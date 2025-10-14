@@ -1,10 +1,13 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+
 import './App.css'
+import { getPartsOfSpeech } from './utils/SentenceAnalyzer'
 
 function App() {
 
     const [inputSentence, setInputSentence] = useState<string>('')
     const [submitted, setSubmitted] = useState<string>('')
+    const [sentencePos, setSentencePos] = useState<string[]>([])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInputSentence(e.target.value)
@@ -15,11 +18,17 @@ function App() {
         if (inputSentence.length > 0) {
             setSubmitted(inputSentence)
         }
+
         setInputSentence('')
     }
 
+    useEffect(() => {
+        getPartsOfSpeech(submitted)
+            .then(res => setSentencePos(res))
+    }, [submitted])
+
     return (
-        <>
+        <div>
             <header>
                 <h1>
                     Grammar Visualizer
@@ -47,10 +56,10 @@ function App() {
                 {submitted.length > 0 &&
                     <div>
                         <p>
-                            Here is the sentence you entered:
+                            Here is the sentence you entered: {submitted}
                         </p>
 
-                        {submitted.split(' ').map((value, index) => (
+                        {sentencePos.map((value, index) => (
                             <li
                                 key={index}
                             >
@@ -59,16 +68,8 @@ function App() {
                         ))}
                     </div>
                 }
-
-                {/* {submitted.length > 0 && (
-                    <div>
-                        <p>
-                            Your input sentence is "{submitted}"
-                        </p>
-                    </div>
-                )} */}
             </main>
-        </>
+        </div>
     )
 }
 
