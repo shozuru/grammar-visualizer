@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 
 import './App.css'
-import { getPartsOfSpeech } from './utils/SentenceAnalyzer'
+import { getPartsOfSpeech } from './utils/SyntaxMethods'
 
 function App() {
 
