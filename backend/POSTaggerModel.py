@@ -3,11 +3,13 @@ from flair.models import SequenceTagger
 
 tagger = SequenceTagger.load("flair/pos-english-fast")
 
-sentence = \
-    Sentence("This is a sample sentence used to test how good this model is")
+def getPartsOfSpeech(sent: str) -> list[str]:
+    sentence = Sentence(sent)
+    tagger.predict(sentence)
 
-tagger.predict(sentence)
+    posList: list[str] =[]
 
-for token in sentence:
-    label = token.get_labels()[0]
-    print(label.value)
+    for token in sentence:
+        posList.append(token.get_labels()[0].value)
+        
+    return posList

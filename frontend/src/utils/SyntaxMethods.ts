@@ -1,9 +1,9 @@
-import { determinerSet, PartsOfSpeech } from "./SyntaxConstants"
+import { PartsOfSpeech } from "./SyntaxConstants"
 
 const determinePos = (word: string): PartsOfSpeech => {
-    if (determinerSet.has(word)) {
-        return PartsOfSpeech.DETERMINER
-    }
+    // if (determinerSet.has(word)) {
+    //     return PartsOfSpeech.DETERMINER
+    // }
 
     return PartsOfSpeech.UNKNOWN
 }
