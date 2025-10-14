@@ -23,3 +23,7 @@ export const getPartsOfSpeech =
         })
         return sentencePOSList
     }
+
+
+// it might just be better to *leverage* some sort of AI model to do this
+// then i could move on to visualizing it
