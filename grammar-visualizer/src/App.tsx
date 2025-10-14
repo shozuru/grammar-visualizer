@@ -1,35 +1,75 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    const [inputSentence, setInputSentence] = useState<string>('')
+    const [submitted, setSubmitted] = useState<string>('')
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setInputSentence(e.target.value)
+    }
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        if (inputSentence.length > 0) {
+            setSubmitted(inputSentence)
+        }
+        setInputSentence('')
+    }
+
+    return (
+        <>
+            <header>
+                <h1>
+                    Grammar Visualizer
+                </h1>
+            </header>
+            <main>
+                <p>
+                    Enter a sentence to be analyzed
+                </p>
+                <form
+                    onSubmit={handleSubmit}
+                >
+                    <input
+                        type='text'
+                        placeholder='This is a sample sentence'
+                        value={inputSentence}
+                        onChange={handleInputChange}
+                    />
+                    <input
+                        type='submit'
+                        value='Submit'
+                    />
+                </form>
+
+                {submitted.length > 0 &&
+                    <div>
+                        <p>
+                            Here is the sentence you entered:
+                        </p>
+
+                        {submitted.split(' ').map((value, index) => (
+                            <li
+                                key={index}
+                            >
+                                {value}
+                            </li>
+                        ))}
+                    </div>
+                }
+
+                {/* {submitted.length > 0 && (
+                    <div>
+                        <p>
+                            Your input sentence is "{submitted}"
+                        </p>
+                    </div>
+                )} */}
+            </main>
+        </>
+    )
 }
 
 export default App
