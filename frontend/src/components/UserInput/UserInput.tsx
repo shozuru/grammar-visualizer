@@ -67,9 +67,21 @@ const UserInput: React.FC = () => {
 
                 {submitted.length > 0 &&
                     <div>
-                        <p>
-                            "{submitted}"
-                        </p>
+                        <div
+                            className='submitted-container'
+                        >
+                            <p
+                                className='sentence-header'
+                            >
+                                The sentence you entered:
+                            </p>
+                            <p
+                                className='submitted-sentence'
+                            >
+                                "{submitted}"
+                            </p>
+
+                        </div>
 
                         <ul>
                             {sentencePos.map((value, index) => (
