@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-
 import './App.css'
-import { getPartsOfSpeech } from './utils/SyntaxMethods'
+import { posDictionary } from './utils/SyntaxConstants'
 
 function App() {
 
@@ -29,7 +28,15 @@ function App() {
                 sentence: submitted
             }
         )
-            .then(res => setSentencePos(res.data.response))
+            .then(res => {
+                let convertedList: string[] = []
+                res.data.response.forEach((value: string) => {
+                    convertedList.push(posDictionary[value])
+                })
+
+                setSentencePos(convertedList)
+            })
+
     }, [submitted])
 
     return (
