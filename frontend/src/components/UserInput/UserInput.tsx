@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { posDictionary } from '../../utils/SyntaxConstants'
 import './UserInput.css'
+import Circle from '../../utils/Circle/Circle'
 
 const UserInput: React.FC = () => {
 
@@ -82,6 +83,8 @@ const UserInput: React.FC = () => {
                             </p>
 
                         </div>
+
+                        <Circle />
 
                         <ul>
                             {sentencePos.map((value, index) => (
