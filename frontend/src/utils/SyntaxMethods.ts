@@ -1,13 +1,5 @@
 import { PartsOfSpeech } from "./SyntaxConstants"
 
-const determinePos = (word: string): PartsOfSpeech => {
-    // if (determinerSet.has(word)) {
-    //     return PartsOfSpeech.DETERMINER
-    // }
-
-    return PartsOfSpeech.UNKNOWN
-}
-
 export const getPartsOfSpeech =
     async (sentence: string): Promise<PartsOfSpeech[]> => {
 

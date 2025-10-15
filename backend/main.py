@@ -12,10 +12,14 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+class Submitted(BaseModel):
+    sentence: str
+
 @app.post('/pos')
-async def getPOS(inputText: str) -> dict[str, list[str]]:
-    if not inputText:
+async def getPOS(submission: Submitted) -> dict[str, list[str]]:
+    if not submission:
         raise HTTPException(status_code=400,
                             detail="Input message cannot be empty")
+    text: str = submission.sentence
     
-    return {"response": getPartsOfSpeech(inputText) }
+    return {"response": getPartsOfSpeech(text) }

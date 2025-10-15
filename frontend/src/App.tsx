@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import axios from 'axios'
 
 import './App.css'
 import { getPartsOfSpeech } from './utils/SyntaxMethods'
@@ -23,8 +24,12 @@ function App() {
     }
 
     useEffect(() => {
-        getPartsOfSpeech(submitted)
-            .then(res => setSentencePos(res))
+        axios.post('http://127.0.0.1:8000/pos',
+            {
+                sentence: submitted
+            }
+        )
+            .then(res => setSentencePos(res.data.response))
     }, [submitted])
 
     return (
