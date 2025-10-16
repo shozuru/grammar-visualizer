@@ -31,11 +31,11 @@ const UserInput: React.FC = () => {
         )
             .then(res => {
                 let convertedList: string[] = []
-                res.data.response.forEach((value: string) => {
+                res.data.response.forEach((value: number) => {
                     convertedList.push(posDictionary[value])
                 })
 
-                setSentencePos(convertedList)
+                // setSentencePos(convertedList)
             })
 
     }, [submitted])

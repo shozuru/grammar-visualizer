@@ -16,7 +16,7 @@ class Submitted(BaseModel):
     sentence: str
 
 @app.post('/pos')
-async def getPOS(submission: Submitted) -> dict[str, list[str]]:
+async def getPOS(submission: Submitted) -> dict[str, list[int]]:
     if not submission:
         raise HTTPException(status_code=400,
                             detail="Input message cannot be empty")
