@@ -92,14 +92,22 @@ export class GrammarVisualizer {
 
     private countClauses(posList: number[]): number {
         let counter: number = 0
-        for (const pos of posList) {
+        for (let i = 0; i < posList.length; i++) {
             if (
-                pos === PartsOfSpeech.VB ||
-                pos === PartsOfSpeech.VBD ||
-                pos === PartsOfSpeech.VBN ||
-                pos === PartsOfSpeech.VBP ||
-                pos === PartsOfSpeech.VBZ) {
-
+                posList[i] === PartsOfSpeech.VB ||
+                posList[i] === PartsOfSpeech.VBD ||
+                posList[i] === PartsOfSpeech.VBN ||
+                posList[i] === PartsOfSpeech.VBP ||
+                posList[i] === PartsOfSpeech.VBZ ||
+                ((
+                    posList[i] === PartsOfSpeech.JJ ||
+                    posList[i] === PartsOfSpeech.JJR ||
+                    posList[i] === PartsOfSpeech.JJS
+                ) && (
+                        posList[i + 1] === PartsOfSpeech.NN ||
+                        posList[i + 1] === PartsOfSpeech.NNS
+                    ))
+            ) {
                 counter += 1
             }
         }
