@@ -71,7 +71,7 @@ export class GrammarVisualizer {
                 wordList[i] === "has" ||
                 wordList[i] === "had"
             ) && (
-                    wordList[i + 1] === "n't"
+                    posList[i + 1] === PartsOfSpeech.RB
                 )
             ) {
                 posList[i] = PartsOfSpeech.PERFECTIVE
