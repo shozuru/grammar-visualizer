@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import './UserInput.css'
 import Circle from '../../utils/Circle/Circle'
-import { countClauses, type SentenceInfo } from '../../utils/SyntaxMethods'
+import { type SentenceInfo } from '../../utils/SyntaxMethods'
 import { PartsOfSpeech } from '../../utils/SyntaxConstants'
-import { GrammarStructure } from '../../utils/GrammarStructure'
+import { GrammarVisualizer } from '../../utils/GrammarVisualizer/GrammarVisualizer'
 
 const UserInput: React.FC = () => {
 
@@ -47,8 +47,7 @@ const UserInput: React.FC = () => {
                     posList: listOfPosNumbers
                 }
 
-                const sentenceStructure = new GrammarStructure(sentInfo)
-                sentenceStructure.setNumberOfClauses(countClauses(sentInfo))
+                const sentenceStructure = new GrammarVisualizer(sentInfo)
             })
 
     }, [submitted])

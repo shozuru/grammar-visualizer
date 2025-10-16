@@ -45,9 +45,9 @@ export enum PartsOfSpeech {
     WR,
     XX,
 
-
     // Constants that the model doesn't use but that I am
-    TENSE
+    TENSE,
+    PERFECTIVE
 }
 
 export const posDictionary: PosDictionary = {
