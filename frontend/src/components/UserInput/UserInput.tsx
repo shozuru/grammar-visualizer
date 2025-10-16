@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import { PartsOfSpeech } from '../../utils/SyntaxConstants'
 import './UserInput.css'
 import Circle from '../../utils/Circle/Circle'
+import { countClauses, type SentenceInfo } from '../../utils/SyntaxMethods'
+import { PartsOfSpeech } from '../../utils/SyntaxConstants'
+import { GrammarStructure } from '../../utils/GrammarStructure'
 
 const UserInput: React.FC = () => {
 
@@ -30,12 +32,23 @@ const UserInput: React.FC = () => {
             }
         )
             .then(res => {
-                let convertedList: string[] = []
+                let listOfPosNumbers: number[] = []
+                let listOfPosStrings: string[] = []
+
                 res.data.response.forEach((value: number) => {
-                    convertedList.push(PartsOfSpeech[value])
+                    listOfPosNumbers.push(value)
+                    listOfPosStrings.push(PartsOfSpeech[value])
                 })
 
-                setSentencePos(convertedList)
+                setSentencePos(listOfPosStrings)
+
+                const sentInfo: SentenceInfo = {
+                    wordList: submitted.split(' '),
+                    posList: listOfPosNumbers
+                }
+
+                const sentenceStructure = new GrammarStructure(sentInfo)
+                sentenceStructure.setNumberOfClauses(countClauses(sentInfo))
             })
 
     }, [submitted])
