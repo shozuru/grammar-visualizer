@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import { posDictionary } from '../../utils/SyntaxConstants'
+import { PartsOfSpeech } from '../../utils/SyntaxConstants'
 import './UserInput.css'
 import Circle from '../../utils/Circle/Circle'
 
@@ -32,10 +32,10 @@ const UserInput: React.FC = () => {
             .then(res => {
                 let convertedList: string[] = []
                 res.data.response.forEach((value: number) => {
-                    convertedList.push(posDictionary[value])
+                    convertedList.push(PartsOfSpeech[value])
                 })
 
-                // setSentencePos(convertedList)
+                setSentencePos(convertedList)
             })
 
     }, [submitted])
