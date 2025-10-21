@@ -3,9 +3,11 @@ import type { Noun } from "./Noun";
 export class Preposition {
 
     private object: Noun | null
+    private modifiers: string[]
 
     constructor() {
         this.object = null
+        this.modifiers = []
     }
 
     public hasObject(): boolean {
@@ -18,5 +20,13 @@ export class Preposition {
 
     public setObject(noun: Noun): void {
         this.object = noun
+    }
+
+    public getModifiers(): string[] {
+        return this.modifiers
+    }
+
+    public addModifier(modifier: string): void {
+        this.modifiers.push(modifier)
     }
 }

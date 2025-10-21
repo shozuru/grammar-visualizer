@@ -6,12 +6,22 @@ export class Verb {
     private experiencer: Noun | null
     private patient: Noun | null
     private modifiers: string[]
+    private name: string
 
-    constructor() {
+    constructor(name: string) {
+        this.name = name
         this.agent = null
         this.experiencer = null
         this.patient = null
         this.modifiers = []
+    }
+
+    public getName(): string {
+        return this.name
+    }
+
+    public setName(newName: string): void {
+        this.name = newName
     }
 
     public hasAgent(): boolean {
@@ -56,5 +66,9 @@ export class Verb {
 
     public addModifier(modifier: string): void {
         this.modifiers.push(modifier)
+    }
+
+    public handleAgreement(modifier: string): void {
+
     }
 }

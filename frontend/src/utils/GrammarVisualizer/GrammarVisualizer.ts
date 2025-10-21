@@ -1,3 +1,4 @@
+import { Verb } from "../Syntax/Verb"
 import { PartsOfSpeech } from "../SyntaxConstants"
 import { type SentenceInfo } from "../SyntaxMethods"
 import { PosInfo } from "./PosInfo"
@@ -8,15 +9,23 @@ export class GrammarVisualizer {
     private posInfo: PosInfo
     private wordInfo: WordInfo
     private numberOfClauses: number
+    private clauses: Verb[]
 
     constructor(sentInfo: SentenceInfo) {
         this.posInfo = new PosInfo(sentInfo.posList)
         this.wordInfo = new WordInfo(sentInfo.wordList)
         this.numberOfClauses = -1
+        this.clauses = []
         this.uncontractSentence(this.wordInfo.getWordList())
         this.fixPartsOfSpeech(this.posInfo, this.wordInfo)
-        this.numberOfClauses = this.countClauses(this.posInfo.getPOSList())
+
+        this.generateClauses(
+            this.posInfo.getPOSList(),
+            this.wordInfo.getWordList()
+        )
+
         console.log(this.numberOfClauses)
+        console.log(this.clauses)
     }
 
     private uncontractSentence(wordList: string[]): void {
@@ -48,7 +57,6 @@ export class GrammarVisualizer {
         }
 
         this.wordInfo.setWordList(alignedWordList)
-
     }
 
     private fixPartsOfSpeech(posInfo: PosInfo, wordInfo: WordInfo): void {
@@ -90,8 +98,7 @@ export class GrammarVisualizer {
         posInfo.setPOSList(posList)
     }
 
-    private countClauses(posList: number[]): number {
-        let counter: number = 0
+    private generateClauses(posList: number[], wordList: string[]): void {
         for (let i = 0; i < posList.length; i++) {
             if (
                 posList[i] === PartsOfSpeech.VB ||
@@ -108,18 +115,18 @@ export class GrammarVisualizer {
                         posList[i + 1] === PartsOfSpeech.NNS
                     ))
             ) {
-                counter += 1
+                this.numberOfClauses += 1
+                const verbPhrase: Verb = new Verb(wordList[i])
+                this.clauses.push(verbPhrase)
             }
         }
-        return counter
     }
-
 }
 
 
 // next steps are to try to identify the main relations between elements per clause
-// for example, identify the main predicate for each clause
 // identify the subjects and objects that go with each clause
 // maybe there are possible heuristics we could use for deciding nouns?
-// like if it's NOUN VERB NOUN VERB, to assume the second nouns is with the second verb?
+// like if it's NOUN VERB NOUN VERB, to assume the second noun is with the second verb?
 // almost like onset priority?
+// if the second verb doesn't have a noun, then inherit it from the first
