@@ -119,7 +119,33 @@ export class GrammarVisualizer {
             let currentPair: [number, string] | undefined = zippedPair.shift()
 
             if (currentPair !== undefined) {
-                if (this.isVerb(currentPair, zippedPair)) {
+
+                if (this.isAdverb(currentPair)) {
+                    if (
+                        zippedPair.length > 0 &&
+                        this.isPreposition(zippedPair[0])
+                    ) {
+                        let prepositionPair: [number, string] =
+                            zippedPair.shift() as [number, string]
+
+                        let currentPreposition: Preposition =
+                            new Preposition(prepositionPair[1])
+                        currentPreposition.addModifier(currentPair[1])
+
+                        let prepObj: Noun | undefined =
+                            this.tagIfObject(zippedPair)
+                        if (prepObj !== undefined) {
+                            currentPreposition.setObject(prepObj)
+                        }
+                        clauseAdjuncts.push(currentPreposition)
+
+                    } else {
+
+                        // else add the adverb to the verb's modifiers:
+                        clauseAdjuncts.push(new Adverb(currentPair[1]))
+                    }
+
+                } else if (this.isVerb(currentPair, zippedPair)) {
                     currentPredicate = new Verb(currentPair[1])
                     this.clauses.push(currentPredicate)
                 } else if (this.isNoun(currentPair)) {
@@ -128,7 +154,6 @@ export class GrammarVisualizer {
                     currentPredicate &&
                     this.isConjunction(currentPair)
                 ) {
-                    console.log("i am now at a conjunction")
                     for (const noun of clauseNouns) {
                         currentPredicate.addNoun(noun)
                     }
@@ -144,18 +169,23 @@ export class GrammarVisualizer {
                     this.isPreposition(currentPair) &&
                     currentPredicate
                 ) {
-                    const currentPreposition: Preposition =
+                    let currentPreposition: Preposition =
                         new Preposition(currentPair[1])
+                    let prepObj: Noun | undefined =
+                        this.tagIfObject(zippedPair)
+                    if (prepObj !== undefined) {
+                        currentPreposition.setObject(prepObj)
+                    }
                     clauseAdjuncts.push(currentPreposition)
-                    let nextWord: [number, string] | undefined =
-                        zippedPair.shift()
-                    while (nextWord && !this.isNoun(nextWord)) {
-                        nextWord = zippedPair.shift()
-                    }
-                    if (nextWord !== undefined) {
-                        const object: Noun = new Noun(nextWord[1])
-                        currentPreposition.setObject(object)
-                    }
+                    // let nextWord: [number, string] | undefined =
+                    //     zippedPair.shift()
+                    // while (nextWord && !this.isNoun(nextWord)) {
+                    //     nextWord = zippedPair.shift()
+                    // }
+                    // if (nextWord !== undefined) {
+                    //     const object: Noun = new Noun(nextWord[1])
+                    //     currentPreposition.setObject(object)
+                    // }
                 }
             }
         }
@@ -216,6 +246,15 @@ export class GrammarVisualizer {
         return currentPOS === PartsOfSpeech.IN
     }
 
+    private isAdverb(wordPair: [number, string]): boolean {
+        const currentPOS: number = wordPair[0]
+        return (
+            currentPOS === PartsOfSpeech.RB ||
+            currentPOS === PartsOfSpeech.RBR ||
+            currentPOS === PartsOfSpeech.RBS
+        )
+    }
+
     private isConjunction(wordPair: [number, string]): boolean {
         const currentPOS: number = wordPair[0]
         const currentWord: string = wordPair[1]
@@ -232,6 +271,17 @@ export class GrammarVisualizer {
 
     private isRelativeClause(wordPair: [number, string]): boolean {
         return false
+    }
+
+    public tagIfObject(restOfSent: [number, string][]): Noun | undefined {
+        let nextPair: [number, string] | undefined = restOfSent.shift()
+        while (nextPair && !this.isNoun(nextPair)) {
+            nextPair = restOfSent.shift()
+        }
+        if (nextPair !== undefined) {
+            const object: Noun = new Noun(nextPair[1])
+            return object
+        }
     }
 }
 
