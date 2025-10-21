@@ -2,6 +2,8 @@ import type { Noun } from "./Noun"
 
 export class Verb {
 
+    // need to delete this
+    private nounList: Noun[]
     private agent: Noun | null
     private experiencer: Noun | null
     private patient: Noun | null
@@ -14,6 +16,11 @@ export class Verb {
         this.experiencer = null
         this.patient = null
         this.modifiers = []
+        this.nounList = []
+    }
+
+    public addNoun(n: Noun): void {
+        this.nounList.push(n)
     }
 
     public getName(): string {

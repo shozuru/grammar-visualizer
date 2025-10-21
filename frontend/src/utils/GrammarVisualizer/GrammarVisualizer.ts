@@ -1,4 +1,7 @@
-import { Verb } from "../Syntax/Verb"
+import { Adverb } from "../Syntactic Categories/Adverbs"
+import { Noun } from "../Syntactic Categories/Noun"
+import { Preposition } from "../Syntactic Categories/Preposition"
+import { Verb } from "../Syntactic Categories/Verb"
 import { PartsOfSpeech } from "../SyntaxConstants"
 import { type SentenceInfo } from "../SyntaxMethods"
 import { PosInfo } from "./PosInfo"
@@ -14,7 +17,7 @@ export class GrammarVisualizer {
     constructor(sentInfo: SentenceInfo) {
         this.posInfo = new PosInfo(sentInfo.posList)
         this.wordInfo = new WordInfo(sentInfo.wordList)
-        this.numberOfClauses = -1
+        this.numberOfClauses = 0
         this.clauses = []
         this.uncontractSentence(this.wordInfo.getWordList())
         this.fixPartsOfSpeech(this.posInfo, this.wordInfo)
@@ -99,27 +102,118 @@ export class GrammarVisualizer {
     }
 
     private generateClauses(posList: number[], wordList: string[]): void {
+        let zippedPair: [number, string][] = []
+
         for (let i = 0; i < posList.length; i++) {
-            if (
-                posList[i] === PartsOfSpeech.VB ||
-                posList[i] === PartsOfSpeech.VBD ||
-                posList[i] === PartsOfSpeech.VBN ||
-                posList[i] === PartsOfSpeech.VBP ||
-                posList[i] === PartsOfSpeech.VBZ ||
-                ((
-                    posList[i] === PartsOfSpeech.JJ ||
-                    posList[i] === PartsOfSpeech.JJR ||
-                    posList[i] === PartsOfSpeech.JJS
-                ) && (
-                        posList[i + 1] === PartsOfSpeech.NN ||
-                        posList[i + 1] === PartsOfSpeech.NNS
-                    ))
-            ) {
-                this.numberOfClauses += 1
-                const verbPhrase: Verb = new Verb(wordList[i])
-                this.clauses.push(verbPhrase)
+            zippedPair.push([posList[i], wordList[i]])
+        }
+
+        let currentPredicate: Verb | null = null
+
+        // baskets to put elements for each clause
+        let clauseNouns: Noun[] = []
+        let clauseModifiers: (Adverb | Preposition)[] = []
+
+        while (zippedPair.length > 0) {
+
+            let currentPair: [number, string] | undefined = zippedPair.shift()
+
+            if (currentPair !== undefined) {
+                if (this.isVerb(currentPair, zippedPair)) {
+                    currentPredicate = new Verb(currentPair[1])
+                    this.clauses.push(currentPredicate)
+                } else if (this.isNoun(currentPair)) {
+                    clauseNouns.push(new Noun(currentPair[1]))
+                } else if (
+                    this.isConjunction(currentPair) &&
+                    currentPredicate
+                ) {
+                    for (const noun of clauseNouns) {
+                        currentPredicate.addNoun(noun)
+                    }
+
+                    clauseNouns = []
+                    currentPredicate = null
+                } else if (
+                    this.isPreposition(currentPair) &&
+                    currentPredicate
+                ) {
+                    currentPredicate.addModifier(currentPair[1])
+                }
             }
         }
+
+        if (currentPredicate) {
+            for (const noun of clauseNouns) {
+                currentPredicate.addNoun(noun)
+            }
+        }
+    }
+
+    // verbs are predicates and predicates are verbs
+    private isVerb(
+        wordPair: [number, string],
+        restOfSent: [number, string][]
+    ): boolean {
+
+        const currentPOS: number = wordPair[0]
+
+        if (
+            currentPOS === PartsOfSpeech.VB ||
+            currentPOS === PartsOfSpeech.VBD ||
+            currentPOS === PartsOfSpeech.VBN ||
+            currentPOS === PartsOfSpeech.VBP ||
+            currentPOS === PartsOfSpeech.VBZ ||
+            ((
+                currentPOS === PartsOfSpeech.JJ ||
+                currentPOS === PartsOfSpeech.JJR ||
+                currentPOS === PartsOfSpeech.JJS
+            ) && (
+                    restOfSent.length > 0 &&
+                    (
+                        restOfSent[0][0] === PartsOfSpeech.NN ||
+                        restOfSent[0][0] === PartsOfSpeech.NNS
+                    )
+                ))
+        ) {
+            this.numberOfClauses += 1
+            return true
+        }
+        return false
+    }
+
+    private isNoun(wordPair: [number, string]): boolean {
+        const currentPOS: number = wordPair[0]
+        return (currentPOS === PartsOfSpeech.NN ||
+            currentPOS === PartsOfSpeech.NNS ||
+            currentPOS === PartsOfSpeech.NNP ||
+            currentPOS === PartsOfSpeech.NNPS ||
+            currentPOS === PartsOfSpeech.PRP)
+    }
+
+    private isPreposition(wordPair: [number, string]): boolean {
+        const currentPOS: number = wordPair[0]
+        return currentPOS === PartsOfSpeech.IN
+    }
+
+    private isConjunction(wordPair: [number, string]): boolean {
+        const currentPOS: number = wordPair[0]
+        const currentWord: string = wordPair[1]
+
+        return (
+            (currentPOS === PartsOfSpeech.IN ||
+                currentPOS === PartsOfSpeech.CC ||
+                currentPOS === PartsOfSpeech.WR
+            ) && (
+                currentWord === "that" ||
+                currentWord === "if" ||
+                currentWord === "whether"
+            )
+        )
+    }
+
+    private isRelativeClause(wordPair: [number, string]): boolean {
+        return false
     }
 }
 

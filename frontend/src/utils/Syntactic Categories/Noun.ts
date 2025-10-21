@@ -4,10 +4,20 @@ export class Noun {
 
     private case: Case | null
     private modifiers: string[]
+    private name: string
 
-    constructor() {
+    constructor(name: string) {
+        this.name = name
         this.case = null
         this.modifiers = []
+    }
+
+    public setName(newName: string) {
+        this.name = newName
+    }
+
+    public getName(): string {
+        return this.name
     }
 
     public hasCase(): boolean {

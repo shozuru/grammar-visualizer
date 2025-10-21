@@ -4,8 +4,10 @@ export class Preposition {
 
     private object: Noun | null
     private modifiers: string[]
+    private name: string
 
-    constructor() {
+    constructor(name: string) {
+        this.name = name
         this.object = null
         this.modifiers = []
     }
@@ -28,5 +30,13 @@ export class Preposition {
 
     public addModifier(modifier: string): void {
         this.modifiers.push(modifier)
+    }
+
+    public getName(): string {
+        return this.name
+    }
+
+    public setName(newName: string): void {
+        this.name = newName
     }
 }
