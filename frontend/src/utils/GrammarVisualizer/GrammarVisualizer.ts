@@ -114,4 +114,12 @@ export class GrammarVisualizer {
         return counter
     }
 
-}   
+}
+
+
+// next steps are to try to identify the main relations between elements per clause
+// for example, identify the main predicate for each clause
+// identify the subjects and objects that go with each clause
+// maybe there are possible heuristics we could use for deciding nouns?
+// like if it's NOUN VERB NOUN VERB, to assume the second nouns is with the second verb?
+// almost like onset priority?

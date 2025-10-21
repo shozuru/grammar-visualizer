@@ -50,6 +50,11 @@ export enum PartsOfSpeech {
     PERFECTIVE
 }
 
+export enum Case {
+    NOMINATIVE,
+    ACCUSATIVE
+}
+
 export const posDictionary: PosDictionary = {
     ADD: "Email",
     AFX: "Affix",
