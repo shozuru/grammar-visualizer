@@ -4,8 +4,9 @@ import type { Preposition } from "./Preposition"
 
 export class Verb {
 
-    // need to delete this
+    // need to replace this with actual theta roles.
     private nounList: Noun[]
+
     private agent: Noun | null
     private experiencer: Noun | null
     private patient: Noun | null
@@ -80,6 +81,5 @@ export class Verb {
     }
 
     public handleAgreement(modifier: string): void {
-
     }
 }

@@ -27,7 +27,7 @@ export class GrammarVisualizer {
             this.wordInfo.getWordList()
         )
 
-        console.log(this.numberOfClauses)
+        console.log(`Number of clauses in sentence: ${this.numberOfClauses}`)
         console.log(this.clauses)
     }
 
@@ -113,14 +113,16 @@ export class GrammarVisualizer {
         // baskets to put elements for each clause
         let clauseNouns: Noun[] = []
         let clauseAdjuncts: (Adverb | Preposition)[] = []
+        let nounModifiers: string[] = []
 
         while (zippedPair.length > 0) {
 
             let currentPair: [number, string] | undefined = zippedPair.shift()
 
             if (currentPair !== undefined) {
-
-                if (this.isAdverb(currentPair)) {
+                if (this.isNounModifier(currentPair)) {
+                    nounModifiers.push(currentPair[1])
+                } else if (this.isAdverb(currentPair)) {
                     if (
                         zippedPair.length > 0 &&
                         this.isPreposition(zippedPair[0])
@@ -140,16 +142,18 @@ export class GrammarVisualizer {
                         clauseAdjuncts.push(currentPreposition)
 
                     } else {
-
                         // else add the adverb to the verb's modifiers:
                         clauseAdjuncts.push(new Adverb(currentPair[1]))
                     }
-
                 } else if (this.isVerb(currentPair, zippedPair)) {
                     currentPredicate = new Verb(currentPair[1])
                     this.clauses.push(currentPredicate)
                 } else if (this.isNoun(currentPair)) {
-                    clauseNouns.push(new Noun(currentPair[1]))
+                    let currentNoun: Noun = new Noun(currentPair[1])
+                    if (nounModifiers.length > 0) {
+                        currentNoun.addModifier(nounModifiers.pop() as string)
+                    }
+                    clauseNouns.push(currentNoun)
                 } else if (
                     currentPredicate &&
                     this.isConjunction(currentPair)
@@ -177,15 +181,6 @@ export class GrammarVisualizer {
                         currentPreposition.setObject(prepObj)
                     }
                     clauseAdjuncts.push(currentPreposition)
-                    // let nextWord: [number, string] | undefined =
-                    //     zippedPair.shift()
-                    // while (nextWord && !this.isNoun(nextWord)) {
-                    //     nextWord = zippedPair.shift()
-                    // }
-                    // if (nextWord !== undefined) {
-                    //     const object: Noun = new Noun(nextWord[1])
-                    //     currentPreposition.setObject(object)
-                    // }
                 }
             }
         }
@@ -206,7 +201,7 @@ export class GrammarVisualizer {
         restOfSent: [number, string][]
     ): boolean {
 
-        const currentPOS: number = wordPair[0]
+        let currentPOS: number = wordPair[0]
 
         if (
             currentPOS === PartsOfSpeech.VB ||
@@ -233,7 +228,7 @@ export class GrammarVisualizer {
     }
 
     private isNoun(wordPair: [number, string]): boolean {
-        const currentPOS: number = wordPair[0]
+        let currentPOS: number = wordPair[0]
         return (currentPOS === PartsOfSpeech.NN ||
             currentPOS === PartsOfSpeech.NNS ||
             currentPOS === PartsOfSpeech.NNP ||
@@ -242,12 +237,12 @@ export class GrammarVisualizer {
     }
 
     private isPreposition(wordPair: [number, string]): boolean {
-        const currentPOS: number = wordPair[0]
+        let currentPOS: number = wordPair[0]
         return currentPOS === PartsOfSpeech.IN
     }
 
     private isAdverb(wordPair: [number, string]): boolean {
-        const currentPOS: number = wordPair[0]
+        let currentPOS: number = wordPair[0]
         return (
             currentPOS === PartsOfSpeech.RB ||
             currentPOS === PartsOfSpeech.RBR ||
@@ -256,8 +251,8 @@ export class GrammarVisualizer {
     }
 
     private isConjunction(wordPair: [number, string]): boolean {
-        const currentPOS: number = wordPair[0]
-        const currentWord: string = wordPair[1]
+        let currentPOS: number = wordPair[0]
+        let currentWord: string = wordPair[1]
 
         return (
             (currentPOS === PartsOfSpeech.IN ||
@@ -273,22 +268,45 @@ export class GrammarVisualizer {
         return false
     }
 
-    public tagIfObject(restOfSent: [number, string][]): Noun | undefined {
+    private tagIfObject(restOfSent: [number, string][]): Noun | undefined {
+        let nounModiferList: string[] = []
         let nextPair: [number, string] | undefined = restOfSent.shift()
         while (nextPair && !this.isNoun(nextPair)) {
+            if (this.isNounModifier(nextPair)) {
+                nounModiferList.push(nextPair[1])
+            }
             nextPair = restOfSent.shift()
         }
         if (nextPair !== undefined) {
             const object: Noun = new Noun(nextPair[1])
+            if (nounModiferList.length > 0) {
+                for (const modifier of nounModiferList) {
+                    object.addModifier(modifier)
+                }
+            }
             return object
         }
+    }
+
+    private isNounModifier(wordPair: [number, string]): boolean {
+        let currentPOS: number = wordPair[0]
+        return (
+            currentPOS === PartsOfSpeech.DT
+        )
+    }
+
+    private isVerbModifier(wordPair: [number, string]): boolean {
+        return false
     }
 }
 
 
-// next steps are to try to identify the main relations between elements per clause
 // identify the subjects and objects that go with each clause
 // maybe there are possible heuristics we could use for deciding nouns?
 // like if it's NOUN VERB NOUN VERB, to assume the second noun is with the second verb?
 // almost like onset priority?
 // if the second verb doesn't have a noun, then inherit it from the first
+
+// have to account for things like questions, raising, control, ecm predicates, relative clauses
+// also have to make sure that the main predicate is the verb and not progessive or perfective aspects
+// also having make/let be in the same clause as the predicate "under" it
