@@ -2,7 +2,7 @@ import { Adverb } from "../Syntactic Categories/Adverbs"
 import { Noun } from "../Syntactic Categories/Noun"
 import { Preposition } from "../Syntactic Categories/Preposition"
 import { Verb } from "../Syntactic Categories/Verb"
-import { PartsOfSpeech } from "../SyntaxConstants"
+import { conjunctions, PartsOfSpeech } from "../SyntaxConstants"
 import { type SentenceInfo } from "../SyntaxMethods"
 import { PosInfo } from "./PosInfo"
 import { WordInfo } from "./WordInfo"
@@ -147,7 +147,11 @@ export class GrammarVisualizer {
                     const currentPreposition: Preposition =
                         new Preposition(currentPair[1])
                     clauseAdjuncts.push(currentPreposition)
-                    const nextWord = zippedPair.pop()
+                    let nextWord: [number, string] | undefined =
+                        zippedPair.shift()
+                    while (nextWord && !this.isNoun(nextWord)) {
+                        nextWord = zippedPair.shift()
+                    }
                     if (nextWord !== undefined) {
                         const object: Noun = new Noun(nextWord[1])
                         currentPreposition.setObject(object)
@@ -221,11 +225,7 @@ export class GrammarVisualizer {
                 currentPOS === PartsOfSpeech.CC ||
                 currentPOS === PartsOfSpeech.WR
             ) && (
-                currentWord === "that" ||
-                currentWord === "if" ||
-                currentWord === "whether" ||
-                currentWord === "and" ||
-                currentWord === "or"
+                conjunctions.has(currentWord)
             )
         )
     }

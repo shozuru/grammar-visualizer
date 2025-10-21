@@ -98,3 +98,14 @@ export const posDictionary: PosDictionary = {
     WRB: "Wh - adverb",
     XX: "Unknown",
 }
+
+export const conjunctions: Set<string> = new Set(
+    [
+        "that",
+        "if",
+        "whether",
+        "and",
+        "or",
+        "while"
+    ]
+)
