@@ -1,4 +1,6 @@
+import type { Adverb } from "./Adverbs"
 import type { Noun } from "./Noun"
+import type { Preposition } from "./Preposition"
 
 export class Verb {
 
@@ -7,16 +9,18 @@ export class Verb {
     private agent: Noun | null
     private experiencer: Noun | null
     private patient: Noun | null
-    private modifiers: string[]
+    private adverbs: (Adverb | Preposition)[]
     private name: string
+    private tamm: string[]
 
     constructor(name: string) {
         this.name = name
         this.agent = null
         this.experiencer = null
         this.patient = null
-        this.modifiers = []
+        this.adverbs = []
         this.nounList = []
+        this.tamm = []
     }
 
     public addNoun(n: Noun): void {
@@ -67,12 +71,12 @@ export class Verb {
         this.patient = p
     }
 
-    public getModifiers(): string[] {
-        return this.modifiers
+    public getAdjunct(): (Adverb | Preposition)[] {
+        return this.adverbs
     }
 
-    public addModifier(modifier: string): void {
-        this.modifiers.push(modifier)
+    public addAdjunct(modifier: Adverb | Preposition): void {
+        this.adverbs.push(modifier)
     }
 
     public handleAgreement(modifier: string): void {

@@ -112,7 +112,7 @@ export class GrammarVisualizer {
 
         // baskets to put elements for each clause
         let clauseNouns: Noun[] = []
-        let clauseModifiers: (Adverb | Preposition)[] = []
+        let clauseAdjuncts: (Adverb | Preposition)[] = []
 
         while (zippedPair.length > 0) {
 
@@ -125,20 +125,33 @@ export class GrammarVisualizer {
                 } else if (this.isNoun(currentPair)) {
                     clauseNouns.push(new Noun(currentPair[1]))
                 } else if (
-                    this.isConjunction(currentPair) &&
-                    currentPredicate
+                    currentPredicate &&
+                    this.isConjunction(currentPair)
                 ) {
+                    console.log("i am now at a conjunction")
                     for (const noun of clauseNouns) {
                         currentPredicate.addNoun(noun)
                     }
+                    for (const modifier of clauseAdjuncts) {
+                        currentPredicate.addAdjunct(modifier)
+                    }
 
                     clauseNouns = []
+                    clauseAdjuncts = []
                     currentPredicate = null
+
                 } else if (
                     this.isPreposition(currentPair) &&
                     currentPredicate
                 ) {
-                    currentPredicate.addModifier(currentPair[1])
+                    const currentPreposition: Preposition =
+                        new Preposition(currentPair[1])
+                    clauseAdjuncts.push(currentPreposition)
+                    const nextWord = zippedPair.pop()
+                    if (nextWord !== undefined) {
+                        const object: Noun = new Noun(nextWord[1])
+                        currentPreposition.setObject(object)
+                    }
                 }
             }
         }
@@ -146,6 +159,9 @@ export class GrammarVisualizer {
         if (currentPredicate) {
             for (const noun of clauseNouns) {
                 currentPredicate.addNoun(noun)
+            }
+            for (const modifier of clauseAdjuncts) {
+                currentPredicate.addAdjunct(modifier)
             }
         }
     }
@@ -207,7 +223,9 @@ export class GrammarVisualizer {
             ) && (
                 currentWord === "that" ||
                 currentWord === "if" ||
-                currentWord === "whether"
+                currentWord === "whether" ||
+                currentWord === "and" ||
+                currentWord === "or"
             )
         )
     }
