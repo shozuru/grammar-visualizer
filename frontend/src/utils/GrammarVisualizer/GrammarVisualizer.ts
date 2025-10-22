@@ -308,5 +308,17 @@ export class GrammarVisualizer {
 // if the second verb doesn't have a noun, then inherit it from the first
 
 // have to account for things like questions, raising, control, ecm predicates, relative clauses
+// ECM verb: see
+// Control verb: ask
+// Raising verb: expect
 // also have to make sure that the main predicate is the verb and not progessive or perfective aspects
 // also having make/let be in the same clause as the predicate "under" it
+
+// experiencer verbs might be super limited
+// determining if intransitive verb is unaccusative or unergative might prove more challenging
+// might want to look into an ML model that can classify it or make one yourself
+
+// for some reason two empty sentences are being submitted on startup
+
+// (I saw) (her run)
+// (I saw her)
