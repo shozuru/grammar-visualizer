@@ -179,43 +179,32 @@ export class GrammarVisualizer {
                         } else {
 
                             if (
-                                // matrix verb is in raising list
-                                clauseNouns.length > 0 &&
-                                Array
-                                    .from(raisingVerbs)
-                                    .some(item => predName.includes(item))
+                                clauseNouns.length > 1
                             ) {
-                                // first noun is only matrix, rest are only subordiante
-                                let matrixSubject: Noun =
-                                    clauseNouns.shift() as Noun
-                                currentPredicate.addNoun(matrixSubject)
+                                if (
+                                    // matrix verb is in raising list
+                                    Array
+                                        .from(raisingVerbs)
+                                        .some(item => predName.includes(item))
+                                ) {
+                                    // first noun is only matrix, rest are only subordiante
+                                    let matrixSubject: Noun =
+                                        clauseNouns.shift() as Noun
+                                    currentPredicate.addNoun(matrixSubject)
+                                } else {
+                                    // first noun is matrix and subordinate, 
+                                    // second is only matrix, 
+                                    // rest are only subordinate
+                                    let matrixSubject: Noun = clauseNouns[0]
+                                    currentPredicate.addNoun(matrixSubject)
+                                    let matrixObject: Noun =
+                                        clauseNouns.pop() as Noun
+                                    currentPredicate.addNoun(matrixObject)
+                                }
                             } else {
-                                // first noun is matrix and subordinate, 
-                                // second is only matrix, 
-                                // rest are only subordinate
                                 let matrixSubject: Noun = clauseNouns[0]
                                 currentPredicate.addNoun(matrixSubject)
-                                let matrixObject: Noun =
-                                    clauseNouns.pop() as Noun
-                                currentPredicate.addNoun(matrixObject)
                             }
-                            // I expected him to win
-                            // I called him to rant
-
-                            // xx (I expected him) ((I) to win)
-                            // (I expected) (him to win)
-                            // (I called him) ((I) to rant)
-
-
-
-                            // while (clauseNouns.length > 1) {
-                            //     let matrixObject: Noun =
-                            //         clauseNouns.pop() as Noun
-                            //     currentPredicate.addNoun(matrixObject)
-                            // }
-
-                            // let matrixSubject = clauseNouns[0]
-                            // currentPredicate.addNoun(matrixSubject)
                         }
                     }
 
@@ -401,31 +390,6 @@ export class GrammarVisualizer {
 
 // for some reason two empty sentences are being submitted on startup
 
-
-// -----------------------------------------------------------------------------
-// (I saw) (her run) --> (I saw) (her run)
-// (I saw her)
-// DONE
-
-// (I expect) (him to win) --> (I expect) (him to win)
-// (I expect) (to win) --> (I expect) (I to win)
-// (I expect a cake)
-
-// (I asked him) (to win) --> (I asked him) (him to win)
-// (I asked) (to win) --> (I asked) (I to win)
-// (I asked him)
-// DONE
-
-// he called me to talk about his job --> (he called me) (he to talk about his job)
-// he called to talk about his job --> (he called) (he to talk)
-// (he called me)
-
-// maybe ECM and control are marked and have to be listed, 
-// and the rest is this kind of raising 
-// (it looks like a lot of verbs have raising)
-
-// finite clause?
-
 // want
 // use
 // find
@@ -481,14 +445,4 @@ export class GrammarVisualizer {
 // prove
 
 
-// seem 
-
-
-
-// he called me to talk about his job
-// he signaled us to come over
-// he signaled for us to come over
-
-// move all the nouns before changing the current predicate for these verbs
-// we want to shift the first noun onto the matrix clause, and copy the next 
-// noun, but leave it to be popped off by the subordinate clause
+// seem
