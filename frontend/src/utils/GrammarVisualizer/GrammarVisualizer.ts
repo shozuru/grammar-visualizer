@@ -2,7 +2,7 @@ import { Adverb } from "../Syntactic Categories/Adverbs"
 import { Noun } from "../Syntactic Categories/Noun"
 import { Preposition } from "../Syntactic Categories/Preposition"
 import { Verb } from "../Syntactic Categories/Verb"
-import { conjunctions, PartsOfSpeech } from "../SyntaxConstants"
+import { conjunctions, ecmVerbs, PartsOfSpeech } from "../SyntaxConstants"
 import { type SentenceInfo } from "../SyntaxMethods"
 import { PosInfo } from "./PosInfo"
 import { WordInfo } from "./WordInfo"
@@ -146,8 +146,16 @@ export class GrammarVisualizer {
                         clauseAdjuncts.push(new Adverb(currentPair[1]))
                     }
                 } else if (this.isVerb(currentPair, zippedPair)) {
-                    currentPredicate = new Verb(currentPair[1])
-                    this.clauses.push(currentPredicate)
+                    let currentVerb: Verb = new Verb(currentPair[1])
+                    currentPredicate = currentVerb
+                    if (
+                        ecmVerbs.has(currentVerb.getName()) &&
+                        clauseNouns.length > 0
+                    ) {
+                        let ecmMatrixNoun: Noun = clauseNouns.shift() as Noun
+                        currentVerb.addNoun(ecmMatrixNoun)
+                    }
+                    this.clauses.push(currentVerb)
                 } else if (this.isNoun(currentPair)) {
                     let currentNoun: Noun = new Noun(currentPair[1])
                     if (nounModifiers.length > 0) {
@@ -318,7 +326,89 @@ export class GrammarVisualizer {
 // determining if intransitive verb is unaccusative or unergative might prove more challenging
 // might want to look into an ML model that can classify it or make one yourself
 
+// might want to do stuff for case and agreement on nouns and verbs
+
 // for some reason two empty sentences are being submitted on startup
 
-// (I saw) (her run)
+
+// -----------------------------------------------------------------------------
+// (I saw) (her run) --> (I saw) (her run)
 // (I saw her)
+// DONE
+
+// (I expect) (him to win) --> (I expect) (him to win)
+// (I expect) (to win) --> (I expect) (I to win)
+// (I expect a cake)
+
+// (I asked him) (to win) --> (I asked him) (him to win)
+// (I asked) (to win) --> (I asked) (I to win)
+// (I asked him)
+
+// he called me to talk about his job --> (he called me) (he to talk about his job)
+// he called to talk about his job --> (he called) (he to talk)
+// (he called me)
+
+// maybe ECM and control are marked and have to be listed, 
+// otherwise it's this kind of raising (it looks like a lot of verbs have raising)
+
+// finite clause?
+
+// want
+// use
+// find
+// add
+// take
+// get
+// include
+// need
+// put
+// teach
+// spend
+// announce
+// encourage
+// click
+// raise
+// connect
+// pay
+// allow
+// ask
+// establish
+// switch
+// believe 
+// expect
+// require
+// call
+// bring
+// like
+// offer
+// force
+// borrow
+// reduce
+// undergo
+// pull
+// tell
+// urge
+// convince
+// go
+// come
+// try
+// start 
+// decide 
+// love
+// hate
+// manage
+// continue
+// decline
+// wait
+// mean
+// hope
+// judge
+// assume
+// prove
+
+
+// seem 
+
+
+
+// he called me to talk about his job

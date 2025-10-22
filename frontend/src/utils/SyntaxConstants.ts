@@ -109,3 +109,19 @@ export const conjunctions: Set<string> = new Set(
         "while"
     ]
 )
+
+export const ecmVerbs: Set<string> = new Set(
+    [
+        "see",
+        "saw",
+        "hear",
+        "smell",
+        "sense",
+        "taste",
+        "watch",
+        "observe",
+        "feel",
+        "felt",
+        "notice"
+    ]
+)
