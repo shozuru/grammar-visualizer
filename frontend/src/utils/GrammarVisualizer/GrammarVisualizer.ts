@@ -5,69 +5,75 @@ import { Verb } from "../Syntactic Categories/Verb"
 import { conjunctions, ecmVerbs, objectControlVerbs, PartsOfSpeech, raisingVerbs }
     from "../SyntaxConstants"
 import { type SentenceInfo } from "../SyntaxMethods"
-import { PosInfo } from "./PosInfo"
-import { WordInfo } from "./WordInfo"
+import { Sentence } from "./Sentence"
 
 export class GrammarVisualizer {
 
-    private posInfo: PosInfo
-    private wordInfo: WordInfo
+    private sentence: Sentence
     private numberOfClauses: number
     private clauses: Verb[]
 
-    constructor(sentInfo: SentenceInfo) {
-        this.posInfo = new PosInfo(sentInfo.posList)
-        this.wordInfo = new WordInfo(sentInfo.wordList)
+    constructor(inputSentence: SentenceInfo) {
+        this.sentence = new Sentence(
+            inputSentence.posList,
+            inputSentence.wordList
+        )
         this.numberOfClauses = 0
         this.clauses = []
-        this.uncontractSentence(this.wordInfo.getWordList())
-        this.fixPartsOfSpeech(this.posInfo, this.wordInfo)
+
+
+        this.uncontractSentence(
+            this.sentence.getPosInfoList(),
+            this.sentence.getWordInfoList()
+        )
+        this.fixPartsOfSpeech(
+            this.sentence.getPosInfoList(),
+            this.sentence.getWordInfoList())
 
         this.generateClauses(
-            this.posInfo.getPOSList(),
-            this.wordInfo.getWordList()
+            this.sentence.getPosInfoList(),
+            this.sentence.getWordInfoList()
         )
 
         console.log(`Number of clauses in sentence: ${this.numberOfClauses}`)
         console.log(this.clauses)
     }
 
-    private uncontractSentence(wordList: string[]): void {
+    private uncontractSentence(posList: number[], wordList: string[]): void {
 
         let alignedWordList: string[] = []
 
-        for (const word of wordList) {
-            if (word === "didn't") {
-                alignedWordList.push("did")
-                alignedWordList.push("n't")
-            } else if (word === "doesn't") {
-                alignedWordList.push("does")
-                alignedWordList.push("n't")
-            } else if (word === "don't") {
-                alignedWordList.push("do")
-                alignedWordList.push("n't")
-            } else if (word === "haven't") {
-                alignedWordList.push("have")
-                alignedWordList.push("n't")
-            } else if (word === "hasn't") {
-                alignedWordList.push("has")
-                alignedWordList.push("n't")
-            } else if (word === "hadn't") {
-                alignedWordList.push("had")
-                alignedWordList.push("n't")
-            } else {
-                alignedWordList.push(word)
-            }
-        }
+        // for (const word of wordList) {
+        //     if (word === "didn't") {
+        //         alignedWordList.push("did")
+        //         alignedWordList.push("n't")
+        //     } else if (word === "doesn't") {
+        //         alignedWordList.push("does")
+        //         alignedWordList.push("n't")
+        //     } else if (word === "don't") {
+        //         alignedWordList.push("do")
+        //         alignedWordList.push("n't")
+        //     } else if (word === "haven't") {
+        //         alignedWordList.push("have")
+        //         alignedWordList.push("n't")
+        //     } else if (word === "hasn't") {
+        //         alignedWordList.push("has")
+        //         alignedWordList.push("n't")
+        //     } else if (word === "hadn't") {
+        //         alignedWordList.push("had")
+        //         alignedWordList.push("n't")
+        //     } else {
+        //         alignedWordList.push(word)
+        //     }
+        // }
 
-        this.wordInfo.setWordList(alignedWordList)
+        // this.wordInfo.setWordList(alignedWordList)
     }
 
-    private fixPartsOfSpeech(posInfo: PosInfo, wordInfo: WordInfo): void {
-        let posList: number[] = posInfo.getPOSList()
-        const wordList: string[] = wordInfo.getWordList()
+    private fixPartsOfSpeech(posList: number[], wordList: string[]): void {
 
         for (let i = 0; i < wordList.length; i++) {
+
             if ((
                 wordList[i] === "do" ||
                 wordList[i] === "does" ||
@@ -122,7 +128,7 @@ export class GrammarVisualizer {
             }
         }
 
-        posInfo.setPOSList(posList)
+        this.sentence.setPosInfoList(posList)
     }
 
     private generateClauses(posList: number[], wordList: string[]): void {
