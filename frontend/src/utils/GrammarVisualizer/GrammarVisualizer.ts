@@ -2,7 +2,10 @@ import { Adverb } from "../Syntactic Categories/Adverbs"
 import { Noun } from "../Syntactic Categories/Noun"
 import { Preposition } from "../Syntactic Categories/Preposition"
 import { Verb } from "../Syntactic Categories/Verb"
-import { conjunctions, ecmVerbs, objectControlVerbs, PartsOfSpeech, raisingVerbs }
+import {
+    conjunctions, ecmVerbs, objectControlVerbs, PartsOfSpeech,
+    raisingVerbs
+}
     from "../SyntaxConstants"
 import { type SentenceInfo } from "../SyntaxMethods"
 import { Sentence } from "./Sentence"
@@ -67,7 +70,8 @@ export class GrammarVisualizer {
         //     }
         // }
 
-        // this.wordInfo.setWordList(alignedWordList)
+        this.sentence.setPosInfoList(posList)
+        this.sentence.setWordInfoList(wordList)
     }
 
     private fixPartsOfSpeech(posList: number[], wordList: string[]): void {
