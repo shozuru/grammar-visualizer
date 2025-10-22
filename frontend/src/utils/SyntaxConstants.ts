@@ -125,3 +125,25 @@ export const ecmVerbs: Set<string> = new Set(
         "notice"
     ]
 )
+
+export const objectControlVerbs: Set<string> = new Set(
+    [
+        "ask",
+        "tell",
+        "told",
+        "teach",
+        "taught",
+        "signal",
+        "persuade",
+        "remind",
+        "warn",
+        "invite",
+        "convince",
+        "motivate",
+        "beg",
+        "motion",
+        "encourage",
+        "pay",
+        "paid"
+    ]
+)

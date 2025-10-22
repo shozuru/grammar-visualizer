@@ -2,7 +2,7 @@ import { Adverb } from "../Syntactic Categories/Adverbs"
 import { Noun } from "../Syntactic Categories/Noun"
 import { Preposition } from "../Syntactic Categories/Preposition"
 import { Verb } from "../Syntactic Categories/Verb"
-import { conjunctions, ecmVerbs, PartsOfSpeech } from "../SyntaxConstants"
+import { conjunctions, ecmVerbs, objectControlVerbs, PartsOfSpeech } from "../SyntaxConstants"
 import { type SentenceInfo } from "../SyntaxMethods"
 import { PosInfo } from "./PosInfo"
 import { WordInfo } from "./WordInfo"
@@ -147,6 +147,18 @@ export class GrammarVisualizer {
                     }
                 } else if (this.isVerb(currentPair, zippedPair)) {
                     let currentVerb: Verb = new Verb(currentPair[1])
+                    if (
+                        currentPredicate &&
+                        clauseNouns.length > 0 &&
+                        objectControlVerbs.has(currentPredicate.getName())
+                    ) {
+                        let matrixSubject: Noun = clauseNouns.shift() as Noun
+                        let matrixObject: Noun = clauseNouns[0]
+
+                        currentPredicate.addNoun(matrixSubject)
+                        currentPredicate.addNoun(matrixObject)
+
+                    }
                     currentPredicate = currentVerb
                     if (
                         ecmVerbs.has(currentVerb.getName()) &&
@@ -349,7 +361,8 @@ export class GrammarVisualizer {
 // (he called me)
 
 // maybe ECM and control are marked and have to be listed, 
-// otherwise it's this kind of raising (it looks like a lot of verbs have raising)
+// and the rest is this kind of raising 
+// (it looks like a lot of verbs have raising)
 
 // finite clause?
 
@@ -358,13 +371,14 @@ export class GrammarVisualizer {
 // find
 // add
 // take
-// get
+// get --> is this another form of causative? what about 'have'
 // include
 // need
 // put
 // teach
 // spend
 // announce
+// "motivate"
 // encourage
 // click
 // raise
@@ -412,3 +426,9 @@ export class GrammarVisualizer {
 
 
 // he called me to talk about his job
+// he signaled us to come over
+// he signaled for us to come over
+
+// move all the nouns before changing the current predicate for these verbs
+// we want to shift the first noun onto the matrix clause, and copy the next 
+// noun, but leave it to be popped off by the subordinate clause
