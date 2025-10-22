@@ -147,3 +147,25 @@ export const objectControlVerbs: Set<string> = new Set(
         "paid"
     ]
 )
+
+export const raisingVerbs: Set<string> = new Set(
+    [
+        "expect",
+        "believe",
+        "know",
+        "knew",
+        "predict",
+        "suppose",
+        "imagine",
+        "consider",
+        "deem",
+        "find",
+        "found",
+        "think",
+        "thought",
+        "estimate",
+        "presume",
+        "judge",
+        "report"
+    ]
+)

@@ -2,7 +2,8 @@ import { Adverb } from "../Syntactic Categories/Adverbs"
 import { Noun } from "../Syntactic Categories/Noun"
 import { Preposition } from "../Syntactic Categories/Preposition"
 import { Verb } from "../Syntactic Categories/Verb"
-import { conjunctions, ecmVerbs, objectControlVerbs, PartsOfSpeech } from "../SyntaxConstants"
+import { conjunctions, ecmVerbs, objectControlVerbs, PartsOfSpeech, raisingVerbs }
+    from "../SyntaxConstants"
 import { type SentenceInfo } from "../SyntaxMethods"
 import { PosInfo } from "./PosInfo"
 import { WordInfo } from "./WordInfo"
@@ -153,8 +154,6 @@ export class GrammarVisualizer {
                     let currentVerb: Verb = new Verb(currentPair[1])
                     if (currentPredicate) {
                         let predName: string = currentPredicate.getName()
-                        console.log("I made it here")
-                        console.log(clauseNouns)
 
                         if (
                             clauseNouns.length > 1 &&
@@ -162,7 +161,8 @@ export class GrammarVisualizer {
                                 .from(objectControlVerbs)
                                 .some(item => predName.includes(item))
                         ) {
-                            let matrixSubject: Noun = clauseNouns.shift() as Noun
+                            let matrixSubject: Noun =
+                                clauseNouns.shift() as Noun
                             let matrixObject: Noun = clauseNouns[0]
 
                             currentPredicate.addNoun(matrixSubject)
@@ -176,6 +176,46 @@ export class GrammarVisualizer {
                         ) {
                             let matrixSubject: Noun = clauseNouns[0]
                             currentPredicate.addNoun(matrixSubject)
+                        } else {
+
+                            if (
+                                // matrix verb is in raising list
+                                clauseNouns.length > 0 &&
+                                Array
+                                    .from(raisingVerbs)
+                                    .some(item => predName.includes(item))
+                            ) {
+                                // first noun is only matrix, rest are only subordiante
+                                let matrixSubject: Noun =
+                                    clauseNouns.shift() as Noun
+                                currentPredicate.addNoun(matrixSubject)
+                            } else {
+                                // first noun is matrix and subordinate, 
+                                // second is only matrix, 
+                                // rest are only subordinate
+                                let matrixSubject: Noun = clauseNouns[0]
+                                currentPredicate.addNoun(matrixSubject)
+                                let matrixObject: Noun =
+                                    clauseNouns.pop() as Noun
+                                currentPredicate.addNoun(matrixObject)
+                            }
+                            // I expected him to win
+                            // I called him to rant
+
+                            // xx (I expected him) ((I) to win)
+                            // (I expected) (him to win)
+                            // (I called him) ((I) to rant)
+
+
+
+                            // while (clauseNouns.length > 1) {
+                            //     let matrixObject: Noun =
+                            //         clauseNouns.pop() as Noun
+                            //     currentPredicate.addNoun(matrixObject)
+                            // }
+
+                            // let matrixSubject = clauseNouns[0]
+                            // currentPredicate.addNoun(matrixSubject)
                         }
                     }
 
@@ -336,7 +376,8 @@ export class GrammarVisualizer {
     private isNounModifier(wordPair: [number, string]): boolean {
         let currentPOS: number = wordPair[0]
         return (
-            currentPOS === PartsOfSpeech.DT
+            currentPOS === PartsOfSpeech.DT ||
+            currentPOS === PartsOfSpeech.PRPQ
         )
     }
 
@@ -347,15 +388,8 @@ export class GrammarVisualizer {
 
 
 // identify the subjects and objects that go with each clause
-// maybe there are possible heuristics we could use for deciding nouns?
-// like if it's NOUN VERB NOUN VERB, to assume the second noun is with the second verb?
-// almost like onset priority?
-// if the second verb doesn't have a noun, then inherit it from the first
 
 // have to account for things like questions, raising, control, ecm predicates, relative clauses
-// ECM verb: see
-// Control verb: ask
-// Raising verb: expect
 // also have to make sure that the main predicate is the verb and not progessive or perfective aspects
 // also having make/let be in the same clause as the predicate "under" it
 
