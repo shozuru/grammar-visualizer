@@ -29,6 +29,7 @@ const UserInput: React.FC = () => {
         axios.post('http://127.0.0.1:8000/pos',
             {
                 sentence: submitted
+                    .replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()'"]/g, "")
             }
         )
             .then(res => {

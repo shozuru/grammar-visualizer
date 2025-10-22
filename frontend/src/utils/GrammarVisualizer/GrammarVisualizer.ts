@@ -98,7 +98,30 @@ export class GrammarVisualizer {
                 )) {
                 posList[i] = PartsOfSpeech.PERFECTIVE
             }
+
+            if ((
+                i === 0 &&
+                posList[i] === PartsOfSpeech.VBD ||
+                posList[i] === PartsOfSpeech.VBZ ||
+                posList[i] === PartsOfSpeech.VBP ||
+                posList[i] === PartsOfSpeech.MD ||
+                posList[i] === PartsOfSpeech.TENSE
+
+            )
+                // && (
+                //         this.isNoun([posList[i + 1], wordList[i + 1]]) ||
+
+                //         (
+                //             this.isAdverb([posList[i + 1], wordList[i + 1]])
+                //             &&
+                //             this.isNoun([posList[i + 2], wordList[i + 2]])
+                //         )
+                //     )
+            ) {
+                posList[i] = PartsOfSpeech.QuestionTense
+            }
         }
+
         posInfo.setPOSList(posList)
     }
 
@@ -124,7 +147,11 @@ export class GrammarVisualizer {
                 if (this.isNounModifier(currentPair)) {
                     nounModifiers.push(currentPair[1])
 
-
+                } else if (
+                    currentPair[0] === PartsOfSpeech.QuestionTense
+                ) {
+                    let questionModifier: Adverb = new Adverb(currentPair[1])
+                    clauseAdjuncts.push(questionModifier)
                 } else if (this.isAdverb(currentPair)) {
                     if (
                         zippedPairs.length > 0 &&
@@ -182,19 +209,19 @@ export class GrammarVisualizer {
                                 clauseNouns.length > 1
                             ) {
                                 if (
-                                    // matrix verb is in raising list
+
                                     Array
                                         .from(raisingVerbs)
                                         .some(item => predName.includes(item))
+
                                 ) {
-                                    // first noun is only matrix, rest are only subordiante
+
                                     let matrixSubject: Noun =
                                         clauseNouns.shift() as Noun
                                     currentPredicate.addNoun(matrixSubject)
+
                                 } else {
-                                    // first noun is matrix and subordinate, 
-                                    // second is only matrix, 
-                                    // rest are only subordinate
+
                                     let matrixSubject: Noun = clauseNouns[0]
                                     currentPredicate.addNoun(matrixSubject)
                                     let matrixObject: Noun =
@@ -307,7 +334,9 @@ export class GrammarVisualizer {
             currentPOS === PartsOfSpeech.NNS ||
             currentPOS === PartsOfSpeech.NNP ||
             currentPOS === PartsOfSpeech.NNPS ||
-            currentPOS === PartsOfSpeech.PRP)
+            currentPOS === PartsOfSpeech.PRP ||
+            currentPOS === PartsOfSpeech.FW
+        )
     }
 
     private isPreposition(wordPair: [number, string]): boolean {
@@ -378,7 +407,7 @@ export class GrammarVisualizer {
 
 // identify the subjects and objects that go with each clause
 
-// have to account for things like questions, raising, control, ecm predicates, relative clauses
+// have to account for things like questions, relative clauses
 // also have to make sure that the main predicate is the verb and not progessive or perfective aspects
 // also having make/let be in the same clause as the predicate "under" it
 
@@ -389,60 +418,3 @@ export class GrammarVisualizer {
 // might want to do stuff for case and agreement on nouns and verbs
 
 // for some reason two empty sentences are being submitted on startup
-
-// want
-// use
-// find
-// add
-// take
-// get --> is this another form of causative? what about 'have'
-// include
-// need
-// put
-// teach
-// spend
-// announce
-// motivate
-// encourage
-// click
-// raise
-// connect
-// pay
-// allow
-// ask
-// establish
-// switch
-// believe 
-// expect
-// require
-// call
-// bring
-// like
-// offer
-// force
-// borrow
-// reduce
-// undergo
-// pull
-// tell
-// urge
-// convince
-// go
-// come
-// try
-// start 
-// decide 
-// love
-// hate
-// manage
-// continue
-// decline
-// wait
-// mean
-// hope
-// judge
-// assume
-// prove
-
-
-// seem

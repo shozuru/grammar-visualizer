@@ -47,7 +47,8 @@ export enum PartsOfSpeech {
 
     // Constants that the model doesn't use but that I am
     TENSE,
-    PERFECTIVE
+    PERFECTIVE,
+    QuestionTense
 }
 
 export enum Case {
