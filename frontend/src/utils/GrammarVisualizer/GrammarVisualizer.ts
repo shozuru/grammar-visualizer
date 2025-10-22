@@ -102,10 +102,10 @@ export class GrammarVisualizer {
     }
 
     private generateClauses(posList: number[], wordList: string[]): void {
-        let zippedPair: [number, string][] = []
+        let zippedPairs: [number, string][] = []
 
         for (let i = 0; i < posList.length; i++) {
-            zippedPair.push([posList[i], wordList[i]])
+            zippedPairs.push([posList[i], wordList[i]])
         }
 
         let currentPredicate: Verb | null = null
@@ -115,27 +115,29 @@ export class GrammarVisualizer {
         let clauseAdjuncts: (Adverb | Preposition)[] = []
         let nounModifiers: string[] = []
 
-        while (zippedPair.length > 0) {
+        while (zippedPairs.length > 0) {
 
-            let currentPair: [number, string] | undefined = zippedPair.shift()
+            let currentPair: [number, string] | undefined = zippedPairs.shift()
 
             if (currentPair !== undefined) {
                 if (this.isNounModifier(currentPair)) {
                     nounModifiers.push(currentPair[1])
+
+
                 } else if (this.isAdverb(currentPair)) {
                     if (
-                        zippedPair.length > 0 &&
-                        this.isPreposition(zippedPair[0])
+                        zippedPairs.length > 0 &&
+                        this.isPreposition(zippedPairs[0])
                     ) {
                         let prepositionPair: [number, string] =
-                            zippedPair.shift() as [number, string]
+                            zippedPairs.shift() as [number, string]
 
                         let currentPreposition: Preposition =
                             new Preposition(prepositionPair[1])
                         currentPreposition.addModifier(currentPair[1])
 
                         let prepObj: Noun | undefined =
-                            this.tagIfObject(zippedPair)
+                            this.tagIfObject(zippedPairs)
                         if (prepObj !== undefined) {
                             currentPreposition.setObject(prepObj)
                         }
@@ -145,20 +147,38 @@ export class GrammarVisualizer {
                         // else add the adverb to the verb's modifiers:
                         clauseAdjuncts.push(new Adverb(currentPair[1]))
                     }
-                } else if (this.isVerb(currentPair, zippedPair)) {
+
+
+                } else if (this.isVerb(currentPair, zippedPairs)) {
                     let currentVerb: Verb = new Verb(currentPair[1])
-                    if (
-                        currentPredicate &&
-                        clauseNouns.length > 0 &&
-                        objectControlVerbs.has(currentPredicate.getName())
-                    ) {
-                        let matrixSubject: Noun = clauseNouns.shift() as Noun
-                        let matrixObject: Noun = clauseNouns[0]
+                    if (currentPredicate) {
+                        let predName: string = currentPredicate.getName()
+                        console.log("I made it here")
+                        console.log(clauseNouns)
 
-                        currentPredicate.addNoun(matrixSubject)
-                        currentPredicate.addNoun(matrixObject)
+                        if (
+                            clauseNouns.length > 1 &&
+                            Array
+                                .from(objectControlVerbs)
+                                .some(item => predName.includes(item))
+                        ) {
+                            let matrixSubject: Noun = clauseNouns.shift() as Noun
+                            let matrixObject: Noun = clauseNouns[0]
 
+                            currentPredicate.addNoun(matrixSubject)
+                            currentPredicate.addNoun(matrixObject)
+
+                        } else if (
+                            clauseNouns.length === 1 &&
+                            Array
+                                .from(objectControlVerbs)
+                                .some(item => predName.includes(item))
+                        ) {
+                            let matrixSubject: Noun = clauseNouns[0]
+                            currentPredicate.addNoun(matrixSubject)
+                        }
                     }
+
                     currentPredicate = currentVerb
                     if (
                         ecmVerbs.has(currentVerb.getName()) &&
@@ -168,12 +188,16 @@ export class GrammarVisualizer {
                         currentVerb.addNoun(ecmMatrixNoun)
                     }
                     this.clauses.push(currentVerb)
+
+
                 } else if (this.isNoun(currentPair)) {
                     let currentNoun: Noun = new Noun(currentPair[1])
                     if (nounModifiers.length > 0) {
                         currentNoun.addModifier(nounModifiers.pop() as string)
                     }
                     clauseNouns.push(currentNoun)
+
+
                 } else if (
                     currentPredicate &&
                     this.isConjunction(currentPair)
@@ -189,6 +213,7 @@ export class GrammarVisualizer {
                     clauseAdjuncts = []
                     currentPredicate = null
 
+
                 } else if (
                     this.isPreposition(currentPair) &&
                     currentPredicate
@@ -196,7 +221,7 @@ export class GrammarVisualizer {
                     let currentPreposition: Preposition =
                         new Preposition(currentPair[1])
                     let prepObj: Noun | undefined =
-                        this.tagIfObject(zippedPair)
+                        this.tagIfObject(zippedPairs)
                     if (prepObj !== undefined) {
                         currentPreposition.setObject(prepObj)
                     }
@@ -355,6 +380,7 @@ export class GrammarVisualizer {
 // (I asked him) (to win) --> (I asked him) (him to win)
 // (I asked) (to win) --> (I asked) (I to win)
 // (I asked him)
+// DONE
 
 // he called me to talk about his job --> (he called me) (he to talk about his job)
 // he called to talk about his job --> (he called) (he to talk)
@@ -378,7 +404,7 @@ export class GrammarVisualizer {
 // teach
 // spend
 // announce
-// "motivate"
+// motivate
 // encourage
 // click
 // raise
