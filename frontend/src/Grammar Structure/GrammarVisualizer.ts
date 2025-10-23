@@ -11,7 +11,7 @@ export class GrammarVisualizer {
             inputSentence.wordList
         )
 
-        this.sentence.uncontractSent()
+        this.sentence.uncontractSent() // experiment with not doing this 
         this.sentence.fixPartsOfSpeech()
         this.sentence.generateClauses()
 

@@ -70,17 +70,23 @@ export class Sentence {
     public fixPartsOfSpeech(): void {
         let posList: number[] = this.posInfo
         let wordList: string[] = this.wordInfo
-
         for (let i = 0; i < wordList.length; i++) {
-            if ((
-                wordList[i] === "do" ||
-                wordList[i] === "does" ||
-                wordList[i] === "did"
-            ) && (
-                    wordList[i + 1] === "n't"
+            if (
+                (
+                    wordList[i] === "do" ||
+                    wordList[i] === "does" ||
+                    wordList[i] === "did"
+                ) && (
+                    (
+                        wordList[i + 1] === "n't" ||
+                        wordList[i + 1] === "not"
+                    )
                 )
             ) {
                 posList[i] = PartsOfSpeech.TENSE
+                if (wordList[i + 1] === "not") {
+                    posList[i + 1] = PartsOfSpeech.NEGATION
+                }
 
             } else if ((
                 wordList[i] === "have" ||
@@ -124,6 +130,7 @@ export class Sentence {
                 posList[i] = PartsOfSpeech.QuestionTense
             }
         }
+
         this.posInfo = posList
     }
 
@@ -168,7 +175,13 @@ export class Sentence {
                             currentPredicate,
                             clauseNouns
                         )
+                        this.addMatrixClauseModifiers(
+                            currentPredicate,
+                            verbModifiers
+                        )
+                        verbModifiers.push("inf")
                     }
+
                     let vPhrase: Verb = new Verb(currentPair.name)
                     this.clauses.push(vPhrase)
 
@@ -197,7 +210,6 @@ export class Sentence {
                     clauseNouns = []
                     clauseAdjuncts = []
                     currentPredicate = null
-
 
                 } else if (
                     isPreposition(currentPair) &&
@@ -284,7 +296,7 @@ export class Sentence {
     ): Preposition | Adverb {
         let nextWord: Pair = listOfNextWords[0]
 
-        if (isPreposition(nextWord)) {
+        if (nextWord && isPreposition(nextWord)) {
 
             // shift off the preposition
             let prepositionPair: Pair = listOfNextWords.shift() as Pair
@@ -323,5 +335,14 @@ export class Sentence {
             }
         }
         return nounPhrase
+    }
+
+    private addMatrixClauseModifiers(
+        matrixPred: Verb, listOfTamms: string[]
+    ): void {
+        while (listOfTamms.length > 0) {
+            let tamm: string = listOfTamms.shift() as string
+            matrixPred.addTamm(tamm)
+        }
     }
 }

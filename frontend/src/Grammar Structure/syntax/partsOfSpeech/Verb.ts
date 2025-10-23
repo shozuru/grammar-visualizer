@@ -1,3 +1,4 @@
+import { uncontractVerbalModifiers } from "../SyntaxMethods"
 import type { Adverb } from "./Adverb"
 import { CanTakeObject } from "./CanTakeObject"
 import type { Noun } from "./Noun"
@@ -87,8 +88,15 @@ export class Verb extends CanTakeObject {
         this.adverbs.push(modifier)
     }
 
-    public addTamm(grammaticalModifier: string): void {
-        this.tamm.push(grammaticalModifier)
+    public addTamm(gramMod: string): void {
+        if (gramMod.includes("'")) {
+            let mods: string[] = uncontractVerbalModifiers(gramMod)
+            for (const mod of mods) {
+                this.tamm.push(mod)
+            }
+        } else {
+            this.tamm.push(gramMod)
+        }
     }
 
     public handleAgreement(modifier: string): void {

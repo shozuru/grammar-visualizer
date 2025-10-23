@@ -22,6 +22,7 @@ export function isVerbModifier(wordPair: Pair): boolean {
     return (
         wordPos === PartsOfSpeech.TENSE ||
         wordPos === PartsOfSpeech.PERFECTIVE ||
+        wordPos === PartsOfSpeech.NEGATION ||
         wordPos === PartsOfSpeech.QuestionTense ||
         wordPos === PartsOfSpeech.MD
     )
@@ -151,4 +152,12 @@ export function addNounsToSubjectControlPred(
     // add object to matrix clause
     let matrixObject: Noun = listOfNouns.pop() as Noun
     matrixPred.addSubjectAndObject(matrixSubject, matrixObject)
+}
+
+export function uncontractVerbalModifiers(modifier: string): string[] {
+    if (modifier === "didn't") {
+        return ["did", "not"]
+    } else {
+        return [modifier]
+    }
 }
