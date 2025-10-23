@@ -1,14 +1,19 @@
 import {
-    isAdverb, isConjunction, isNoun, isNounModifier,
+    addNounsToObjectControlPred,
+    addNounsToSubjectControlPred,
+    hasMultipleNouns,
+    isAdverb, isConjunction, isECMVerb, isNoun, isNounModifier,
+    isObjectControl,
     isPredicate,
     isPreposition,
+    isRaisingVerb,
+    isVerbModifier,
 } from "../partOfSpeechUtils/partOfSpeechUtils"
 import { Adverb } from "../Syntactic Categories/Adverb"
 import { Noun } from "../Syntactic Categories/Noun"
 import { Preposition } from "../Syntactic Categories/Preposition"
 import { Verb } from "../Syntactic Categories/Verb"
-import { ecmVerbs, objectControlVerbs, PartsOfSpeech, raisingVerbs }
-    from "../SyntaxConstants"
+import { PartsOfSpeech, } from "../SyntaxConstants"
 import type { Pair } from "./Pair"
 
 export class Sentence {
@@ -17,7 +22,6 @@ export class Sentence {
     private wordInfo: string[]
     public clauses: Verb[]
     public numberOfClauses: number
-
 
     constructor(posInfo: number[], wordInfo: string[]) {
         this.posInfo = posInfo
@@ -68,9 +72,6 @@ export class Sentence {
         let wordList: string[] = this.wordInfo
 
         for (let i = 0; i < wordList.length; i++) {
-            console.log(posList[i])
-            console.log(wordList[i])
-
             if ((
                 wordList[i] === "do" ||
                 wordList[i] === "does" ||
@@ -123,7 +124,6 @@ export class Sentence {
                 posList[i] = PartsOfSpeech.QuestionTense
             }
         }
-
         this.posInfo = posList
     }
 
@@ -142,14 +142,18 @@ export class Sentence {
 
                 if (isNounModifier(currentPair)) {
                     nounModifiers.push(currentPair.name)
+                    if (isVerbModifier(currentPair)) { // this includes stuff 
+                        // like tamm and negation, but not adverbs necessarily 
+                        // (these are grammaticalized elements just like how noun 
+                        // modifiers are grammaticalized elements like determiners)
+
+                    }
 
                 } else if (
                     currentPair.pos === PartsOfSpeech.QuestionTense
                 ) {
-                    console.log(currentPair.name)
                     let questionModifier: Adverb = new Adverb(currentPair.name)
                     clauseAdjuncts.push(questionModifier)
-
 
                 } else if (isAdverb(currentPair)) {
                     let modPhrase: Preposition | Adverb =
@@ -160,20 +164,17 @@ export class Sentence {
                     clauseAdjuncts.push(modPhrase)
 
                 } else if (isPredicate(currentPair, zippedPairs)) {
-                    console.log("I found a clause")
-                    console.log(currentPair.name)
                     if (currentPredicate) {
-                        console.log("there are two clauses")
                         this.addMatrixClauseArguments(
                             currentPredicate,
                             clauseNouns
                         )
                     }
                     let vPhrase: Verb = new Verb(currentPair.name)
-                    currentPredicate = vPhrase
                     this.clauses.push(vPhrase)
-                    this.numberOfClauses += 1
 
+                    currentPredicate = vPhrase
+                    this.numberOfClauses += 1
 
                 } else if (isNoun(currentPair)) {
                     let nPhrase: Noun =
@@ -223,102 +224,39 @@ export class Sentence {
         }
     }
 
-    /**
-     * 
-     * @param matrixPredicate 
-     * @param nounArguments 
-     * needs to be split into smaller functions depending on the verb type
-     */
     private addMatrixClauseArguments(
         matrixPredicate: Verb,
         nounArguments: Noun[]
     ) {
         if (
-            // is objectControl with two nouns
-            nounArguments.length > 1 &&
-            Array
-                .from(objectControlVerbs)
-                .some(item => matrixPredicate
-                    .getName()
-                    .includes(item))
-            // I asked him to win
+            hasMultipleNouns(nounArguments) &&
+            (
+                // I expected him to win
+                isRaisingVerb(matrixPredicate) ||
+                // I saw him win
+                isECMVerb(matrixPredicate)
+            )
         ) {
-            // add nouns to matrix clause
-
-            // Matrix subject is first noun argument
-            let matrixSubject: Noun = nounArguments.shift() as Noun
-            // Matrix object is second noun argument
-            let matrixObject: Noun = nounArguments[0]
-
-            matrixPredicate.addNoun(matrixSubject)
-            matrixPredicate.addNoun(matrixObject)
-
-        } else if (
-            // is object control with 1 noun
-            nounArguments.length === 1 &&
-            Array
-                .from(objectControlVerbs)
-                .some(item => matrixPredicate
-                    .getName()
-                    .includes(item))
-            // I asked to win
-        ) {
-            // add noun to matrix clause
-            let matrixSubject: Noun = nounArguments[0]
-            matrixPredicate.addNoun(matrixSubject)
-
-        } else if (
-            // is raising predicate with multiple nouns 
-            nounArguments.length > 1 &&
-            Array
-                .from(raisingVerbs)
-                .some(item => matrixPredicate
-                    .getName()
-                    .includes(item)
-                )
-            // I expected him to win
-        ) {
-            // first add first noun to matrix predicate
-            let matrixSubject: Noun = nounArguments.shift() as Noun
-            matrixPredicate.addNoun(matrixSubject)
-
-        } else if (
-            // ECM verb with multiple nouns
-            nounArguments.length > 1 &&
-            Array
-                .from(ecmVerbs)
-                .some(item => matrixPredicate
-                    .getName()
-                    .includes(item)
-                )
-            // I saw him win
-        ) {
-
             // add first noun to matrix clause
             let matrixSubject: Noun = nounArguments.shift() as Noun
             matrixPredicate.addNoun(matrixSubject)
-
         } else if (
-            // subject control with multiple nouns
-            nounArguments.length > 1
-            // I used him to win
+            // I asked him to win
+            hasMultipleNouns(nounArguments) &&
+            isObjectControl(matrixPredicate)
         ) {
-            // Add subject to matrix clause
-            let matrixSubject: Noun = nounArguments[0]
-            matrixPredicate.addNoun(matrixSubject)
-            // add object to matrix clause
-            let matrixObject: Noun = nounArguments.pop() as Noun
-            matrixPredicate.addNoun(matrixObject)
-
-
+            addNounsToObjectControlPred(matrixPredicate, nounArguments)
+        } else if (
+            // I used him to win
+            hasMultipleNouns(nounArguments)
+        ) {
+            addNounsToSubjectControlPred(matrixPredicate, nounArguments)
         } else {
-            // there is only one noun
             // add subject to matrix clause
             let matrixSubject: Noun = nounArguments[0]
             matrixPredicate.addNoun(matrixSubject)
         }
     }
-
 
     private createZippedPairs(): Pair[] {
         let zipped: Pair[] = []
@@ -337,11 +275,6 @@ export class Sentence {
         return zipped
     }
 
-    /**
-     * Determines if an adverb modifies a clause or a preposition
-     * If it modifies a preposition, it returns the full PP
-     * Otherwise it returns the Adverb
-     */
     private resolveAdverbAttachment(
         adverbPair: Pair,
         listOfNextWords: Pair[]

@@ -30,6 +30,11 @@ export class Verb extends CanTakeObject {
         this.nounList.push(n)
     }
 
+    public addSubjectAndObject(subject: Noun, object: Noun): void {
+        this.nounList.push(subject)
+        this.nounList.push(object)
+    }
+
     public getName(): string {
         return this.name
     }

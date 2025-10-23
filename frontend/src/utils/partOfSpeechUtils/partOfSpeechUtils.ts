@@ -1,5 +1,10 @@
 import type { Pair } from "../GrammarVisualizer/Pair"
-import { conjunctions, PartsOfSpeech } from "../SyntaxConstants"
+import { Noun } from "../Syntactic Categories/Noun"
+import type { Verb } from "../Syntactic Categories/Verb"
+import {
+    conjunctions, ecmVerbs, objectControlVerbs, PartsOfSpeech,
+    raisingVerbs
+} from "../SyntaxConstants"
 
 export function isNoun(wordPair: Pair): boolean {
     let currentPOS: number = wordPair.pos
@@ -84,4 +89,60 @@ export function isConjunction(wordPair: Pair): boolean {
 
 export function isRelativeClause(wordPair: Pair): boolean {
     return false
+}
+
+export function hasMultipleNouns(nounList: Noun[]): boolean {
+    return nounList.length > 1
+}
+
+export function isObjectControl(matrixPred: Verb): boolean {
+    return (
+        Array
+            .from(objectControlVerbs)
+            .some(item => matrixPred
+                .getName()
+                .includes(item))
+    )
+}
+
+export function isRaisingVerb(matrixPred: Verb): boolean {
+    return (
+        Array
+            .from(raisingVerbs)
+            .some(item => matrixPred
+                .getName()
+                .includes(item)
+            )
+    )
+}
+
+export function isECMVerb(matrixPred: Verb): boolean {
+    return (
+        Array
+            .from(ecmVerbs)
+            .some(item => matrixPred
+                .getName()
+                .includes(item)
+            )
+    )
+}
+
+export function addNounsToObjectControlPred(
+    matrixPred: Verb, listOfNouns: Noun[]
+): void {
+    // Matrix subject is first noun argument
+    let matrixSubject: Noun = listOfNouns.shift() as Noun
+    // Matrix object is second noun argument
+    let matrixObject: Noun = listOfNouns[0]
+    matrixPred.addSubjectAndObject(matrixSubject, matrixObject)
+}
+
+export function addNounsToSubjectControlPred(
+    matrixPred: Verb, listOfNouns: Noun[]
+): void {
+    // Add subject to matrix clause
+    let matrixSubject: Noun = listOfNouns[0]
+    // add object to matrix clause
+    let matrixObject: Noun = listOfNouns.pop() as Noun
+    matrixPred.addSubjectAndObject(matrixSubject, matrixObject)
 }
