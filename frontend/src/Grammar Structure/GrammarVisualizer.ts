@@ -1,5 +1,5 @@
-import { type SentenceInfo } from "../SyntaxMethods"
-import { Sentence } from "./Sentence"
+import { type SentenceInfo } from "./types/SentenceInfo"
+import { Sentence } from "./syntax/Sentence"
 
 export class GrammarVisualizer {
 
@@ -14,7 +14,6 @@ export class GrammarVisualizer {
         this.sentence.uncontractSent()
         this.sentence.fixPartsOfSpeech()
         this.sentence.generateClauses()
-
 
         console.log(
             `Number of clauses in sentence: ${this.sentence.numberOfClauses}`

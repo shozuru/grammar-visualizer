@@ -8,13 +8,13 @@ import {
     isPreposition,
     isRaisingVerb,
     isVerbModifier,
-} from "../partOfSpeechUtils/partOfSpeechUtils"
-import { Adverb } from "../Syntactic Categories/Adverb"
-import { Noun } from "../Syntactic Categories/Noun"
-import { Preposition } from "../Syntactic Categories/Preposition"
-import { Verb } from "../Syntactic Categories/Verb"
-import { PartsOfSpeech, } from "../SyntaxConstants"
-import type { Pair } from "./Pair"
+} from "./SyntaxMethods"
+import { Adverb } from "./partsOfSpeech/Adverb"
+import { Noun } from "./partsOfSpeech/Noun"
+import { Preposition } from "./partsOfSpeech/Preposition"
+import { Verb } from "./partsOfSpeech/Verb"
+import { PartsOfSpeech, } from "./SyntaxConstants"
+import type { Pair } from "../types/Pair"
 
 export class Sentence {
 

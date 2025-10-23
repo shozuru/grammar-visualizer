@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import './UserInput.css'
-import Circle from '../../utils/Circle/Circle'
-import { type SentenceInfo } from '../../utils/SyntaxMethods'
-import { PartsOfSpeech } from '../../utils/SyntaxConstants'
-import { GrammarVisualizer } from '../../utils/GrammarVisualizer/GrammarVisualizer'
+import Circle from '../../Grammar Structure/visuals/Circle/Circle'
+import { type SentenceInfo } from '../../Grammar Structure/types/SentenceInfo'
+import { PartsOfSpeech } from '../../Grammar Structure/syntax/SyntaxConstants'
+import { GrammarVisualizer }
+    from '../../Grammar Structure/GrammarVisualizer'
 
 const UserInput: React.FC = () => {
 

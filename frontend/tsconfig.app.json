@@ -30,6 +30,6 @@
     },
     "include": [
         "src",
-        "src/utils/.ts"
+        "src/Grammar Structure/.ts"
     ]
 }

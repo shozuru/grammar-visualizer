@@ -1,10 +1,10 @@
-import type { Pair } from "../GrammarVisualizer/Pair"
-import { Noun } from "../Syntactic Categories/Noun"
-import type { Verb } from "../Syntactic Categories/Verb"
+import type { Pair } from "../types/Pair"
+import { Noun } from "./partsOfSpeech/Noun"
+import type { Verb } from "./partsOfSpeech/Verb"
 import {
     conjunctions, ecmVerbs, objectControlVerbs, PartsOfSpeech,
     raisingVerbs
-} from "../SyntaxConstants"
+} from "./SyntaxConstants"
 
 export function isNoun(wordPair: Pair): boolean {
     let currentPOS: number = wordPair.pos

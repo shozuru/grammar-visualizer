@@ -1,6 +1,6 @@
 import { isNoun, isNounModifier } from "../partOfSpeechUtils/partOfSpeechUtils"
 import { Noun } from "./Noun"
-import type { Pair } from "../GrammarVisualizer/Pair"
+import type { Pair } from "../types/Pair"
 
 export abstract class CanTakeObject {
 

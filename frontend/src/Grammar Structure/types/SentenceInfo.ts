@@ -1,4 +1,4 @@
-export interface SentenceInfo {
+export type SentenceInfo = {
     wordList: string[]
     posList: number[]
 }
