@@ -1,14 +1,14 @@
-import type { Noun } from "./Noun";
+import { CanTakeObject } from "./CanTakeObject";
+import { Noun } from "./Noun";
 
-export class Preposition {
+export class Preposition extends CanTakeObject {
 
-    private object: Noun | null
     private modifiers: string[]
     private name: string
 
     constructor(name: string) {
+        super()
         this.name = name
-        this.object = null
         this.modifiers = []
     }
 

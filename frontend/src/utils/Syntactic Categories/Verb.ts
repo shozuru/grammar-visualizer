@@ -1,8 +1,9 @@
-import type { Adverb } from "./Adverbs"
+import type { Adverb } from "./Adverb"
+import { CanTakeObject } from "./CanTakeObject"
 import type { Noun } from "./Noun"
 import type { Preposition } from "./Preposition"
 
-export class Verb {
+export class Verb extends CanTakeObject {
 
     // need to replace this with actual theta roles.
     private nounList: Noun[]
@@ -15,6 +16,7 @@ export class Verb {
     private tamm: string[]
 
     constructor(name: string) {
+        super()
         this.name = name
         this.agent = null
         this.experiencer = null
