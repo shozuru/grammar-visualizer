@@ -133,7 +133,9 @@ export class Sentence {
         let currentPredicate: Verb | null = null
         let clauseNouns: Noun[] = []
         let clauseAdjuncts: (Adverb | Preposition)[] = []
+
         let nounModifiers: string[] = []
+        let verbModifiers: string[] = []
 
         while (zippedPairs.length > 0) {
 
@@ -142,12 +144,9 @@ export class Sentence {
 
                 if (isNounModifier(currentPair)) {
                     nounModifiers.push(currentPair.name)
-                    if (isVerbModifier(currentPair)) { // this includes stuff 
-                        // like tamm and negation, but not adverbs necessarily 
-                        // (these are grammaticalized elements just like how noun 
-                        // modifiers are grammaticalized elements like determiners)
 
-                    }
+                } else if (isVerbModifier(currentPair)) {
+                    verbModifiers.push(currentPair.name)
 
                 } else if (
                     currentPair.pos === PartsOfSpeech.QuestionTense
@@ -220,6 +219,10 @@ export class Sentence {
             }
             for (const modifier of clauseAdjuncts) {
                 currentPredicate.addAdjunct(modifier)
+            }
+
+            for (const modifier of verbModifiers) {
+                currentPredicate.addTamm(modifier)
             }
         }
     }

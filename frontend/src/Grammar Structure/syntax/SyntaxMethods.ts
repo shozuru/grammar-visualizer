@@ -18,7 +18,13 @@ export function isNoun(wordPair: Pair): boolean {
 }
 
 export function isVerbModifier(wordPair: Pair): boolean {
-    return false
+    let wordPos: number = wordPair.pos
+    return (
+        wordPos === PartsOfSpeech.TENSE ||
+        wordPos === PartsOfSpeech.PERFECTIVE ||
+        wordPos === PartsOfSpeech.QuestionTense ||
+        wordPos === PartsOfSpeech.MD
+    )
 }
 
 export function isNounModifier(wordPair: Pair): boolean {

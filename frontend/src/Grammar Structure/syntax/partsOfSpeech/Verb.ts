@@ -87,6 +87,10 @@ export class Verb extends CanTakeObject {
         this.adverbs.push(modifier)
     }
 
+    public addTamm(grammaticalModifier: string): void {
+        this.tamm.push(grammaticalModifier)
+    }
+
     public handleAgreement(modifier: string): void {
     }
 }

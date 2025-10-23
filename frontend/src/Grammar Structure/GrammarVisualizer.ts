@@ -3,7 +3,7 @@ import { Sentence } from "./syntax/Sentence"
 
 export class GrammarVisualizer {
 
-    private sentence: Sentence
+    public sentence: Sentence
 
     constructor(inputSentence: SentenceInfo) {
         this.sentence = new Sentence(
