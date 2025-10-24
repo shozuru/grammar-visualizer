@@ -2,11 +2,14 @@ import {
     addCaustiveModifier,
     addMatrixClauseArguments,
     addMatrixClauseModifiers,
+    createNounPhrase,
+    createPrepositionalPhrase,
     fixPartsOfSpeech,
     isAdverb, isCausative, isConjunction, isNoun, isNounModifier,
     isPredicate,
     isPreposition,
     isVerbModifier,
+    resolveAdverbAttachment,
 } from "./SyntaxMethods"
 import { Adverb } from "./partsOfSpeech/Adverb"
 import { Noun } from "./partsOfSpeech/Noun"
@@ -26,7 +29,7 @@ export class Sentence {
     private currentPredicate: Verb | null
     private nounStack: Noun[]
     private nounModStack: string[]
-    private adjunctStack: (Preposition | Adverb | Noun)[]
+    private adjunctStack: (Preposition | Adverb)[]
     private predModStack: string[]
 
     constructor(pairList: Pair[]) {
@@ -34,15 +37,11 @@ export class Sentence {
 
         this.clauses = []
         this.numberOfClauses = 0
-
         this.wordPairs = pairList
-
         this.currentPredicate = null
         this.predModStack = []
-
         this.nounStack = []
         this.nounModStack = []
-
         this.adjunctStack = []
 
     }
@@ -110,7 +109,7 @@ export class Sentence {
 
                 } else if (isAdverb(currentPair)) {
                     let modPhrase: Preposition | Adverb =
-                        this.resolveAdverbAttachment(
+                        resolveAdverbAttachment(
                             currentPair,
                             this.wordPairs
                         )
@@ -127,7 +126,7 @@ export class Sentence {
 
                 } else if (isNoun(currentPair)) {
                     let nPhrase: Noun =
-                        this.createNounPhrase(
+                        createNounPhrase(
                             currentPair,
                             this.nounModStack
                         )
@@ -137,20 +136,13 @@ export class Sentence {
                     this.currentPredicate &&
                     isConjunction(currentPair)
                 ) {
+                    let completeClause: Clause = new Clause()
+
                     for (const noun of this.nounStack) {
-                        // this.currentPredicate.addNoun(noun)
+                        completeClause.addNounToClause(noun)
                     }
                     for (const modifier of this.adjunctStack) {
-                        if (
-                            modifier instanceof Adverb ||
-                            modifier instanceof Preposition
-                        ) {
-                            // this.currentPredicate.addAdjunct(modifier)
-                        } else if (
-                            modifier instanceof Noun
-                        ) {
-                            // this.currentPredicate.setAgent(modifier)
-                        }
+                        completeClause.addAdjunct(modifier)
                     }
 
                     this.nounStack = []
@@ -162,7 +154,7 @@ export class Sentence {
                     this.currentPredicate
                 ) {
                     let pPhrase: Preposition =
-                        this.createPrepositionalPhrase(
+                        createPrepositionalPhrase(
                             currentPair,
                             this.wordPairs
                         )
@@ -187,17 +179,7 @@ export class Sentence {
                 }
             }
             for (const modifier of this.adjunctStack) {
-                if (
-                    modifier instanceof Adverb ||
-                    modifier instanceof Preposition
-                ) {
-                    // this.currentPredicate.addAdjunct(modifier)
-                    completeClause.addAdjunct(modifier)
-                } else if (
-                    modifier instanceof Noun
-                ) {
-                    // this.currentPredicate.setAgent(modifier)
-                }
+                completeClause.addAdjunct(modifier)
             }
 
             for (const modifier of this.predModStack) {
@@ -206,61 +188,6 @@ export class Sentence {
 
             this.clauses.push(completeClause)
         }
-    }
-
-    private resolveAdverbAttachment(
-        adverbPair: Pair,
-        listOfNextWords: Pair[]
-    ): Preposition | Adverb {
-
-        let thisAdverb: Adverb = new Adverb(adverbPair.name)
-        let nextWord: Pair = listOfNextWords[0]
-
-        if (nextWord && isPreposition(nextWord)) {
-
-            // shift off the preposition
-            let prepositionPair: Pair = listOfNextWords.shift() as Pair
-            // create new preposition using shifted pair
-            let currentPreposition: Preposition =
-                new Preposition(prepositionPair.name)
-            // add adverb to preposition's modifier list
-            currentPreposition.addModifier(thisAdverb)
-            // add potential following object to preposition
-            currentPreposition.tagIfObject(listOfNextWords)
-            return currentPreposition
-
-        } else if (nextWord && isAdverb(nextWord)) {
-
-            let nextAdverb: Pair = listOfNextWords.shift() as Pair
-            let aPhrase: Adverb = new Adverb(nextAdverb.name)
-            aPhrase.addModifier(thisAdverb)
-            return aPhrase
-
-        } else {
-            return thisAdverb
-        }
-    }
-
-    private createPrepositionalPhrase(
-        prepositionPair: Pair,
-        restOfSent: Pair[]
-    ): Preposition {
-        let prepositionalPhrase: Preposition =
-            new Preposition(prepositionPair.name)
-        prepositionalPhrase.tagIfObject(restOfSent)
-
-        return prepositionalPhrase
-    }
-
-    private createNounPhrase(nounPair: Pair, modifiers: string[]): Noun {
-        let nounPhrase: Noun = new Noun(nounPair.name)
-        if (modifiers.length > 0) {
-            while (modifiers.length > 0) {
-                let modifier: string = modifiers.pop() as string
-                nounPhrase.addModifier(modifier)
-            }
-        }
-        return nounPhrase
     }
 
     private handleMatrixClause(currentPred: Verb): void {

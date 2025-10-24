@@ -1,6 +1,8 @@
 import type { Pair } from "../types/Pair"
 import { Noun } from "./partsOfSpeech/Noun"
 import { Verb } from "./partsOfSpeech/Verb"
+import { Preposition } from "./partsOfSpeech/Preposition"
+import { Adverb } from "./partsOfSpeech/Adverb"
 import { Clause } from "./partsOfSpeech/Clause"
 import {
     conjunctions, ecmVerbs, objectControlVerbs, PartsOfSpeech,
@@ -348,4 +350,58 @@ export function addMatrixClauseModifiers(
         let tamm: string = listOfTamms.shift() as string
         matrixPred.addTamm(tamm)
     }
+}
+
+export function resolveAdverbAttachment(
+    adverbPair: Pair,
+    listOfNextWords: Pair[]
+): Preposition | Adverb {
+
+    let thisAdverb: Adverb = new Adverb(adverbPair.name)
+    let nextWord: Pair = listOfNextWords[0]
+
+    if (nextWord && isPreposition(nextWord)) {
+
+        // shift off the preposition
+        let prepositionPair: Pair = listOfNextWords.shift() as Pair
+        // create new preposition using shifted pair
+        let currentPreposition: Preposition =
+            new Preposition(prepositionPair.name)
+        // add adverb to preposition's modifier list
+        currentPreposition.addModifier(thisAdverb)
+        // add potential following object to preposition
+        currentPreposition.tagIfObject(listOfNextWords)
+        return currentPreposition
+
+    } else if (nextWord && isAdverb(nextWord)) {
+
+        let nextAdverb: Pair = listOfNextWords.shift() as Pair
+        let aPhrase: Adverb = new Adverb(nextAdverb.name)
+        aPhrase.addModifier(thisAdverb)
+        return aPhrase
+    } else {
+        return thisAdverb
+    }
+}
+
+export function createNounPhrase(nounPair: Pair, modifiers: string[]): Noun {
+    let nounPhrase: Noun = new Noun(nounPair.name)
+    if (modifiers.length > 0) {
+        while (modifiers.length > 0) {
+            let modifier: string = modifiers.pop() as string
+            nounPhrase.addModifier(modifier)
+        }
+    }
+    return nounPhrase
+}
+
+export function createPrepositionalPhrase(
+    prepositionPair: Pair,
+    restOfSent: Pair[]
+): Preposition {
+    let prepositionalPhrase: Preposition =
+        new Preposition(prepositionPair.name)
+    prepositionalPhrase.tagIfObject(restOfSent)
+
+    return prepositionalPhrase
 }
