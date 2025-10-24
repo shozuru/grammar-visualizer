@@ -49,7 +49,9 @@ export enum PartsOfSpeech {
     TENSE,
     NEGATION,
     PERFECTIVE,
-    QuestionTense
+    QuestionTense,
+    CAUSATIVE,
+    PASSIVE
 }
 
 export enum Case {

@@ -1,8 +1,10 @@
 import {
+    addCaustiveModifier,
     addNounsToObjectControlPred,
     addNounsToSubjectControlPred,
+    fixPartsOfSpeech,
     hasMultipleNouns,
-    isAdverb, isConjunction, isECMVerb, isNoun, isNounModifier,
+    isAdverb, isCausative, isConjunction, isECMVerb, isNoun, isNounModifier,
     isObjectControl,
     isPredicate,
     isPreposition,
@@ -15,18 +17,21 @@ import { Preposition } from "./partsOfSpeech/Preposition"
 import { Verb } from "./partsOfSpeech/Verb"
 import { PartsOfSpeech, } from "./SyntaxConstants"
 import type { Pair } from "../types/Pair"
+import { Clause } from "./partsOfSpeech/Clause"
 
 export class Sentence {
 
     private posInfo: number[]
     private wordInfo: string[]
     public clauses: Verb[]
+    public new_clauses: Clause[]
     public numberOfClauses: number
 
     constructor(posInfo: number[], wordInfo: string[]) {
-        this.posInfo = posInfo
+        this.posInfo = fixPartsOfSpeech(posInfo, wordInfo)
         this.wordInfo = wordInfo
         this.clauses = []
+        this.new_clauses = []
         this.numberOfClauses = 0
     }
 
@@ -64,97 +69,43 @@ export class Sentence {
         this.wordInfo = wordList
     }
 
-    /**
-     * should probably break this up into smaller functions
-     */
-    public fixPartsOfSpeech(): void {
-        let posList: number[] = this.posInfo
-        let wordList: string[] = this.wordInfo
-        for (let i = 0; i < wordList.length; i++) {
-            if (
-                (
-                    wordList[i] === "do" ||
-                    wordList[i] === "does" ||
-                    wordList[i] === "did"
-                ) && (
-                    (
-                        wordList[i + 1] === "n't" ||
-                        wordList[i + 1] === "not"
-                    )
-                )
-            ) {
-                posList[i] = PartsOfSpeech.TENSE
-                if (wordList[i + 1] === "not") {
-                    posList[i + 1] = PartsOfSpeech.NEGATION
-                }
-
-            } else if ((
-                wordList[i] === "have" ||
-                wordList[i] === "has" ||
-                wordList[i] === "had"
-            ) && (
-                    posList[i + 1] === PartsOfSpeech.RB
-                )
-            ) {
-                posList[i] = PartsOfSpeech.PERFECTIVE
-
-            } else if (
-                (
-                    wordList[i] === "have" ||
-                    wordList[i] === "has" ||
-                    wordList[i] === "had"
-                ) && (
-                    posList[i + 1] == PartsOfSpeech.VBN
-                )) {
-                posList[i] = PartsOfSpeech.PERFECTIVE
-            }
-
-            if ((
-                i === 0 && (
-                    posList[i] === PartsOfSpeech.VBD ||
-                    posList[i] === PartsOfSpeech.VBZ ||
-                    posList[i] === PartsOfSpeech.VBP ||
-                    posList[i] === PartsOfSpeech.MD ||
-                    posList[i] === PartsOfSpeech.TENSE
-                )
-
-            ) && (
-                    isNoun({ pos: posList[i + 1], name: wordList[i + 1] }) ||
-                    (
-                        isAdverb({ pos: posList[i + 1], name: wordList[i + 1] })
-                        &&
-                        isNoun({ pos: posList[i + 2], name: wordList[i + 2] })
-                    )
-                )
-            ) {
-                posList[i] = PartsOfSpeech.QuestionTense
-            }
-        }
-
-        this.posInfo = posList
-    }
-
     public generateClauses(): void {
+
+        // create clause object that has verbs and nouns and bits and other bits
+        let currentClause: Clause = new Clause()
+
         let zippedPairs: Pair[] = this.createZippedPairs()
 
         let currentPredicate: Verb | null = null
+        let new_currentPredicate: Clause | null
         let clauseNouns: Noun[] = []
-        let clauseAdjuncts: (Adverb | Preposition)[] = []
+        let clauseAdjuncts: (Adverb | Preposition | Noun)[] = []
 
         let nounModifiers: string[] = []
         let verbModifiers: string[] = []
+        let causativeNoun: Noun | null = null
+        let passiveNoun: Noun | null = null
 
+        // the girl wanted to eat right under the bridge
         while (zippedPairs.length > 0) {
 
             let currentPair: Pair | undefined = zippedPairs.shift()
-            if (currentPair !== undefined) {
 
+            if (currentPair !== undefined) {
                 if (isNounModifier(currentPair)) {
                     nounModifiers.push(currentPair.name)
 
                 } else if (isVerbModifier(currentPair)) {
                     verbModifiers.push(currentPair.name)
 
+                } else if (
+                    clauseNouns.length > 0 &&
+                    isCausative(currentPair)
+                ) {
+                    let agentNoun: Noun = clauseNouns.shift() as Noun
+                    clauseAdjuncts.push(
+                        addCaustiveModifier(agentNoun, currentPair)
+                    )
                 } else if (
                     currentPair.pos === PartsOfSpeech.QuestionTense
                 ) {
@@ -204,8 +155,19 @@ export class Sentence {
                         currentPredicate.addNoun(noun)
                     }
                     for (const modifier of clauseAdjuncts) {
-                        currentPredicate.addAdjunct(modifier)
+                        if (
+                            modifier instanceof Adverb ||
+                            modifier instanceof Preposition
+                        ) {
+                            currentPredicate.addAdjunct(modifier)
+                        } else if (
+                            modifier instanceof Noun
+                        ) {
+                            currentPredicate.setAgent(modifier)
+                        }
                     }
+
+                    // she wanted me to let her eat food
 
                     clauseNouns = []
                     clauseAdjuncts = []
@@ -226,16 +188,33 @@ export class Sentence {
         }
 
         if (currentPredicate) {
+            let completeClause: Clause = new Clause()
+            completeClause.setPredicate(currentPredicate)
+
             for (const noun of clauseNouns) {
                 currentPredicate.addNoun(noun)
+                completeClause.addNounToClause(noun)
             }
             for (const modifier of clauseAdjuncts) {
-                currentPredicate.addAdjunct(modifier)
+                if (
+                    modifier instanceof Adverb ||
+                    modifier instanceof Preposition
+                ) {
+                    currentPredicate.addAdjunct(modifier)
+                    completeClause.addAdjunct(modifier)
+                } else if (
+                    modifier instanceof Noun
+                ) {
+                    currentPredicate.setAgent(modifier)
+                }
             }
 
             for (const modifier of verbModifiers) {
                 currentPredicate.addTamm(modifier)
+                completeClause.addPredicateModifier(modifier)
             }
+
+            this.new_clauses.push(completeClause)
         }
     }
 
@@ -243,6 +222,8 @@ export class Sentence {
         matrixPredicate: Verb,
         nounArguments: Noun[]
     ) {
+        let matrixClause: Clause = new Clause()
+
         if (
             hasMultipleNouns(nounArguments) &&
             (
@@ -254,6 +235,7 @@ export class Sentence {
         ) {
             // add first noun to matrix clause
             let matrixSubject: Noun = nounArguments.shift() as Noun
+            matrixClause.addNounToClause(matrixSubject)
             matrixPredicate.addNoun(matrixSubject)
         } else if (
             // I asked him to win
@@ -270,6 +252,7 @@ export class Sentence {
             // add subject to matrix clause
             let matrixSubject: Noun = nounArguments[0]
             matrixPredicate.addNoun(matrixSubject)
+            matrixClause.addNounToClause(matrixSubject)
         }
     }
 

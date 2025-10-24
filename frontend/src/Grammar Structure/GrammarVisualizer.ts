@@ -12,22 +12,23 @@ export class GrammarVisualizer {
         )
 
         this.sentence.uncontractSent() // experiment with not doing this 
-        this.sentence.fixPartsOfSpeech()
         this.sentence.generateClauses()
 
         console.log(
             `Number of clauses in sentence: ${this.sentence.numberOfClauses}`
         )
         console.log(this.sentence.clauses)
+
+        console.log("below is the new clause class version")
+        console.log(this.sentence.new_clauses)
     }
 }
 
 
 // identify the subjects and objects that go with each clause
 
-// account for things like questions, relative clauses, passive
+// account for things like questions, relative clauses, passive, causative 
 // make sure that the main predicate is the verb and not progessive or perfective aspects
-// have make/let be in the same clause as the predicate "under" it
 
 // experiencer verbs might be super limited
 // determining if intransitive verb is unaccusative or unergative might prove more challenging
