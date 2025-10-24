@@ -1,17 +1,23 @@
 import { type SentenceInfo } from "./types/SentenceInfo"
 import { Sentence } from "./syntax/Sentence"
+import type { Pair } from "./types/Pair"
 
 export class GrammarVisualizer {
 
     public sentence: Sentence
+    private sentencePairsList: Pair[]
 
     constructor(inputSentence: SentenceInfo) {
-        this.sentence = new Sentence(
+        this.sentencePairsList = this.createZippedPairs(
             inputSentence.posList,
             inputSentence.wordList
         )
 
-        this.sentence.uncontractSent() // experiment with not doing this 
+        this.sentence = new Sentence(
+            this.sentencePairsList
+        )
+
+        // this.sentence.uncontractSent() // experiment with not doing this 
         this.sentence.generateClauses()
 
         console.log(
@@ -21,6 +27,23 @@ export class GrammarVisualizer {
 
         console.log("below is the new clause class version")
         console.log(this.sentence.new_clauses)
+    }
+
+    private createZippedPairs(
+        listOfPos: number[],
+        listOfWords: string[]
+    ): Pair[] {
+        let zipped: Pair[] = []
+
+        for (let i = 0; i < listOfPos.length; i++) {
+            let pair: Pair = {
+
+                pos: listOfPos[i],
+                name: listOfWords[i]
+            }
+            zipped.push(pair)
+        }
+        return zipped
     }
 }
 

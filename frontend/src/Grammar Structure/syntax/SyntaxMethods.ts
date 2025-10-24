@@ -1,6 +1,7 @@
 import type { Pair } from "../types/Pair"
 import { Noun } from "./partsOfSpeech/Noun"
-import type { Verb } from "./partsOfSpeech/Verb"
+import { Verb } from "./partsOfSpeech/Verb"
+import { Clause } from "./partsOfSpeech/Clause"
 import {
     conjunctions, ecmVerbs, objectControlVerbs, PartsOfSpeech,
     raisingVerbs
@@ -153,23 +154,31 @@ export function isECMVerb(matrixPred: Verb): boolean {
 }
 
 export function addNounsToObjectControlPred(
-    matrixPred: Verb, listOfNouns: Noun[]
+    matrixClause: Clause,
+    matrixPred: Verb,
+    listOfNouns: Noun[]
 ): void {
-    // Matrix subject is first noun argument
+    // Move first noun to matrix clause
     let matrixSubject: Noun = listOfNouns.shift() as Noun
-    // Matrix object is second noun argument
+    // Copy second noun to matrix clause
     let matrixObject: Noun = listOfNouns[0]
     matrixPred.addSubjectAndObject(matrixSubject, matrixObject)
+    matrixClause.addNounToClause(matrixSubject)
+    matrixClause.addNounToClause(matrixObject)
 }
 
 export function addNounsToSubjectControlPred(
-    matrixPred: Verb, listOfNouns: Noun[]
+    matrixClause: Clause,
+    matrixPred: Verb,
+    listOfNouns: Noun[]
 ): void {
-    // Add subject to matrix clause
+    // Copy subject to matrix clause
     let matrixSubject: Noun = listOfNouns[0]
-    // add object to matrix clause
+    // Move object to matrix clause
     let matrixObject: Noun = listOfNouns.pop() as Noun
     matrixPred.addSubjectAndObject(matrixSubject, matrixObject)
+    matrixClause.addNounToClause(matrixSubject)
+    matrixClause.addNounToClause(matrixObject)
 }
 
 export function uncontractVerbalModifiers(modifier: string): string[] {
@@ -184,82 +193,97 @@ export function uncontractVerbalModifiers(modifier: string): string[] {
    * should probably break this up into smaller functions
    */
 export function fixPartsOfSpeech(
-    posList: number[],
-    wordList: string[]
-): number[] {
-    for (let i = 0; i < wordList.length; i++) {
+    pairedList: Pair[],
+    // posList: number[],
+    // wordList: string[]
+): Pair[] {
+    for (let i = 0; i < pairedList.length; i++) {
         if (
             (
-                wordList[i] === "do" ||
-                wordList[i] === "does" ||
-                wordList[i] === "did"
+                pairedList[i].name === "do" ||
+                pairedList[i].name === "does" ||
+                pairedList[i].name === "did"
             ) && (
                 (
-                    wordList[i + 1] === "n't" ||
-                    wordList[i + 1] === "not"
+                    pairedList[i + 1].name === "n't" ||
+                    pairedList[i + 1].name === "not"
                 )
             )
         ) {
-            posList[i] = PartsOfSpeech.TENSE
-            if (wordList[i + 1] === "not") {
-                posList[i + 1] = PartsOfSpeech.NEGATION
+            pairedList[i].pos = PartsOfSpeech.TENSE
+            if (pairedList[i + 1].name === "not") {
+                pairedList[i + 1].pos = PartsOfSpeech.NEGATION
             }
 
         } else if ((
-            wordList[i] === "have" ||
-            wordList[i] === "has" ||
-            wordList[i] === "had"
+            pairedList[i].name === "have" ||
+            pairedList[i].name === "has" ||
+            pairedList[i].name === "had"
         ) && (
-                posList[i + 1] === PartsOfSpeech.RB
+                pairedList[i + 1].pos === PartsOfSpeech.RB
             )
         ) {
-            posList[i] = PartsOfSpeech.PERFECTIVE
+            pairedList[i].pos = PartsOfSpeech.PERFECTIVE
 
         } else if (
             (
-                wordList[i] === "have" ||
-                wordList[i] === "has" ||
-                wordList[i] === "had"
+                pairedList[i].name === "have" ||
+                pairedList[i].name === "has" ||
+                pairedList[i].name === "had"
             ) && (
-                posList[i + 1] == PartsOfSpeech.VBN
+                pairedList[i + 1].pos == PartsOfSpeech.VBN
             )) {
-            posList[i] = PartsOfSpeech.PERFECTIVE
+            pairedList[i].pos = PartsOfSpeech.PERFECTIVE
         }
 
         if ((
             i === 0 && (
-                posList[i] === PartsOfSpeech.VBD ||
-                posList[i] === PartsOfSpeech.VBZ ||
-                posList[i] === PartsOfSpeech.VBP ||
-                posList[i] === PartsOfSpeech.MD ||
-                posList[i] === PartsOfSpeech.TENSE
+                pairedList[i].pos === PartsOfSpeech.VBD ||
+                pairedList[i].pos === PartsOfSpeech.VBZ ||
+                pairedList[i].pos === PartsOfSpeech.VBP ||
+                pairedList[i].pos === PartsOfSpeech.MD ||
+                pairedList[i].pos === PartsOfSpeech.TENSE
             )
 
         ) && (
-                isNoun({ pos: posList[i + 1], name: wordList[i + 1] }) ||
-                (
-                    isAdverb({ pos: posList[i + 1], name: wordList[i + 1] })
+                isNoun(
+                    {
+                        pos: pairedList[i + 1].pos,
+                        name: pairedList[i + 1].name
+                    }
+                ) || (
+                    isAdverb(
+                        {
+                            pos: pairedList[i + 1].pos,
+                            name: pairedList[i + 1].name
+                        }
+                    )
                     &&
-                    isNoun({ pos: posList[i + 2], name: wordList[i + 2] })
+                    isNoun(
+                        {
+                            pos: pairedList[i + 2].pos,
+                            name: pairedList[i + 2].name
+                        }
+                    )
                 )
             )
         ) {
-            posList[i] = PartsOfSpeech.QuestionTense
+            pairedList[i].pos = PartsOfSpeech.QuestionTense
         } else if (
             (
-                wordList[i] === "make" ||
-                wordList[i] === "made" ||
-                wordList[i] === "let"
+                pairedList[i].name === "make" ||
+                pairedList[i].name === "made" ||
+                pairedList[i].name === "let"
             ) && (
-                posList
+                pairedList
                     .slice(i)
-                    .includes(PartsOfSpeech.VB)
+                    .some(item => item.pos === PartsOfSpeech.VB)
             )
         ) {
-            posList[i] = PartsOfSpeech.CAUSATIVE
+            pairedList[i].pos = PartsOfSpeech.CAUSATIVE
         }
     }
-    return posList
+    return pairedList
 }
 
 export function addCaustiveModifier(

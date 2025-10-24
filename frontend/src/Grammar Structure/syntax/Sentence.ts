@@ -21,66 +21,81 @@ import { Clause } from "./partsOfSpeech/Clause"
 
 export class Sentence {
 
-    private posInfo: number[]
-    private wordInfo: string[]
     public clauses: Verb[]
     public new_clauses: Clause[]
     public numberOfClauses: number
 
-    constructor(posInfo: number[], wordInfo: string[]) {
-        this.posInfo = fixPartsOfSpeech(posInfo, wordInfo)
-        this.wordInfo = wordInfo
+    private wordPairs: Pair[]
+
+    private currentPredicate: Verb | null
+    private currentClause: Clause | null
+    private nounStack: Noun[]
+    private adjunctStack: (Preposition | Adverb)[]
+    private nounModStack: string[]
+    private predModStack: string[]
+
+    constructor(pairList: Pair[]) {
+        this.wordPairs = fixPartsOfSpeech(pairList)
+
         this.clauses = []
         this.new_clauses = []
         this.numberOfClauses = 0
+
+        this.wordPairs = pairList
+        this.currentPredicate = null
+        this.currentClause = null
+        this.nounStack = []
+        this.nounModStack = []
+        this.adjunctStack = []
+        this.predModStack = []
     }
 
-    public uncontractSent(): void {
-        let posList: number[] = this.posInfo
-        let wordList: string[] = this.wordInfo
+    // public uncontractSent(): void {
+    //     let posList: number[] = this.posInfo
+    //     let wordList: string[] = this.wordInfo
 
-        let alignedWordList: string[] = []
+    //     let alignedWordList: string[] = []
 
-        // for (const word of wordList) {
-        //     if (word === "didn't") {
-        //         alignedWordList.push("did")
-        //         alignedWordList.push("n't")
-        //     } else if (word === "doesn't") {
-        //         alignedWordList.push("does")
-        //         alignedWordList.push("n't")
-        //     } else if (word === "don't") {
-        //         alignedWordList.push("do")
-        //         alignedWordList.push("n't")
-        //     } else if (word === "haven't") {
-        //         alignedWordList.push("have")
-        //         alignedWordList.push("n't")
-        //     } else if (word === "hasn't") {
-        //         alignedWordList.push("has")
-        //         alignedWordList.push("n't")
-        //     } else if (word === "hadn't") {
-        //         alignedWordList.push("had")
-        //         alignedWordList.push("n't")
-        //     } else {
-        //         alignedWordList.push(word)
-        //     }
-        // }
+    //     // for (const word of wordList) {
+    //     //     if (word === "didn't") {
+    //     //         alignedWordList.push("did")
+    //     //         alignedWordList.push("n't")
+    //     //     } else if (word === "doesn't") {
+    //     //         alignedWordList.push("does")
+    //     //         alignedWordList.push("n't")
+    //     //     } else if (word === "don't") {
+    //     //         alignedWordList.push("do")
+    //     //         alignedWordList.push("n't")
+    //     //     } else if (word === "haven't") {
+    //     //         alignedWordList.push("have")
+    //     //         alignedWordList.push("n't")
+    //     //     } else if (word === "hasn't") {
+    //     //         alignedWordList.push("has")
+    //     //         alignedWordList.push("n't")
+    //     //     } else if (word === "hadn't") {
+    //     //         alignedWordList.push("had")
+    //     //         alignedWordList.push("n't")
+    //     //     } else {
+    //     //         alignedWordList.push(word)
+    //     //     }
+    //     // }
 
-        this.posInfo = posList
-        this.wordInfo = wordList
-    }
+    //     this.posInfo = posList
+    //     this.wordInfo = wordList
+    // }
 
     public generateClauses(): void {
 
         // create clause object that has verbs and nouns and bits and other bits
         let currentClause: Clause = new Clause()
 
-        let zippedPairs: Pair[] = this.createZippedPairs()
 
+        // these should probably be instance variables
+        let zippedPairs: Pair[] = this.wordPairs
         let currentPredicate: Verb | null = null
         let new_currentPredicate: Clause | null
         let clauseNouns: Noun[] = []
         let clauseAdjuncts: (Adverb | Preposition | Noun)[] = []
-
         let nounModifiers: string[] = []
         let verbModifiers: string[] = []
         let causativeNoun: Noun | null = null
@@ -223,6 +238,7 @@ export class Sentence {
         nounArguments: Noun[]
     ) {
         let matrixClause: Clause = new Clause()
+        matrixClause.setPredicate(matrixPredicate)
 
         if (
             hasMultipleNouns(nounArguments) &&
@@ -233,7 +249,7 @@ export class Sentence {
                 isECMVerb(matrixPredicate)
             )
         ) {
-            // add first noun to matrix clause
+            // move first noun to matrix clause
             let matrixSubject: Noun = nounArguments.shift() as Noun
             matrixClause.addNounToClause(matrixSubject)
             matrixPredicate.addNoun(matrixSubject)
@@ -242,35 +258,22 @@ export class Sentence {
             hasMultipleNouns(nounArguments) &&
             isObjectControl(matrixPredicate)
         ) {
-            addNounsToObjectControlPred(matrixPredicate, nounArguments)
+            addNounsToObjectControlPred(matrixClause,
+                matrixPredicate, nounArguments)
         } else if (
             // I used him to win
             hasMultipleNouns(nounArguments)
         ) {
-            addNounsToSubjectControlPred(matrixPredicate, nounArguments)
+            addNounsToSubjectControlPred(matrixClause,
+                matrixPredicate, nounArguments)
         } else {
-            // add subject to matrix clause
+            // copy subject to matrix clause
             let matrixSubject: Noun = nounArguments[0]
             matrixPredicate.addNoun(matrixSubject)
             matrixClause.addNounToClause(matrixSubject)
         }
-    }
 
-    private createZippedPairs(): Pair[] {
-        let zipped: Pair[] = []
-
-        let listOfPos: number[] = this.posInfo
-        let listOfWords: string[] = this.wordInfo
-
-        for (let i = 0; i < listOfPos.length; i++) {
-            let pair: Pair = {
-
-                pos: listOfPos[i],
-                name: listOfWords[i]
-            }
-            zipped.push(pair)
-        }
-        return zipped
+        this.new_clauses.push(matrixClause)
     }
 
     private resolveAdverbAttachment(
