@@ -21,9 +21,8 @@ import { Clause } from "./partsOfSpeech/Clause"
 
 export class Sentence {
 
-    public clauses: Verb[]
     // list of completed clauses
-    public new_clauses: Clause[]
+    public clauses: Clause[]
     public numberOfClauses: number
 
     private wordPairs: Pair[]
@@ -37,15 +36,18 @@ export class Sentence {
         this.wordPairs = fixPartsOfSpeech(pairList)
 
         this.clauses = []
-        this.new_clauses = []
         this.numberOfClauses = 0
 
         this.wordPairs = pairList
+
         this.currentPredicate = null
+        this.predModStack = []
+
         this.nounStack = []
         this.nounModStack = []
+
         this.adjunctStack = []
-        this.predModStack = []
+
     }
 
     // public uncontractSent(): void {
@@ -132,8 +134,6 @@ export class Sentence {
                     }
 
                     let vPhrase: Verb = new Verb(currentPair.name)
-                    this.clauses.push(vPhrase)
-
                     this.currentPredicate = vPhrase
                     this.numberOfClauses += 1
 
@@ -150,18 +150,18 @@ export class Sentence {
                     isConjunction(currentPair)
                 ) {
                     for (const noun of this.nounStack) {
-                        this.currentPredicate.addNoun(noun)
+                        // this.currentPredicate.addNoun(noun)
                     }
                     for (const modifier of this.adjunctStack) {
                         if (
                             modifier instanceof Adverb ||
                             modifier instanceof Preposition
                         ) {
-                            this.currentPredicate.addAdjunct(modifier)
+                            // this.currentPredicate.addAdjunct(modifier)
                         } else if (
                             modifier instanceof Noun
                         ) {
-                            this.currentPredicate.setAgent(modifier)
+                            // this.currentPredicate.setAgent(modifier)
                         }
                     }
 
@@ -190,7 +190,6 @@ export class Sentence {
             completeClause.setPredicate(this.currentPredicate)
 
             for (const noun of this.nounStack) {
-                this.currentPredicate.addNoun(noun)
                 completeClause.addNounToClause(noun)
             }
             for (const modifier of this.adjunctStack) {
@@ -198,12 +197,12 @@ export class Sentence {
                     modifier instanceof Adverb ||
                     modifier instanceof Preposition
                 ) {
-                    this.currentPredicate.addAdjunct(modifier)
+                    // this.currentPredicate.addAdjunct(modifier)
                     completeClause.addAdjunct(modifier)
                 } else if (
                     modifier instanceof Noun
                 ) {
-                    this.currentPredicate.setAgent(modifier)
+                    // this.currentPredicate.setAgent(modifier)
                 }
             }
 
@@ -212,7 +211,7 @@ export class Sentence {
                 completeClause.addPredicateModifier(modifier)
             }
 
-            this.new_clauses.push(completeClause)
+            this.clauses.push(completeClause)
         }
     }
 
@@ -235,7 +234,6 @@ export class Sentence {
             // move first noun to matrix clause
             let matrixSubject: Noun = nounArguments.shift() as Noun
             matrixClause.addNounToClause(matrixSubject)
-            matrixPredicate.addNoun(matrixSubject)
         } else if (
             // I asked him to win
             hasMultipleNouns(nounArguments) &&
@@ -252,11 +250,10 @@ export class Sentence {
         } else {
             // copy subject to matrix clause
             let matrixSubject: Noun = nounArguments[0]
-            matrixPredicate.addNoun(matrixSubject)
             matrixClause.addNounToClause(matrixSubject)
         }
 
-        this.new_clauses.push(matrixClause)
+        this.clauses.push(matrixClause)
     }
 
     private resolveAdverbAttachment(

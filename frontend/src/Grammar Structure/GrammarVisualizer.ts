@@ -24,9 +24,6 @@ export class GrammarVisualizer {
             `Number of clauses in sentence: ${this.sentence.numberOfClauses}`
         )
         console.log(this.sentence.clauses)
-
-        console.log("below is the new clause class version")
-        console.log(this.sentence.new_clauses)
     }
 
     private createZippedPairs(

@@ -6,9 +6,7 @@ import { Verb } from "./Verb"
 export class Clause {
 
     private verb: Verb | null
-    private verbModifierList: string[]
     private nounList: Noun[]
-    private nounModifierList: string[]
     private adjunctList: (Adverb | Preposition)[]
 
     private causativeNoun: Noun | null
@@ -16,9 +14,7 @@ export class Clause {
 
     constructor() {
         this.verb = null
-        this.verbModifierList = []
         this.nounList = []
-        this.nounModifierList = []
         this.adjunctList = []
 
         this.causativeNoun = null
@@ -33,12 +29,17 @@ export class Clause {
         this.verb = predicate
     }
 
-    public getPredicateModifiers(): string[] {
-        return this.verbModifierList
+    public getPredicateModifiers(): null | string[] {
+        if (this.verb) {
+            return this.verb.getTammList()
+        }
+        return null
     }
 
     public addPredicateModifier(modifier: string): void {
-        this.verbModifierList.push(modifier)
+        if (this.verb) {
+            this.verb.addTamm(modifier)
+        }
     }
 
     public getNouns(): Noun[] {
@@ -57,12 +58,12 @@ export class Clause {
         this.adjunctList.push(adjunct)
     }
 
-    public getNounModifiers(): string[] {
-        return this.nounModifierList
+    public getNounModifiers(noun: Noun): string[] {
+        return noun.getModifiers()
     }
 
-    public addNounModifier(modifier: string): void {
-        this.nounModifierList.push(modifier)
+    public addNounModifier(noun: Noun, modifier: string): void {
+        noun.addModifier(modifier)
     }
 
     public getCausativeNoun(): Noun | null {
