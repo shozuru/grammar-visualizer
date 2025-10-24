@@ -164,6 +164,7 @@ export class Sentence {
         }
 
         if (this.currentPredicate) {
+
             let completeClause: Clause = new Clause()
             completeClause.setPredicate(this.currentPredicate)
 

@@ -12,9 +12,10 @@ export abstract class CanTakeObject {
             let i: number = 0
             let nextPair: Pair = listOfNextWords[i]
             while (nextPair && !isNoun(nextPair)) {
-                if (isNounModifier(nextPair)) {
+                if (isNounModifier(nextPair, listOfNextWords)) {
                     // shift off the element and add to mod list
-                    let nounModifierPair: Pair = listOfNextWords.shift() as Pair
+                    let nounModifierPair: Pair =
+                        listOfNextWords.shift() as Pair
                     nounModiferList.push(nounModifierPair.name)
 
                     nextPair = listOfNextWords[i]
