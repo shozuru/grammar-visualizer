@@ -47,7 +47,7 @@ export class GrammarVisualizer {
 
 // identify the subjects and objects that go with each clause
 
-// account for things like questions, relative clauses, passive, causative 
+// account for things like questions, relative clauses, passive 
 // make sure that the main predicate is the verb and not progessive or perfective aspects
 
 // experiencer verbs might be super limited

@@ -293,3 +293,59 @@ export function addCaustiveModifier(
     agentNoun.addModifier(causativePair.name)
     return agentNoun
 }
+
+export function addMatrixClauseArguments(
+    matrixPredicate: Verb,
+    nounArguments: Noun[]
+): Clause {
+
+    let matrixClause: Clause = new Clause()
+    matrixClause.setPredicate(matrixPredicate)
+    if (
+        nounArguments[0].getModifiers().includes("make") ||
+        nounArguments[0].getModifiers().includes("made") ||
+        nounArguments[0].getModifiers().includes("let")
+    ) {
+        let agentNoun: Noun = nounArguments.shift() as Noun
+        matrixClause.setCausativeNoun(agentNoun)
+    }
+
+    if (
+        hasMultipleNouns(nounArguments) &&
+        (
+            // I expected him to win
+            isRaisingVerb(matrixPredicate) ||
+            // I saw him win
+            isECMVerb(matrixPredicate)
+        )
+    ) {
+        // move first noun to matrix clause
+        let matrixSubject: Noun = nounArguments.shift() as Noun
+        matrixClause.addNounToClause(matrixSubject)
+    } else if (
+        // I asked him to win
+        hasMultipleNouns(nounArguments) &&
+        isObjectControl(matrixPredicate)
+    ) {
+        addNounsToObjectControlPred(matrixClause, nounArguments)
+    } else if (
+        // I used him to win
+        hasMultipleNouns(nounArguments)
+    ) {
+        addNounsToSubjectControlPred(matrixClause, nounArguments)
+    } else {
+        // copy subject to matrix clause
+        let matrixSubject: Noun = nounArguments[0]
+        matrixClause.addNounToClause(matrixSubject)
+    }
+    return matrixClause
+}
+
+export function addMatrixClauseModifiers(
+    matrixPred: Verb, listOfTamms: string[]
+): void {
+    while (listOfTamms.length > 0) {
+        let tamm: string = listOfTamms.shift() as string
+        matrixPred.addTamm(tamm)
+    }
+}

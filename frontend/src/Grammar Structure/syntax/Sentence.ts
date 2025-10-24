@@ -1,14 +1,11 @@
 import {
     addCaustiveModifier,
-    addNounsToObjectControlPred,
-    addNounsToSubjectControlPred,
+    addMatrixClauseArguments,
+    addMatrixClauseModifiers,
     fixPartsOfSpeech,
-    hasMultipleNouns,
-    isAdverb, isCausative, isConjunction, isECMVerb, isNoun, isNounModifier,
-    isObjectControl,
+    isAdverb, isCausative, isConjunction, isNoun, isNounModifier,
     isPredicate,
     isPreposition,
-    isRaisingVerb,
     isVerbModifier,
 } from "./SyntaxMethods"
 import { Adverb } from "./partsOfSpeech/Adverb"
@@ -121,15 +118,7 @@ export class Sentence {
 
                 } else if (isPredicate(currentPair, this.wordPairs)) {
                     if (this.currentPredicate !== null) {
-                        this.addMatrixClauseArguments(
-                            this.currentPredicate,
-                            this.nounStack
-                        )
-                        this.addMatrixClauseModifiers(
-                            this.currentPredicate,
-                            this.predModStack
-                        )
-                        this.predModStack.push("inf")
+                        this.handleMatrixClause(this.currentPredicate)
                     }
 
                     let vPhrase: Verb = new Verb(currentPair.name)
@@ -212,61 +201,11 @@ export class Sentence {
             }
 
             for (const modifier of this.predModStack) {
-                this.currentPredicate.addTamm(modifier)
                 completeClause.addPredicateModifier(modifier)
             }
 
             this.clauses.push(completeClause)
         }
-    }
-
-    // this should probably go in the syntax methods module
-    private addMatrixClauseArguments(
-        matrixPredicate: Verb,
-        nounArguments: Noun[]
-    ) {
-        let matrixClause: Clause = new Clause()
-        matrixClause.setPredicate(matrixPredicate)
-        if (
-            nounArguments[0].getModifiers().includes("make") ||
-            nounArguments[0].getModifiers().includes("made") ||
-            nounArguments[0].getModifiers().includes("let")
-        ) {
-            let agentNoun: Noun = nounArguments.shift() as Noun
-            matrixClause.setCausativeNoun(agentNoun)
-        }
-
-        if (
-            hasMultipleNouns(nounArguments) &&
-            (
-                // I expected him to win
-                isRaisingVerb(matrixPredicate) ||
-                // I saw him win
-                isECMVerb(matrixPredicate)
-            )
-        ) {
-            // move first noun to matrix clause
-            let matrixSubject: Noun = nounArguments.shift() as Noun
-            matrixClause.addNounToClause(matrixSubject)
-        } else if (
-            // I asked him to win
-            hasMultipleNouns(nounArguments) &&
-            isObjectControl(matrixPredicate)
-        ) {
-            addNounsToObjectControlPred(matrixClause, nounArguments)
-        } else if (
-            // I used him to win
-            hasMultipleNouns(nounArguments)
-        ) {
-            addNounsToSubjectControlPred(matrixClause, nounArguments)
-        } else {
-            // copy subject to matrix clause
-            let matrixSubject: Noun = nounArguments[0]
-            matrixClause.addNounToClause(matrixSubject)
-        }
-
-        this.clauses.push(matrixClause)
-        console.log(matrixClause)
     }
 
     private resolveAdverbAttachment(
@@ -324,12 +263,17 @@ export class Sentence {
         return nounPhrase
     }
 
-    private addMatrixClauseModifiers(
-        matrixPred: Verb, listOfTamms: string[]
-    ): void {
-        while (listOfTamms.length > 0) {
-            let tamm: string = listOfTamms.shift() as string
-            matrixPred.addTamm(tamm)
-        }
+    private handleMatrixClause(currentPred: Verb): void {
+        this.clauses.push(
+            addMatrixClauseArguments(
+                currentPred,
+                this.nounStack
+            )
+        )
+        addMatrixClauseModifiers(
+            currentPred,
+            this.predModStack
+        )
+        this.predModStack.push("inf")
     }
 }
