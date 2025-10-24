@@ -1,15 +1,16 @@
+import type { Adverb } from "./Adverb";
 import { CanTakeObject } from "./CanTakeObject";
 import { Noun } from "./Noun";
 
 export class Preposition extends CanTakeObject {
 
-    private modifiers: string[]
+    private listOfModifiers: Adverb[]
     private name: string
 
     constructor(name: string) {
         super()
         this.name = name
-        this.modifiers = []
+        this.listOfModifiers = []
     }
 
     public hasObject(): boolean {
@@ -24,12 +25,12 @@ export class Preposition extends CanTakeObject {
         this.object = noun
     }
 
-    public getModifiers(): string[] {
-        return this.modifiers
+    public getModifiers(): Adverb[] {
+        return this.listOfModifiers
     }
 
-    public addModifier(modifier: string): void {
-        this.modifiers.push(modifier)
+    public addModifier(modifier: Adverb): void {
+        this.listOfModifiers.push(modifier)
     }
 
     public getName(): string {

@@ -1,10 +1,12 @@
 export class Adverb {
 
     private name: string
+    private listOfModifiers: Adverb[]
     // private isPredicate: boolean
 
     constructor(name: string) {
         this.name = name
+        this.listOfModifiers = []
     }
 
     public getName(): string {
@@ -13,5 +15,13 @@ export class Adverb {
 
     public setName(newName: string): void {
         this.name = newName
+    }
+
+    public getModifiers(): Adverb[] {
+        return this.listOfModifiers
+    }
+
+    public addModifier(modifier: Adverb): void {
+        this.listOfModifiers.push(modifier)
     }
 }

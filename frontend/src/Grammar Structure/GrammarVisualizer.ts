@@ -25,9 +25,9 @@ export class GrammarVisualizer {
 
 // identify the subjects and objects that go with each clause
 
-// have to account for things like questions, relative clauses
-// also have to make sure that the main predicate is the verb and not progessive or perfective aspects
-// also having make/let be in the same clause as the predicate "under" it
+// account for things like questions, relative clauses, passive
+// make sure that the main predicate is the verb and not progessive or perfective aspects
+// have make/let be in the same clause as the predicate "under" it
 
 // experiencer verbs might be super limited
 // determining if intransitive verb is unaccusative or unergative might prove more challenging

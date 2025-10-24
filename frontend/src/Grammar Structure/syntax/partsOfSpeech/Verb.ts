@@ -12,7 +12,7 @@ export class Verb extends CanTakeObject {
     private agent: Noun | null
     private experiencer: Noun | null
     private patient: Noun | null
-    private adverbs: (Adverb | Preposition)[]
+    private listOfAdjuncts: (Adverb | Preposition)[]
     private name: string
     private tamm: string[]
 
@@ -22,7 +22,7 @@ export class Verb extends CanTakeObject {
         this.agent = null
         this.experiencer = null
         this.patient = null
-        this.adverbs = []
+        this.listOfAdjuncts = []
         this.nounList = []
         this.tamm = []
     }
@@ -81,11 +81,11 @@ export class Verb extends CanTakeObject {
     }
 
     public getAdjunct(): (Adverb | Preposition)[] {
-        return this.adverbs
+        return this.listOfAdjuncts
     }
 
     public addAdjunct(modifier: Adverb | Preposition): void {
-        this.adverbs.push(modifier)
+        this.listOfAdjuncts.push(modifier)
     }
 
     public addTamm(gramMod: string): void {

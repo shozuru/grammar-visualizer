@@ -294,6 +294,8 @@ export class Sentence {
         adverbPair: Pair,
         listOfNextWords: Pair[]
     ): Preposition | Adverb {
+
+        let thisAdverb: Adverb = new Adverb(adverbPair.name)
         let nextWord: Pair = listOfNextWords[0]
 
         if (nextWord && isPreposition(nextWord)) {
@@ -304,14 +306,20 @@ export class Sentence {
             let currentPreposition: Preposition =
                 new Preposition(prepositionPair.name)
             // add adverb to preposition's modifier list
-            currentPreposition.addModifier(adverbPair.name)
-
+            currentPreposition.addModifier(thisAdverb)
             // add potential following object to preposition
             currentPreposition.tagIfObject(listOfNextWords)
             return currentPreposition
 
+        } else if (nextWord && isAdverb(nextWord)) {
+
+            let nextAdverb: Pair = listOfNextWords.shift() as Pair
+            let aPhrase: Adverb = new Adverb(nextAdverb.name)
+            aPhrase.addModifier(thisAdverb)
+            return aPhrase
+
         } else {
-            return new Adverb(adverbPair.name)
+            return thisAdverb
         }
     }
 
