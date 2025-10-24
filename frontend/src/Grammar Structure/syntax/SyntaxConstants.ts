@@ -154,6 +154,7 @@ export const objectControlVerbs: Set<string> = new Set(
 
 export const raisingVerbs: Set<string> = new Set(
     [
+        "want",
         "expect",
         "believe",
         "know",

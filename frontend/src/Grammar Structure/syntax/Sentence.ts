@@ -91,7 +91,7 @@ export class Sentence {
             let currentPair: Pair | undefined = this.wordPairs.shift()
 
             if (currentPair !== undefined) {
-                if (isNounModifier(currentPair)) {
+                if (isNounModifier(currentPair, this.wordPairs)) {
                     this.nounModStack.push(currentPair.name)
 
                 } else if (isVerbModifier(currentPair)) {
@@ -101,7 +101,7 @@ export class Sentence {
                     this.nounStack.length > 0 &&
                     isCausative(currentPair)
                 ) {
-                    let agentNoun: Noun = this.nounStack.shift() as Noun
+                    let agentNoun: Noun = this.nounStack.pop() as Noun
                     this.nounStack.push(
                         addCaustiveModifier(agentNoun, currentPair)
                     )
@@ -120,7 +120,7 @@ export class Sentence {
                     this.adjunctStack.push(modPhrase)
 
                 } else if (isPredicate(currentPair, this.wordPairs)) {
-                    if (this.currentPredicate) {
+                    if (this.currentPredicate !== null) {
                         this.addMatrixClauseArguments(
                             this.currentPredicate,
                             this.nounStack
@@ -163,9 +163,6 @@ export class Sentence {
                             // this.currentPredicate.setAgent(modifier)
                         }
                     }
-
-                    // she wanted me to let her eat food
-                    // i made her want to eat her food
 
                     this.nounStack = []
                     this.adjunctStack = []
@@ -223,12 +220,21 @@ export class Sentence {
         }
     }
 
+    // this should probably go in the syntax methods module
     private addMatrixClauseArguments(
         matrixPredicate: Verb,
         nounArguments: Noun[]
     ) {
         let matrixClause: Clause = new Clause()
         matrixClause.setPredicate(matrixPredicate)
+        if (
+            nounArguments[0].getModifiers().includes("make") ||
+            nounArguments[0].getModifiers().includes("made") ||
+            nounArguments[0].getModifiers().includes("let")
+        ) {
+            let agentNoun: Noun = nounArguments.shift() as Noun
+            matrixClause.setCausativeNoun(agentNoun)
+        }
 
         if (
             hasMultipleNouns(nounArguments) &&
@@ -260,6 +266,7 @@ export class Sentence {
         }
 
         this.clauses.push(matrixClause)
+        console.log(matrixClause)
     }
 
     private resolveAdverbAttachment(

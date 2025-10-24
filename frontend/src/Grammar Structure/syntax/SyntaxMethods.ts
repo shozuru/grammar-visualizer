@@ -29,11 +29,15 @@ export function isVerbModifier(wordPair: Pair): boolean {
     )
 }
 
-export function isNounModifier(wordPair: Pair): boolean {
+export function isNounModifier(wordPair: Pair, restOfSent: Pair[]): boolean {
     let currentPOS: number = wordPair.pos
     return (
         currentPOS === PartsOfSpeech.DT ||
-        currentPOS === PartsOfSpeech.PRPQ
+        currentPOS === PartsOfSpeech.PRPQ ||
+        (
+            currentPOS === PartsOfSpeech.NNP &&
+            restOfSent[0].pos === PartsOfSpeech.NN
+        )
     )
 }
 
