@@ -22,16 +22,15 @@ import { Clause } from "./partsOfSpeech/Clause"
 export class Sentence {
 
     public clauses: Verb[]
+    // list of completed clauses
     public new_clauses: Clause[]
     public numberOfClauses: number
 
     private wordPairs: Pair[]
-
     private currentPredicate: Verb | null
-    private currentClause: Clause | null
     private nounStack: Noun[]
-    private adjunctStack: (Preposition | Adverb)[]
     private nounModStack: string[]
+    private adjunctStack: (Preposition | Adverb | Noun)[]
     private predModStack: string[]
 
     constructor(pairList: Pair[]) {
@@ -43,7 +42,6 @@ export class Sentence {
 
         this.wordPairs = pairList
         this.currentPredicate = null
-        this.currentClause = null
         this.nounStack = []
         this.nounModStack = []
         this.adjunctStack = []
@@ -86,146 +84,131 @@ export class Sentence {
 
     public generateClauses(): void {
 
-        // create clause object that has verbs and nouns and bits and other bits
-        let currentClause: Clause = new Clause()
-
-
-        // these should probably be instance variables
-        let zippedPairs: Pair[] = this.wordPairs
-        let currentPredicate: Verb | null = null
-        let new_currentPredicate: Clause | null
-        let clauseNouns: Noun[] = []
-        let clauseAdjuncts: (Adverb | Preposition | Noun)[] = []
-        let nounModifiers: string[] = []
-        let verbModifiers: string[] = []
-        let causativeNoun: Noun | null = null
-        let passiveNoun: Noun | null = null
-
         // the girl wanted to eat right under the bridge
-        while (zippedPairs.length > 0) {
+        while (this.wordPairs.length > 0) {
 
-            let currentPair: Pair | undefined = zippedPairs.shift()
+            let currentPair: Pair | undefined = this.wordPairs.shift()
 
             if (currentPair !== undefined) {
                 if (isNounModifier(currentPair)) {
-                    nounModifiers.push(currentPair.name)
+                    this.nounModStack.push(currentPair.name)
 
                 } else if (isVerbModifier(currentPair)) {
-                    verbModifiers.push(currentPair.name)
+                    this.predModStack.push(currentPair.name)
 
                 } else if (
-                    clauseNouns.length > 0 &&
+                    this.nounStack.length > 0 &&
                     isCausative(currentPair)
                 ) {
-                    let agentNoun: Noun = clauseNouns.shift() as Noun
-                    clauseAdjuncts.push(
+                    let agentNoun: Noun = this.nounStack.shift() as Noun
+                    this.adjunctStack.push(
                         addCaustiveModifier(agentNoun, currentPair)
                     )
                 } else if (
                     currentPair.pos === PartsOfSpeech.QuestionTense
                 ) {
                     let questionModifier: Adverb = new Adverb(currentPair.name)
-                    clauseAdjuncts.push(questionModifier)
+                    this.adjunctStack.push(questionModifier)
 
                 } else if (isAdverb(currentPair)) {
                     let modPhrase: Preposition | Adverb =
                         this.resolveAdverbAttachment(
                             currentPair,
-                            zippedPairs
+                            this.wordPairs
                         )
-                    clauseAdjuncts.push(modPhrase)
+                    this.adjunctStack.push(modPhrase)
 
-                } else if (isPredicate(currentPair, zippedPairs)) {
-                    if (currentPredicate) {
+                } else if (isPredicate(currentPair, this.wordPairs)) {
+                    if (this.currentPredicate) {
                         this.addMatrixClauseArguments(
-                            currentPredicate,
-                            clauseNouns
+                            this.currentPredicate,
+                            this.nounStack
                         )
                         this.addMatrixClauseModifiers(
-                            currentPredicate,
-                            verbModifiers
+                            this.currentPredicate,
+                            this.predModStack
                         )
-                        verbModifiers.push("inf")
+                        this.predModStack.push("inf")
                     }
 
                     let vPhrase: Verb = new Verb(currentPair.name)
                     this.clauses.push(vPhrase)
 
-                    currentPredicate = vPhrase
+                    this.currentPredicate = vPhrase
                     this.numberOfClauses += 1
 
                 } else if (isNoun(currentPair)) {
                     let nPhrase: Noun =
                         this.createNounPhrase(
                             currentPair,
-                            nounModifiers
+                            this.nounModStack
                         )
-                    clauseNouns.push(nPhrase)
+                    this.nounStack.push(nPhrase)
 
                 } else if (
-                    currentPredicate &&
+                    this.currentPredicate &&
                     isConjunction(currentPair)
                 ) {
-                    for (const noun of clauseNouns) {
-                        currentPredicate.addNoun(noun)
+                    for (const noun of this.nounStack) {
+                        this.currentPredicate.addNoun(noun)
                     }
-                    for (const modifier of clauseAdjuncts) {
+                    for (const modifier of this.adjunctStack) {
                         if (
                             modifier instanceof Adverb ||
                             modifier instanceof Preposition
                         ) {
-                            currentPredicate.addAdjunct(modifier)
+                            this.currentPredicate.addAdjunct(modifier)
                         } else if (
                             modifier instanceof Noun
                         ) {
-                            currentPredicate.setAgent(modifier)
+                            this.currentPredicate.setAgent(modifier)
                         }
                     }
 
                     // she wanted me to let her eat food
 
-                    clauseNouns = []
-                    clauseAdjuncts = []
-                    currentPredicate = null
+                    this.nounStack = []
+                    this.adjunctStack = []
+                    this.currentPredicate = null
 
                 } else if (
                     isPreposition(currentPair) &&
-                    currentPredicate
+                    this.currentPredicate
                 ) {
                     let pPhrase: Preposition =
                         this.createPrepositionalPhrase(
                             currentPair,
-                            zippedPairs
+                            this.wordPairs
                         )
-                    clauseAdjuncts.push(pPhrase)
+                    this.adjunctStack.push(pPhrase)
                 }
             }
         }
 
-        if (currentPredicate) {
+        if (this.currentPredicate) {
             let completeClause: Clause = new Clause()
-            completeClause.setPredicate(currentPredicate)
+            completeClause.setPredicate(this.currentPredicate)
 
-            for (const noun of clauseNouns) {
-                currentPredicate.addNoun(noun)
+            for (const noun of this.nounStack) {
+                this.currentPredicate.addNoun(noun)
                 completeClause.addNounToClause(noun)
             }
-            for (const modifier of clauseAdjuncts) {
+            for (const modifier of this.adjunctStack) {
                 if (
                     modifier instanceof Adverb ||
                     modifier instanceof Preposition
                 ) {
-                    currentPredicate.addAdjunct(modifier)
+                    this.currentPredicate.addAdjunct(modifier)
                     completeClause.addAdjunct(modifier)
                 } else if (
                     modifier instanceof Noun
                 ) {
-                    currentPredicate.setAgent(modifier)
+                    this.currentPredicate.setAgent(modifier)
                 }
             }
 
-            for (const modifier of verbModifiers) {
-                currentPredicate.addTamm(modifier)
+            for (const modifier of this.predModStack) {
+                this.currentPredicate.addTamm(modifier)
                 completeClause.addPredicateModifier(modifier)
             }
 
