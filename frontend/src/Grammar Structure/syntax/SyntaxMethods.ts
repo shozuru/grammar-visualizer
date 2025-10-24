@@ -155,28 +155,24 @@ export function isECMVerb(matrixPred: Verb): boolean {
 
 export function addNounsToObjectControlPred(
     matrixClause: Clause,
-    matrixPred: Verb,
     listOfNouns: Noun[]
 ): void {
     // Move first noun to matrix clause
     let matrixSubject: Noun = listOfNouns.shift() as Noun
     // Copy second noun to matrix clause
     let matrixObject: Noun = listOfNouns[0]
-    matrixPred.addSubjectAndObject(matrixSubject, matrixObject)
     matrixClause.addNounToClause(matrixSubject)
     matrixClause.addNounToClause(matrixObject)
 }
 
 export function addNounsToSubjectControlPred(
     matrixClause: Clause,
-    matrixPred: Verb,
     listOfNouns: Noun[]
 ): void {
     // Copy subject to matrix clause
     let matrixSubject: Noun = listOfNouns[0]
     // Move object to matrix clause
     let matrixObject: Noun = listOfNouns.pop() as Noun
-    matrixPred.addSubjectAndObject(matrixSubject, matrixObject)
     matrixClause.addNounToClause(matrixSubject)
     matrixClause.addNounToClause(matrixObject)
 }

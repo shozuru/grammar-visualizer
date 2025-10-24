@@ -86,7 +86,6 @@ export class Sentence {
 
     public generateClauses(): void {
 
-        // the girl wanted to eat right under the bridge
         while (this.wordPairs.length > 0) {
 
             let currentPair: Pair | undefined = this.wordPairs.shift()
@@ -103,7 +102,7 @@ export class Sentence {
                     isCausative(currentPair)
                 ) {
                     let agentNoun: Noun = this.nounStack.shift() as Noun
-                    this.adjunctStack.push(
+                    this.nounStack.push(
                         addCaustiveModifier(agentNoun, currentPair)
                     )
                 } else if (
@@ -166,6 +165,7 @@ export class Sentence {
                     }
 
                     // she wanted me to let her eat food
+                    // i made her want to eat her food
 
                     this.nounStack = []
                     this.adjunctStack = []
@@ -190,7 +190,15 @@ export class Sentence {
             completeClause.setPredicate(this.currentPredicate)
 
             for (const noun of this.nounStack) {
-                completeClause.addNounToClause(noun)
+                if (
+                    noun.getModifiers().includes("made") ||
+                    noun.getModifiers().includes("make") ||
+                    noun.getModifiers().includes("let")
+                ) {
+                    completeClause.setCausativeNoun(noun)
+                } else {
+                    completeClause.addNounToClause(noun)
+                }
             }
             for (const modifier of this.adjunctStack) {
                 if (
@@ -239,14 +247,12 @@ export class Sentence {
             hasMultipleNouns(nounArguments) &&
             isObjectControl(matrixPredicate)
         ) {
-            addNounsToObjectControlPred(matrixClause,
-                matrixPredicate, nounArguments)
+            addNounsToObjectControlPred(matrixClause, nounArguments)
         } else if (
             // I used him to win
             hasMultipleNouns(nounArguments)
         ) {
-            addNounsToSubjectControlPred(matrixClause,
-                matrixPredicate, nounArguments)
+            addNounsToSubjectControlPred(matrixClause, nounArguments)
         } else {
             // copy subject to matrix clause
             let matrixSubject: Noun = nounArguments[0]
