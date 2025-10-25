@@ -184,11 +184,11 @@ export function fixPartsOfSpeech(pairedList: Pair[]): Pair[] {
             )
         ) {
             pairedList[i].pos = PartsOfSpeech.VBAGR
-            let ByPhrase: null | number =
-                passiveByPhraseChecker(pairedList.slice(i))
+            let index: null | number =
+                passiveByPhraseIndex(pairedList.slice(i))
 
-            if (ByPhrase) {
-                pairedList[i + ByPhrase].pos = PartsOfSpeech.PASSIVE
+            if (index) {
+                pairedList[i + index].pos = PartsOfSpeech.PASSIVE
             }
         }
 
@@ -393,7 +393,7 @@ export function isVerbModifier(wordPair: Pair): boolean {
     )
 }
 
-export function passiveByPhraseChecker(
+export function passiveByPhraseIndex(
     listOfPairs: Pair[]
 
 ): number | null {
