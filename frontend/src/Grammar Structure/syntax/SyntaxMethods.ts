@@ -193,14 +193,23 @@ export function uncontractVerbalModifiers(modifier: string): string[] {
 
 /**
    * should probably break this up into smaller functions
+   * this doesn't work for words like 'don't' (RB), which should be Present tense + negation
+   * Most likely doesn't work for other forms like doesn't, didn't
    */
-export function fixPartsOfSpeech(
-    pairedList: Pair[],
-    // posList: number[],
-    // wordList: string[]
-): Pair[] {
+export function fixPartsOfSpeech(pairedList: Pair[]): Pair[] {
     for (let i = 0; i < pairedList.length; i++) {
         if (
+            (
+                pairedList[i].name === "don't" ||
+                pairedList[i].name === "doesn't" ||
+                pairedList[i].name === "didn't"
+            ) && (
+                pairedList[i].pos === PartsOfSpeech.RB
+            )
+        ) {
+            pairedList[i].pos = PartsOfSpeech.NEGATION
+
+        } else if (
             (
                 pairedList[i].name === "do" ||
                 pairedList[i].name === "does" ||

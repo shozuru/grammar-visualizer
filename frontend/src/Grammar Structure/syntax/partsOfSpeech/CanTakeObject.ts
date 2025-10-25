@@ -25,7 +25,7 @@ export abstract class CanTakeObject {
             }
             if (nextPair !== undefined) {
                 // element has noun object
-                let [nounPair]: Pair[] = listOfNextWords.splice(i)
+                let [nounPair]: Pair[] = listOfNextWords.splice(i, 1)
                 let nounObject: Noun = new Noun(nounPair.name)
                 if (nounModiferList.length > 0) {
                     // add modifiers to noun

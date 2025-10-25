@@ -80,11 +80,14 @@ export class Sentence {
     //     this.wordInfo = wordList
     // }
 
+    // "I don't want her to let me talk to him directly under the bridge" 
+    // doesn't work
     public generateClauses(): void {
 
         while (this.wordPairs.length > 0) {
 
             let currentPair: Pair | undefined = this.wordPairs.shift()
+            console.log(currentPair)
 
             if (currentPair !== undefined) {
                 if (isNounModifier(currentPair, this.wordPairs)) {
