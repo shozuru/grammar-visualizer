@@ -2,6 +2,8 @@ import { Noun } from "./Noun"
 import { Preposition } from "./Preposition"
 import { Adverb } from "./Adverb"
 import { Verb } from "./Verb"
+import type { Pair } from "../../types/Pair"
+import { PartsOfSpeech } from "../SyntaxConstants"
 
 export class Clause {
 
@@ -36,9 +38,13 @@ export class Clause {
         return null
     }
 
-    public addPredicateModifier(modifier: string): void {
+    public addPredicateModifier(modifier: Pair): void {
         if (this.verb) {
-            this.verb.addTamm(modifier)
+            if (modifier.pos === PartsOfSpeech.VBAGR) {
+                this.verb.addAgr(modifier.name)
+            } else {
+                this.verb.addTamm(modifier.name)
+            }
         }
     }
 

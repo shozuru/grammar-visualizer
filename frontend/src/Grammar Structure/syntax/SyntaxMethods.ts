@@ -27,7 +27,8 @@ export function isVerbModifier(wordPair: Pair): boolean {
         wordPos === PartsOfSpeech.PERFECTIVE ||
         wordPos === PartsOfSpeech.NEGATION ||
         wordPos === PartsOfSpeech.QuestionTense ||
-        wordPos === PartsOfSpeech.MD
+        wordPos === PartsOfSpeech.MD ||
+        wordPos === PartsOfSpeech.VBAGR
     )
 }
 
@@ -245,6 +246,24 @@ export function fixPartsOfSpeech(pairedList: Pair[]): Pair[] {
                 pairedList[i + 1].pos == PartsOfSpeech.VBN
             )) {
             pairedList[i].pos = PartsOfSpeech.PERFECTIVE
+        } else if (
+            (
+                pairedList[i].name === "am" ||
+                pairedList[i].name === "are" ||
+                pairedList[i].name === "is" ||
+                pairedList[i].name === "was" ||
+                pairedList[i].name === "were"
+            ) && (
+                pairedList[i + 1].pos === PartsOfSpeech.VBN
+            )
+        ) {
+            pairedList[i].pos = PartsOfSpeech.VBAGR
+            let ByPhrase: null | number =
+                passiveByPhraseChecker(pairedList.slice(i))
+
+            if (ByPhrase) {
+                pairedList[i + ByPhrase].pos = PartsOfSpeech.PASSIVE
+            }
         }
 
         if ((
@@ -353,10 +372,11 @@ export function addMatrixClauseArguments(
 }
 
 export function addMatrixClauseModifiers(
-    matrixPred: Verb, listOfTamms: string[]
+    matrixPred: Verb, listOfTamms: Pair[]
 ): void {
     while (listOfTamms.length > 0) {
-        let tamm: string = listOfTamms.shift() as string
+        let tammPair: Pair = listOfTamms.shift() as Pair
+        let tamm: string = tammPair.name
         matrixPred.addTamm(tamm)
     }
 }
@@ -393,13 +413,11 @@ export function resolveAdverbAttachment(
     }
 }
 
-export function createNounPhrase(nounPair: Pair, modifiers: string[]): Noun {
+export function createNounPhrase(nounPair: Pair, modifiers: Pair[]): Noun {
     let nounPhrase: Noun = new Noun(nounPair.name)
-    if (modifiers.length > 0) {
-        while (modifiers.length > 0) {
-            let modifier: string = modifiers.pop() as string
-            nounPhrase.addModifier(modifier)
-        }
+    while (modifiers.length > 0) {
+        let modifier: Pair = modifiers.pop() as Pair
+        nounPhrase.addModifier(modifier.name)
     }
     return nounPhrase
 }
@@ -413,4 +431,23 @@ export function createPrepositionalPhrase(
     prepositionalPhrase.tagIfObject(restOfSent)
 
     return prepositionalPhrase
+}
+
+export function passiveByPhraseChecker(
+    listOfPairs: Pair[]
+
+): number | null {
+    let index: number = listOfPairs.length - 1
+
+    if (!isNoun(listOfPairs[index])) {
+        return null
+    }
+    index -= 1
+    while (index >= 0) {
+        if (listOfPairs[index].name === "by") {
+            return index
+        }
+        index -= 1
+    }
+    return null
 }

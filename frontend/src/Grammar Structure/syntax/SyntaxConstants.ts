@@ -51,7 +51,8 @@ export enum PartsOfSpeech {
     PERFECTIVE,
     QuestionTense,
     CAUSATIVE,
-    PASSIVE
+    PASSIVE,
+    VBAGR // agreements of any kind (these will attach to the verb for now)
 }
 
 export enum Case {

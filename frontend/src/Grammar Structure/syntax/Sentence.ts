@@ -6,6 +6,7 @@ import {
     createPrepositionalPhrase,
     fixPartsOfSpeech,
     isAdverb, isCausative, isConjunction, isNoun, isNounModifier,
+    isPassive,
     isPredicate,
     isPreposition,
     isVerbModifier,
@@ -28,9 +29,9 @@ export class Sentence {
     private wordPairs: Pair[]
     private currentPredicate: Verb | null
     private nounStack: Noun[]
-    private nounModStack: string[]
+    private nounModStack: Pair[]
     private adjunctStack: (Preposition | Adverb)[]
-    private predModStack: string[]
+    private predModStack: Pair[]
 
     constructor(pairList: Pair[]) {
         this.wordPairs = fixPartsOfSpeech(pairList)
@@ -80,21 +81,18 @@ export class Sentence {
     //     this.wordInfo = wordList
     // }
 
-    // "I don't want her to let me talk to him directly under the bridge" 
-    // doesn't work
     public generateClauses(): void {
 
         while (this.wordPairs.length > 0) {
 
             let currentPair: Pair | undefined = this.wordPairs.shift()
-            console.log(currentPair)
 
             if (currentPair !== undefined) {
                 if (isNounModifier(currentPair, this.wordPairs)) {
-                    this.nounModStack.push(currentPair.name)
+                    this.nounModStack.push(currentPair)
 
                 } else if (isVerbModifier(currentPair)) {
-                    this.predModStack.push(currentPair.name)
+                    this.predModStack.push(currentPair)
 
                 } else if (
                     this.nounStack.length > 0 &&
@@ -104,6 +102,10 @@ export class Sentence {
                     this.nounStack.push(
                         addCaustiveModifier(agentNoun, currentPair)
                     )
+                } else if (
+                    isPassive(currentPair)
+                ) {
+                    this.nounModStack.push(currentPair)
                 } else if (
                     currentPair.pos === PartsOfSpeech.QuestionTense
                 ) {
@@ -128,6 +130,7 @@ export class Sentence {
                     this.numberOfClauses += 1
 
                 } else if (isNoun(currentPair)) {
+
                     let nPhrase: Noun =
                         createNounPhrase(
                             currentPair,
@@ -205,6 +208,9 @@ export class Sentence {
             currentPred,
             this.predModStack
         )
-        this.predModStack.push("inf")
+
+        this.predModStack.push(
+            { pos: PartsOfSpeech.VBAGR, name: "inf" }
+        )
     }
 }

@@ -8,6 +8,7 @@ export class Verb extends CanTakeObject {
     // private patient: Noun | null
     private name: string
     private tammList: string[]
+    private agrList: string[]
 
     constructor(name: string) {
         super()
@@ -16,6 +17,7 @@ export class Verb extends CanTakeObject {
         // this.experiencer = null
         // this.patient = null
         this.tammList = []
+        this.agrList = []
     }
 
     public getName(): string {
@@ -77,6 +79,11 @@ export class Verb extends CanTakeObject {
         return this.tammList
     }
 
-    public handleAgreement(modifier: string): void {
+    public getAgrList(): string[] {
+        return this.agrList
+    }
+
+    public addAgr(agr: string): void {
+        this.agrList.push(agr)
     }
 }
