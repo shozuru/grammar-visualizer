@@ -16,8 +16,6 @@ export class GrammarVisualizer {
         this.sentence = new Sentence(
             this.sentencePairsList
         )
-
-        // this.sentence.uncontractSent() // experiment with not doing this 
         this.sentence.generateClauses()
 
         console.log(

@@ -47,40 +47,6 @@ export class Sentence {
 
     }
 
-    // public uncontractSent(): void {
-    //     let posList: number[] = this.posInfo
-    //     let wordList: string[] = this.wordInfo
-
-    //     let alignedWordList: string[] = []
-
-    //     // for (const word of wordList) {
-    //     //     if (word === "didn't") {
-    //     //         alignedWordList.push("did")
-    //     //         alignedWordList.push("n't")
-    //     //     } else if (word === "doesn't") {
-    //     //         alignedWordList.push("does")
-    //     //         alignedWordList.push("n't")
-    //     //     } else if (word === "don't") {
-    //     //         alignedWordList.push("do")
-    //     //         alignedWordList.push("n't")
-    //     //     } else if (word === "haven't") {
-    //     //         alignedWordList.push("have")
-    //     //         alignedWordList.push("n't")
-    //     //     } else if (word === "hasn't") {
-    //     //         alignedWordList.push("has")
-    //     //         alignedWordList.push("n't")
-    //     //     } else if (word === "hadn't") {
-    //     //         alignedWordList.push("had")
-    //     //         alignedWordList.push("n't")
-    //     //     } else {
-    //     //         alignedWordList.push(word)
-    //     //     }
-    //     // }
-
-    //     this.posInfo = posList
-    //     this.wordInfo = wordList
-    // }
-
     public generateClauses(): void {
 
         while (this.wordPairs.length > 0) {
@@ -208,7 +174,6 @@ export class Sentence {
             currentPred,
             this.predModStack
         )
-
         this.predModStack.push(
             { pos: PartsOfSpeech.VBAGR, name: "inf" }
         )

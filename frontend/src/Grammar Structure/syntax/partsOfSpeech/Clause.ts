@@ -12,7 +12,6 @@ export class Clause {
     private adjunctList: (Adverb | Preposition)[]
 
     private causativeNoun: Noun | null
-    private passiveNoun: Noun | null
 
     constructor() {
         this.verb = null
@@ -20,7 +19,6 @@ export class Clause {
         this.adjunctList = []
 
         this.causativeNoun = null
-        this.passiveNoun = null
     }
 
     public getPredicate(): Verb | null {
@@ -78,13 +76,5 @@ export class Clause {
 
     public setCausativeNoun(noun: Noun): void {
         this.causativeNoun = noun
-    }
-
-    public getPassiveNoun(): Noun | null {
-        return this.passiveNoun
-    }
-
-    public setPassiveNoun(noun: Noun): void {
-        this.passiveNoun = noun
     }
 }
