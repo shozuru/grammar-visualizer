@@ -46,6 +46,20 @@ export class GrammarVisualizer {
 // identify the subjects and objects that go with each clause
 
 // account for things like questions, relative clauses, passive 
+
+// the movie has been watched by (everyone [that is] in the room)
+// the amazing movie --> the movie that is amazing
+// the movie (that) i saw
+// the person who i knew --> the person that I knew
+
+// account for adjectives
+// I made the game (be) easier
+
+// he was used to win (by me)
+// I wanted the book to be written
+// in both cases the BE form occurs before the second verb, and when the second 
+// verb is procesed, the BE is added to the correct clause
+
 // make sure that the main predicate is the verb and not progessive or perfective aspects
 
 // experiencer verbs might be super limited

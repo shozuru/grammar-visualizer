@@ -178,12 +178,15 @@ export function fixPartsOfSpeech(pairedList: Pair[]): Pair[] {
                 pairedList[i].name === "are" ||
                 pairedList[i].name === "is" ||
                 pairedList[i].name === "was" ||
-                pairedList[i].name === "were"
+                pairedList[i].name === "were" ||
+                pairedList[i].name === "been" ||
+                pairedList[i].name === "be"
             ) && (
                 pairedList[i + 1].pos === PartsOfSpeech.VBN
             )
         ) {
             pairedList[i].pos = PartsOfSpeech.VBAGR
+
             let index: null | number =
                 passiveByPhraseIndex(pairedList.slice(i))
 
@@ -381,6 +384,11 @@ export function isRelativeClause(wordPair: Pair): boolean {
     return false
 }
 
+export function isVerbAgr(wordPair: Pair): boolean {
+    let wordPos: number = wordPair.pos
+    return wordPos === PartsOfSpeech.VBAGR
+}
+
 export function isVerbModifier(wordPair: Pair): boolean {
     let wordPos: number = wordPair.pos
     return (
@@ -388,8 +396,7 @@ export function isVerbModifier(wordPair: Pair): boolean {
         wordPos === PartsOfSpeech.PERFECTIVE ||
         wordPos === PartsOfSpeech.NEGATION ||
         wordPos === PartsOfSpeech.QuestionTense ||
-        wordPos === PartsOfSpeech.MD ||
-        wordPos === PartsOfSpeech.VBAGR
+        wordPos === PartsOfSpeech.MD
     )
 }
 

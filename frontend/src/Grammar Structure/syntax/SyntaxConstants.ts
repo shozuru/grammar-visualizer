@@ -46,6 +46,7 @@ export enum PartsOfSpeech {
     XX,
 
     // Constants that the model doesn't use but that I am
+    VBINF, // verbs that are nonfinite
     TENSE,
     NEGATION,
     PERFECTIVE,

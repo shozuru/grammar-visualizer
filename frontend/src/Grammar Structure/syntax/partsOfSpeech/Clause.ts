@@ -77,4 +77,17 @@ export class Clause {
     public setCausativeNoun(noun: Noun): void {
         this.causativeNoun = noun
     }
+
+    public getVerbAgrs(): String[] {
+        if (this.verb) {
+            return this.verb.getAgrList()
+        }
+        return []
+    }
+
+    public addVerbAgr(agr: Pair): void {
+        if (this.verb) {
+            this.verb.addAgr(agr.name)
+        }
+    }
 }

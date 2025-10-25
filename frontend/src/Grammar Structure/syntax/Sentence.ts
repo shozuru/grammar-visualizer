@@ -9,6 +9,7 @@ import {
     isPassive,
     isPredicate,
     isPreposition,
+    isVerbAgr,
     isVerbModifier,
     resolveAdverbAttachment,
 } from "./SyntaxMethods"
@@ -28,7 +29,9 @@ export class Sentence {
 
     private wordPairs: Pair[]
     private currentPredicate: Verb | null
+    private verbAgrStack: Pair[]
     private nounStack: Noun[]
+    private NounAgrStack: Pair[]
     private nounModStack: Pair[]
     private adjunctStack: (Preposition | Adverb)[]
     private predModStack: Pair[]
@@ -40,9 +43,11 @@ export class Sentence {
         this.numberOfClauses = 0
         this.wordPairs = pairList
         this.currentPredicate = null
+        this.verbAgrStack = []
         this.predModStack = []
         this.nounStack = []
         this.nounModStack = []
+        this.NounAgrStack = []
         this.adjunctStack = []
 
     }
@@ -59,6 +64,9 @@ export class Sentence {
 
                 } else if (isVerbModifier(currentPair)) {
                     this.predModStack.push(currentPair)
+
+                } else if (isVerbAgr(currentPair)) {
+                    this.verbAgrStack.push(currentPair)
 
                 } else if (
                     this.nounStack.length > 0 &&
@@ -120,6 +128,7 @@ export class Sentence {
                     this.nounStack = []
                     this.adjunctStack = []
                     this.currentPredicate = null
+                    this.verbAgrStack = []
 
                 } else if (
                     isPreposition(currentPair) &&
@@ -159,6 +168,10 @@ export class Sentence {
                 completeClause.addPredicateModifier(modifier)
             }
 
+            for (const agr of this.verbAgrStack) {
+                completeClause.addVerbAgr(agr)
+            }
+
             this.clauses.push(completeClause)
         }
     }
@@ -175,7 +188,7 @@ export class Sentence {
             this.predModStack
         )
         this.predModStack.push(
-            { pos: PartsOfSpeech.VBAGR, name: "inf" }
+            { pos: PartsOfSpeech.VBINF, name: "inf" }
         )
     }
 }
