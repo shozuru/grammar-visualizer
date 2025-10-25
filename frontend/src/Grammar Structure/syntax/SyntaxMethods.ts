@@ -9,155 +9,71 @@ import {
     raisingVerbs
 } from "./SyntaxConstants"
 
-export function isNoun(wordPair: Pair): boolean {
-    let currentPOS: number = wordPair.pos
-    return (currentPOS === PartsOfSpeech.NN ||
-        currentPOS === PartsOfSpeech.NNS ||
-        currentPOS === PartsOfSpeech.NNP ||
-        currentPOS === PartsOfSpeech.NNPS ||
-        currentPOS === PartsOfSpeech.PRP ||
-        currentPOS === PartsOfSpeech.FW
-    )
+
+
+export function addCaustiveModifier(
+    agentNoun: Noun,
+    causativePair: Pair
+): Noun {
+    agentNoun.addModifier(causativePair.name)
+    return agentNoun
 }
 
-export function isVerbModifier(wordPair: Pair): boolean {
-    let wordPos: number = wordPair.pos
-    return (
-        wordPos === PartsOfSpeech.TENSE ||
-        wordPos === PartsOfSpeech.PERFECTIVE ||
-        wordPos === PartsOfSpeech.NEGATION ||
-        wordPos === PartsOfSpeech.QuestionTense ||
-        wordPos === PartsOfSpeech.MD ||
-        wordPos === PartsOfSpeech.VBAGR
-    )
-}
+export function addMatrixClauseArguments(
+    matrixPredicate: Verb,
+    nounArguments: Noun[]
+): Clause {
 
-export function isNounModifier(wordPair: Pair, restOfSent: Pair[]): boolean {
-    let currentPOS: number = wordPair.pos
-    return (
-        currentPOS === PartsOfSpeech.DT ||
-        currentPOS === PartsOfSpeech.PRPQ ||
+    let matrixClause: Clause = new Clause()
+    matrixClause.setPredicate(matrixPredicate)
+    if (
+        nounArguments[0].getModifiers().includes("make") ||
+        nounArguments[0].getModifiers().includes("made") ||
+        nounArguments[0].getModifiers().includes("let")
+    ) {
+        let agentNoun: Noun = nounArguments.shift() as Noun
+        matrixClause.setCausativeNoun(agentNoun)
+    }
+
+    if (
+        hasMultipleNouns(nounArguments) &&
         (
-            currentPOS === PartsOfSpeech.NNP &&
-            restOfSent[0].pos === PartsOfSpeech.NN
+            // I expected him to win
+            isRaisingVerb(matrixPredicate) ||
+            // I saw him win
+            isECMVerb(matrixPredicate)
         )
-    )
-}
-
-export function isCausative(wordPair: Pair): boolean {
-    if (
-        wordPair.pos === PartsOfSpeech.CAUSATIVE
     ) {
-        return true
-    }
-    return false
-}
-
-export function isPassive(wordPair: Pair): boolean {
-    if (
-        wordPair.pos === PartsOfSpeech.PASSIVE
+        // move first noun to matrix clause
+        let matrixSubject: Noun = nounArguments.shift() as Noun
+        matrixClause.addNounToClause(matrixSubject)
+    } else if (
+        // I asked him to win
+        hasMultipleNouns(nounArguments) &&
+        isObjectControl(matrixPredicate)
     ) {
-        return true
-    }
-    return false
-}
-
-export function isAdverb(wordPair: Pair): boolean {
-    let currentPOS: number = wordPair.pos
-    return (
-        currentPOS === PartsOfSpeech.RB ||
-        currentPOS === PartsOfSpeech.RBR ||
-        currentPOS === PartsOfSpeech.RBS
-    )
-}
-
-export function isPreposition(wordPair: Pair): boolean {
-    let currentPOS: number = wordPair.pos
-    return currentPOS === PartsOfSpeech.IN
-}
-
-export function isPredicate(
-    wordPair: Pair,
-    restOfSent: Pair[]
-): boolean {
-
-    let currentPOS: number = wordPair.pos
-
-    if (
-        currentPOS === PartsOfSpeech.VB ||
-        currentPOS === PartsOfSpeech.VBD ||
-        currentPOS === PartsOfSpeech.VBN ||
-        currentPOS === PartsOfSpeech.VBP ||
-        currentPOS === PartsOfSpeech.VBZ ||
-        ((
-            currentPOS === PartsOfSpeech.JJ ||
-            currentPOS === PartsOfSpeech.JJR ||
-            currentPOS === PartsOfSpeech.JJS
-        ) && (
-                restOfSent.length > 0 &&
-                (
-                    restOfSent[0].pos === PartsOfSpeech.NN ||
-                    restOfSent[0].pos === PartsOfSpeech.NNS
-                )
-            ))
+        addNounsToObjectControlPred(matrixClause, nounArguments)
+    } else if (
+        // I used him to win
+        hasMultipleNouns(nounArguments)
     ) {
-        return true
+        addNounsToSubjectControlPred(matrixClause, nounArguments)
+    } else {
+        // copy subject to matrix clause
+        let matrixSubject: Noun = nounArguments[0]
+        matrixClause.addNounToClause(matrixSubject)
     }
-    return false
+    return matrixClause
 }
 
-export function isConjunction(wordPair: Pair): boolean {
-    let currentPOS: number = wordPair.pos
-    let currentWord: string = wordPair.name
-
-    return (
-        (currentPOS === PartsOfSpeech.IN ||
-            currentPOS === PartsOfSpeech.CC ||
-            currentPOS === PartsOfSpeech.WR
-        ) && (
-            conjunctions.has(currentWord)
-        )
-    )
-}
-
-export function isRelativeClause(wordPair: Pair): boolean {
-    return false
-}
-
-export function hasMultipleNouns(nounList: Noun[]): boolean {
-    return nounList.length > 1
-}
-
-export function isObjectControl(matrixPred: Verb): boolean {
-    return (
-        Array
-            .from(objectControlVerbs)
-            .some(item => matrixPred
-                .getName()
-                .includes(item))
-    )
-}
-
-export function isRaisingVerb(matrixPred: Verb): boolean {
-    return (
-        Array
-            .from(raisingVerbs)
-            .some(item => matrixPred
-                .getName()
-                .includes(item)
-            )
-    )
-}
-
-export function isECMVerb(matrixPred: Verb): boolean {
-    return (
-        Array
-            .from(ecmVerbs)
-            .some(item => matrixPred
-                .getName()
-                .includes(item)
-            )
-    )
+export function addMatrixClauseModifiers(
+    matrixPred: Verb, listOfTamms: Pair[]
+): void {
+    while (listOfTamms.length > 0) {
+        let tammPair: Pair = listOfTamms.shift() as Pair
+        let tamm: string = tammPair.name
+        matrixPred.addTamm(tamm)
+    }
 }
 
 export function addNounsToObjectControlPred(
@@ -184,18 +100,28 @@ export function addNounsToSubjectControlPred(
     matrixClause.addNounToClause(matrixObject)
 }
 
-export function uncontractVerbalModifiers(modifier: string): string[] {
-    if (modifier === "didn't") {
-        return ["did", "not"]
-    } else {
-        return [modifier]
+export function createNounPhrase(nounPair: Pair, modifiers: Pair[]): Noun {
+    let nounPhrase: Noun = new Noun(nounPair.name)
+    while (modifiers.length > 0) {
+        let modifier: Pair = modifiers.pop() as Pair
+        nounPhrase.addModifier(modifier.name)
     }
+    return nounPhrase
+}
+
+export function createPrepositionalPhrase(
+    prepositionPair: Pair,
+    restOfSent: Pair[]
+): Preposition {
+    let prepositionalPhrase: Preposition =
+        new Preposition(prepositionPair.name)
+    prepositionalPhrase.tagIfObject(restOfSent)
+
+    return prepositionalPhrase
 }
 
 /**
    * should probably break this up into smaller functions
-   * this doesn't work for words like 'don't' (RB), which should be Present tense + negation
-   * Most likely doesn't work for other forms like doesn't, didn't
    */
 export function fixPartsOfSpeech(pairedList: Pair[]): Pair[] {
     for (let i = 0; i < pairedList.length; i++) {
@@ -316,69 +242,174 @@ export function fixPartsOfSpeech(pairedList: Pair[]): Pair[] {
     return pairedList
 }
 
-export function addCaustiveModifier(
-    agentNoun: Noun,
-    causativePair: Pair
-): Noun {
-    agentNoun.addModifier(causativePair.name)
-    return agentNoun
+export function hasMultipleNouns(nounList: Noun[]): boolean {
+    return nounList.length > 1
 }
 
-export function addMatrixClauseArguments(
-    matrixPredicate: Verb,
-    nounArguments: Noun[]
-): Clause {
+export function isAdverb(wordPair: Pair): boolean {
+    let currentPOS: number = wordPair.pos
+    return (
+        currentPOS === PartsOfSpeech.RB ||
+        currentPOS === PartsOfSpeech.RBR ||
+        currentPOS === PartsOfSpeech.RBS
+    )
+}
 
-    let matrixClause: Clause = new Clause()
-    matrixClause.setPredicate(matrixPredicate)
+export function isCausative(wordPair: Pair): boolean {
     if (
-        nounArguments[0].getModifiers().includes("make") ||
-        nounArguments[0].getModifiers().includes("made") ||
-        nounArguments[0].getModifiers().includes("let")
+        wordPair.pos === PartsOfSpeech.CAUSATIVE
     ) {
-        let agentNoun: Noun = nounArguments.shift() as Noun
-        matrixClause.setCausativeNoun(agentNoun)
+        return true
     }
+    return false
+}
 
-    if (
-        hasMultipleNouns(nounArguments) &&
-        (
-            // I expected him to win
-            isRaisingVerb(matrixPredicate) ||
-            // I saw him win
-            isECMVerb(matrixPredicate)
+export function isConjunction(wordPair: Pair): boolean {
+    let currentPOS: number = wordPair.pos
+    let currentWord: string = wordPair.name
+
+    return (
+        (currentPOS === PartsOfSpeech.IN ||
+            currentPOS === PartsOfSpeech.CC ||
+            currentPOS === PartsOfSpeech.WR
+        ) && (
+            conjunctions.has(currentWord)
         )
-    ) {
-        // move first noun to matrix clause
-        let matrixSubject: Noun = nounArguments.shift() as Noun
-        matrixClause.addNounToClause(matrixSubject)
-    } else if (
-        // I asked him to win
-        hasMultipleNouns(nounArguments) &&
-        isObjectControl(matrixPredicate)
-    ) {
-        addNounsToObjectControlPred(matrixClause, nounArguments)
-    } else if (
-        // I used him to win
-        hasMultipleNouns(nounArguments)
-    ) {
-        addNounsToSubjectControlPred(matrixClause, nounArguments)
-    } else {
-        // copy subject to matrix clause
-        let matrixSubject: Noun = nounArguments[0]
-        matrixClause.addNounToClause(matrixSubject)
-    }
-    return matrixClause
+    )
 }
 
-export function addMatrixClauseModifiers(
-    matrixPred: Verb, listOfTamms: Pair[]
-): void {
-    while (listOfTamms.length > 0) {
-        let tammPair: Pair = listOfTamms.shift() as Pair
-        let tamm: string = tammPair.name
-        matrixPred.addTamm(tamm)
+export function isECMVerb(matrixPred: Verb): boolean {
+    return (
+        Array
+            .from(ecmVerbs)
+            .some(item => matrixPred
+                .getName()
+                .includes(item)
+            )
+    )
+}
+
+export function isNoun(wordPair: Pair): boolean {
+    let currentPOS: number = wordPair.pos
+    return (currentPOS === PartsOfSpeech.NN ||
+        currentPOS === PartsOfSpeech.NNS ||
+        currentPOS === PartsOfSpeech.NNP ||
+        currentPOS === PartsOfSpeech.NNPS ||
+        currentPOS === PartsOfSpeech.PRP ||
+        currentPOS === PartsOfSpeech.FW
+    )
+}
+
+export function isNounModifier(wordPair: Pair, restOfSent: Pair[]): boolean {
+    let currentPOS: number = wordPair.pos
+    return (
+        currentPOS === PartsOfSpeech.DT ||
+        currentPOS === PartsOfSpeech.PRPQ ||
+        (
+            currentPOS === PartsOfSpeech.NNP &&
+            restOfSent[0].pos === PartsOfSpeech.NN
+        )
+    )
+}
+
+export function isObjectControl(matrixPred: Verb): boolean {
+    return (
+        Array
+            .from(objectControlVerbs)
+            .some(item => matrixPred
+                .getName()
+                .includes(item))
+    )
+}
+
+export function isPassive(wordPair: Pair): boolean {
+    if (
+        wordPair.pos === PartsOfSpeech.PASSIVE
+    ) {
+        return true
     }
+    return false
+}
+
+export function isPredicate(
+    wordPair: Pair,
+    restOfSent: Pair[]
+): boolean {
+
+    let currentPOS: number = wordPair.pos
+
+    if (
+        currentPOS === PartsOfSpeech.VB ||
+        currentPOS === PartsOfSpeech.VBD ||
+        currentPOS === PartsOfSpeech.VBN ||
+        currentPOS === PartsOfSpeech.VBP ||
+        currentPOS === PartsOfSpeech.VBZ ||
+        ((
+            currentPOS === PartsOfSpeech.JJ ||
+            currentPOS === PartsOfSpeech.JJR ||
+            currentPOS === PartsOfSpeech.JJS
+        ) && (
+                restOfSent.length > 0 &&
+                (
+                    restOfSent[0].pos === PartsOfSpeech.NN ||
+                    restOfSent[0].pos === PartsOfSpeech.NNS
+                )
+            ))
+    ) {
+        return true
+    }
+    return false
+}
+
+export function isPreposition(wordPair: Pair): boolean {
+    let currentPOS: number = wordPair.pos
+    return currentPOS === PartsOfSpeech.IN
+}
+
+export function isRaisingVerb(matrixPred: Verb): boolean {
+    return (
+        Array
+            .from(raisingVerbs)
+            .some(item => matrixPred
+                .getName()
+                .includes(item)
+            )
+    )
+}
+
+export function isRelativeClause(wordPair: Pair): boolean {
+    return false
+}
+
+export function isVerbModifier(wordPair: Pair): boolean {
+    let wordPos: number = wordPair.pos
+    return (
+        wordPos === PartsOfSpeech.TENSE ||
+        wordPos === PartsOfSpeech.PERFECTIVE ||
+        wordPos === PartsOfSpeech.NEGATION ||
+        wordPos === PartsOfSpeech.QuestionTense ||
+        wordPos === PartsOfSpeech.MD ||
+        wordPos === PartsOfSpeech.VBAGR
+    )
+}
+
+export function passiveByPhraseChecker(
+    listOfPairs: Pair[]
+
+): number | null {
+    let index: number = listOfPairs.length - 1
+
+    if (!isNoun(listOfPairs[index])) {
+        return null
+    }
+    index -= 1
+    while (index >= 0) {
+        if (listOfPairs[index].name === "by") {
+            return index
+        }
+        index -= 1
+    }
+    return null
 }
 
 export function resolveAdverbAttachment(
@@ -413,41 +444,10 @@ export function resolveAdverbAttachment(
     }
 }
 
-export function createNounPhrase(nounPair: Pair, modifiers: Pair[]): Noun {
-    let nounPhrase: Noun = new Noun(nounPair.name)
-    while (modifiers.length > 0) {
-        let modifier: Pair = modifiers.pop() as Pair
-        nounPhrase.addModifier(modifier.name)
+export function uncontractVerbalModifiers(modifier: string): string[] {
+    if (modifier === "didn't") {
+        return ["did", "not"]
+    } else {
+        return [modifier]
     }
-    return nounPhrase
-}
-
-export function createPrepositionalPhrase(
-    prepositionPair: Pair,
-    restOfSent: Pair[]
-): Preposition {
-    let prepositionalPhrase: Preposition =
-        new Preposition(prepositionPair.name)
-    prepositionalPhrase.tagIfObject(restOfSent)
-
-    return prepositionalPhrase
-}
-
-export function passiveByPhraseChecker(
-    listOfPairs: Pair[]
-
-): number | null {
-    let index: number = listOfPairs.length - 1
-
-    if (!isNoun(listOfPairs[index])) {
-        return null
-    }
-    index -= 1
-    while (index >= 0) {
-        if (listOfPairs[index].name === "by") {
-            return index
-        }
-        index -= 1
-    }
-    return null
 }
