@@ -1,9 +1,10 @@
+import type { Mod } from "../Mod"
 import type { Case } from "../SyntaxConstants"
 
 export class Noun {
 
     private case: Case | null
-    private modifiers: string[]
+    private modifiers: Mod[]
     private name: string
 
     constructor(name: string) {
@@ -32,11 +33,11 @@ export class Noun {
         this.case = c
     }
 
-    public getModifiers(): string[] {
+    public getModifiers(): Mod[] {
         return this.modifiers
     }
 
-    public addModifier(modifier: string): void {
-        this.modifiers.push(modifier)
+    public addModifier(mod: Mod): void {
+        this.modifiers.push(mod)
     }
 }

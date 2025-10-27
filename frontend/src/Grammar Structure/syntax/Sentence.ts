@@ -29,7 +29,7 @@ export class Sentence {
     private predAgrStack: Agr[]
 
     private nounStack: Noun[]
-    private nounModStack: Pair[]
+    private nounModStack: Mod[]
     private nounAgrStack: Pair[]
 
     private adjunctStack: (Preposition | Adverb)[]
@@ -65,7 +65,7 @@ export class Sentence {
 
             if (currentPair !== undefined) {
                 if (isNounModifier(currentPair, this.wordPairs)) {
-                    this.nounModStack.push(currentPair)
+                    this.nounModStack.push(new Mod(currentPair))
 
                 } else if (isAdverbMod(currentPair)) {
                     this.adverbModStack.push(new Mod(currentPair))
@@ -90,7 +90,7 @@ export class Sentence {
                 } else if (
                     isPassive(currentPair)
                 ) {
-                    this.nounModStack.push(currentPair)
+                    this.nounModStack.push(new Mod(currentPair))
                 } else if (
                     currentPair.pos === PartsOfSpeech.QuestionTense
                 ) {
@@ -163,10 +163,11 @@ export class Sentence {
             completeClause.setPredicate(this.currentPredicate)
 
             for (const noun of this.nounStack) {
-                if (
-                    noun.getModifiers().includes("made") ||
-                    noun.getModifiers().includes("make") ||
-                    noun.getModifiers().includes("let")
+                if (noun.getModifiers().some(
+                    mod =>
+                        mod.getName() === "made" ||
+                        mod.getName() === "make" ||
+                        mod.getName() === "let")
                 ) {
                     completeClause.setCausativeNoun(noun)
                 } else {

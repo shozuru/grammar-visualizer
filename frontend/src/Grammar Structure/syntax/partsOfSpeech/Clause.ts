@@ -76,12 +76,12 @@ export class Clause {
         this.adjunctList.push(adjunct)
     }
 
-    public getNounModifiers(noun: Noun): string[] {
+    public getNounModifiers(noun: Noun): Mod[] {
         return noun.getModifiers()
     }
 
-    public addNounModifier(noun: Noun, modifier: string): void {
-        noun.addModifier(modifier)
+    public addNounModifier(noun: Noun, mod: Mod): void {
+        noun.addModifier(mod)
     }
 
     public getCausativeNoun(): Noun | null {

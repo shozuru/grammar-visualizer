@@ -16,7 +16,7 @@ export function addCaustiveModifier(
     agentNoun: Noun,
     causativePair: Pair
 ): Noun {
-    agentNoun.addModifier(causativePair.name)
+    agentNoun.addModifier(new Mod(causativePair))
     return agentNoun
 }
 
@@ -28,9 +28,13 @@ export function addMatrixClauseArguments(
     let matrixClause: Clause = new Clause()
     matrixClause.setPredicate(matrixPredicate)
     if (
-        nounArguments[0].getModifiers().includes("make") ||
-        nounArguments[0].getModifiers().includes("made") ||
-        nounArguments[0].getModifiers().includes("let")
+        nounArguments[0]
+            .getModifiers()
+            .some(mod =>
+                mod.getName() === "make" ||
+                mod.getName() === "made" ||
+                mod.getName() === "let"
+            )
     ) {
         let agentNoun: Noun = nounArguments.shift() as Noun
         matrixClause.setCausativeNoun(agentNoun)
@@ -117,11 +121,11 @@ export function addNounsToSubjectControlPred(
     matrixClause.addNounToClause(matrixObject)
 }
 
-export function createNounPhrase(nounPair: Pair, modifiers: Pair[]): Noun {
+export function createNounPhrase(nounPair: Pair, modifiers: Mod[]): Noun {
     let nounPhrase: Noun = new Noun(nounPair.name)
     while (modifiers.length > 0) {
-        let modifier: Pair = modifiers.pop() as Pair
-        nounPhrase.addModifier(modifier.name)
+        let mod: Mod = modifiers.pop() as Mod
+        nounPhrase.addModifier(mod)
     }
     return nounPhrase
 }
