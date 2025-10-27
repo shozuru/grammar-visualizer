@@ -98,6 +98,8 @@ export class Sentence {
                     this.adjunctStack.push(questionModifier)
 
                 } else if (isAdverb(currentPair)) {
+                    this.addModsIfPresent(currentPair)
+
                     let currentAdverb: Adverb = new Adverb(currentPair.name)
                     this.handleAdverbModsAndArgs(currentAdverb)
                     let modPhrase: Preposition | Adverb =
@@ -235,6 +237,28 @@ export class Sentence {
             for (const agr of this.adverbAgrStack) {
                 adverb.addAdverbAgr(agr)
             }
+        }
+    }
+
+    private addModsIfPresent(adverbPair: Pair): void {
+        if (adverbPair.pos === PartsOfSpeech.RBS) {
+            this.adverbModStack.push(
+                new Mod(
+                    {
+                        name: "superlative",
+                        pos: PartsOfSpeech.SUPERLATIVE
+                    }
+                )
+            )
+        } else if (adverbPair.pos === PartsOfSpeech.RBR) {
+            this.adverbModStack.push(
+                new Mod(
+                    {
+                        name: "comparative",
+                        pos: PartsOfSpeech.COMPARATIVE
+                    }
+                )
+            )
         }
     }
 }

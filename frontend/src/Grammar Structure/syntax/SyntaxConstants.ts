@@ -56,7 +56,8 @@ export enum PartsOfSpeech {
     PsvAgr,
     InfAgr,
     AdvAgr,
-    SUPERLATIVE
+    SUPERLATIVE,
+    COMPARATIVE
 }
 
 export enum Case {
