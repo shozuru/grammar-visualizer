@@ -38,8 +38,10 @@ export class Clause {
 
     public addPredicateModifier(modifier: Pair): void {
         if (this.verb) {
-            if (modifier.pos === PartsOfSpeech.VBAGR) {
-                this.verb.addAgr(modifier.name)
+            if (modifier.pos === PartsOfSpeech.PsvAgr ||
+                modifier.pos === PartsOfSpeech.InfAgr
+            ) {
+                this.verb.addAgr(modifier)
             } else {
                 this.verb.addTamm(modifier.name)
             }
@@ -77,8 +79,12 @@ export class Clause {
     public setCausativeNoun(noun: Noun): void {
         this.causativeNoun = noun
     }
-
-    public getVerbAgrs(): String[] {
+    /**
+     * gets list of strings that are agreement markers of this clause's 
+     * predicate if there is a main predicate
+     * @returns list of agreement markers as strings
+     */
+    public getVerbAgrs(): Pair[] {
         if (this.verb) {
             return this.verb.getAgrList()
         }
@@ -87,7 +93,7 @@ export class Clause {
 
     public addVerbAgr(agr: Pair): void {
         if (this.verb) {
-            this.verb.addAgr(agr.name)
+            this.verb.addAgr(agr)
         }
     }
 }

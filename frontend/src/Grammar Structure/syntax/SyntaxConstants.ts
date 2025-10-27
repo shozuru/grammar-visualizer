@@ -53,7 +53,8 @@ export enum PartsOfSpeech {
     QuestionTense,
     CAUSATIVE,
     PASSIVE,
-    VBAGR // agreements of any kind (these will attach to the verb for now)
+    PsvAgr,
+    InfAgr
 }
 
 export enum Case {

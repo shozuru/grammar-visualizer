@@ -11,8 +11,7 @@ import {
     isPreposition,
     isVerbAgr,
     isVerbModifier,
-    removeInfAgr,
-    removePassiveAgr,
+    removeAgr,
     resolveAdverbAttachment,
 } from "./SyntaxMethods"
 import { Adverb } from "./partsOfSpeech/Adverb"
@@ -198,14 +197,14 @@ export class Sentence {
     private handlePreVerbAgrs(): void {
         if (this.currentPredicate) {
             let passiveAgr: Pair | null =
-                removePassiveAgr(this.verbAgrStack)
+                removeAgr(this.verbAgrStack, PartsOfSpeech.PsvAgr)
             let infAgr: Pair | null =
-                removeInfAgr(this.verbAgrStack)
+                removeAgr(this.verbAgrStack, PartsOfSpeech.InfAgr)
             if (passiveAgr) {
-                this.currentPredicate.addAgr(passiveAgr.name)
+                this.currentPredicate.addAgr(passiveAgr)
             }
             if (infAgr) {
-                this.currentPredicate.addAgr(infAgr.name)
+                this.currentPredicate.addAgr(infAgr)
             }
         }
     }

@@ -58,17 +58,6 @@ export class GrammarVisualizer {
 // he was used to win (by me)
 // I wanted the book to be written
 
-// He was used to win 
-// this incorrectly puts 'he' as a noun for to win even though it's not 
-
-// if it is subject control with passive, the surface subject should be popped 
-// onto the matrix clause, not simply copied onto it (which is the default
-// behavior)
-
-
-
-
-
 // experiencer verbs might be super limited
 // determining if intransitive verb is unaccusative or unergative might prove more challenging
 // might want to look into an ML model that can classify it or make one yourself

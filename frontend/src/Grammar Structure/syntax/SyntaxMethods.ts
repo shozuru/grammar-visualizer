@@ -58,6 +58,14 @@ export function addMatrixClauseArguments(
         hasMultipleNouns(nounArguments)
     ) {
         addNounsToSubjectControlPred(matrixClause, nounArguments)
+    } else if (
+        matrixClause
+            .getVerbAgrs()
+            .some((pair) => pair.pos === PartsOfSpeech.PsvAgr)
+    ) {
+        let matrixSubject: Noun = nounArguments.shift() as Noun
+        matrixClause.addNounToClause(matrixSubject)
+
     } else {
         // copy subject to matrix clause
         let matrixSubject: Noun = nounArguments[0]
@@ -176,7 +184,7 @@ export function fixPartsOfSpeech(pairedList: Pair[]): Pair[] {
             isBeVerb(pairedList[i]) &&
             pairedList[i + 1].pos === PartsOfSpeech.VBN
         ) {
-            pairedList[i].pos = PartsOfSpeech.VBAGR
+            pairedList[i].pos = PartsOfSpeech.PsvAgr
 
             let index: null | number =
                 passiveByPhraseIndex(pairedList.slice(i))
@@ -231,6 +239,12 @@ export function fixPartsOfSpeech(pairedList: Pair[]): Pair[] {
             )
         ) {
             pairedList[i].pos = PartsOfSpeech.CAUSATIVE
+        }
+        else if (
+            pairedList[i].pos === PartsOfSpeech.TO &&
+            pairedList[i].name === "to"
+        ) {
+            pairedList[i].pos = PartsOfSpeech.InfAgr
         }
     }
     return pairedList
@@ -394,7 +408,8 @@ export function isRelativeClause(wordPair: Pair): boolean {
 export function isVerbAgr(wordPair: Pair): boolean {
     let wordPos: number = wordPair.pos
     return (
-        wordPos === PartsOfSpeech.VBAGR ||
+        wordPos === PartsOfSpeech.PsvAgr ||
+        wordPos === PartsOfSpeech.InfAgr ||
         wordPos === PartsOfSpeech.TO
     )
 }
@@ -429,20 +444,9 @@ export function passiveByPhraseIndex(
     return null
 }
 
-export function removeInfAgr(verbAgrStack: Pair[]): Pair | null {
+export function removeAgr(verbAgrStack: Pair[], agrPos: PartsOfSpeech) {
     for (let i = 0; i < verbAgrStack.length; i++) {
-        if (verbAgrStack[i].pos === PartsOfSpeech.TO) {
-            return verbAgrStack.splice(i, 1)[0]
-        }
-    }
-    return null
-}
-
-export function removePassiveAgr(verbAgrStack: Pair[]): Pair | null {
-    for (let i = 0; i < verbAgrStack.length; i++) {
-        if (verbAgrStack[i].pos === PartsOfSpeech.VBAGR &&
-            isBeVerb(verbAgrStack[i])
-        ) {
+        if (verbAgrStack[i].pos === agrPos) {
             return verbAgrStack.splice(i, 1)[0]
         }
     }

@@ -1,3 +1,4 @@
+import type { Pair } from "../../types/Pair"
 import { uncontractVerbalModifiers } from "../SyntaxMethods"
 import { CanTakeObject } from "./CanTakeObject"
 export class Verb extends CanTakeObject {
@@ -8,7 +9,7 @@ export class Verb extends CanTakeObject {
     // private patient: Noun | null
     private name: string
     private tammList: string[]
-    private agrList: string[]
+    private agrList: Pair[]
 
     constructor(name: string) {
         super()
@@ -79,11 +80,11 @@ export class Verb extends CanTakeObject {
         return this.tammList
     }
 
-    public getAgrList(): string[] {
+    public getAgrList(): Pair[] {
         return this.agrList
     }
 
-    public addAgr(agr: string): void {
+    public addAgr(agr: Pair): void {
         this.agrList.push(agr)
     }
 }
