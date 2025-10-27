@@ -57,10 +57,17 @@ export class GrammarVisualizer {
 
 // he was used to win (by me)
 // I wanted the book to be written
-// in both cases the BE form occurs before the second verb, and when the second 
-// verb is procesed, the BE is added to the correct clause
 
-// make sure that the main predicate is the verb and not progessive or perfective aspects
+// He was used to win 
+// this incorrectly puts 'he' as a noun for to win even though it's not 
+
+// if it is subject control with passive, the surface subject should be popped 
+// onto the matrix clause, not simply copied onto it (which is the default
+// behavior)
+
+
+
+
 
 // experiencer verbs might be super limited
 // determining if intransitive verb is unaccusative or unergative might prove more challenging

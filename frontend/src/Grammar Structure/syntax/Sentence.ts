@@ -11,6 +11,8 @@ import {
     isPreposition,
     isVerbAgr,
     isVerbModifier,
+    removeInfAgr,
+    removePassiveAgr,
     resolveAdverbAttachment,
 } from "./SyntaxMethods"
 import { Adverb } from "./partsOfSpeech/Adverb"
@@ -102,6 +104,7 @@ export class Sentence {
                     let vPhrase: Verb = new Verb(currentPair.name)
                     this.currentPredicate = vPhrase
                     this.numberOfClauses += 1
+                    this.handlePreVerbAgrs()
 
                 } else if (isNoun(currentPair)) {
 
@@ -190,5 +193,20 @@ export class Sentence {
         this.predModStack.push(
             { pos: PartsOfSpeech.VBINF, name: "inf" }
         )
+    }
+
+    private handlePreVerbAgrs(): void {
+        if (this.currentPredicate) {
+            let passiveAgr: Pair | null =
+                removePassiveAgr(this.verbAgrStack)
+            let infAgr: Pair | null =
+                removeInfAgr(this.verbAgrStack)
+            if (passiveAgr) {
+                this.currentPredicate.addAgr(passiveAgr.name)
+            }
+            if (infAgr) {
+                this.currentPredicate.addAgr(infAgr.name)
+            }
+        }
     }
 }

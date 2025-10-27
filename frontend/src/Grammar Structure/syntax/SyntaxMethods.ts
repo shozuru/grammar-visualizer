@@ -173,17 +173,8 @@ export function fixPartsOfSpeech(pairedList: Pair[]): Pair[] {
             )) {
             pairedList[i].pos = PartsOfSpeech.PERFECTIVE
         } else if (
-            (
-                pairedList[i].name === "am" ||
-                pairedList[i].name === "are" ||
-                pairedList[i].name === "is" ||
-                pairedList[i].name === "was" ||
-                pairedList[i].name === "were" ||
-                pairedList[i].name === "been" ||
-                pairedList[i].name === "be"
-            ) && (
-                pairedList[i + 1].pos === PartsOfSpeech.VBN
-            )
+            isBeVerb(pairedList[i]) &&
+            pairedList[i + 1].pos === PartsOfSpeech.VBN
         ) {
             pairedList[i].pos = PartsOfSpeech.VBAGR
 
@@ -256,6 +247,22 @@ export function isAdverb(wordPair: Pair): boolean {
         currentPOS === PartsOfSpeech.RBR ||
         currentPOS === PartsOfSpeech.RBS
     )
+}
+
+export function isBeVerb(word: Pair): boolean {
+    if (
+        word.name === "am" ||
+        word.name === "are" ||
+        word.name === "is" ||
+        word.name === "was" ||
+        word.name === "were" ||
+        word.name === "been" ||
+        word.name === "be" ||
+        word.name === "being"
+    ) {
+        return true
+    }
+    return false
 }
 
 export function isCausative(wordPair: Pair): boolean {
@@ -386,7 +393,10 @@ export function isRelativeClause(wordPair: Pair): boolean {
 
 export function isVerbAgr(wordPair: Pair): boolean {
     let wordPos: number = wordPair.pos
-    return wordPos === PartsOfSpeech.VBAGR
+    return (
+        wordPos === PartsOfSpeech.VBAGR ||
+        wordPos === PartsOfSpeech.TO
+    )
 }
 
 export function isVerbModifier(wordPair: Pair): boolean {
@@ -415,6 +425,26 @@ export function passiveByPhraseIndex(
             return index
         }
         index -= 1
+    }
+    return null
+}
+
+export function removeInfAgr(verbAgrStack: Pair[]): Pair | null {
+    for (let i = 0; i < verbAgrStack.length; i++) {
+        if (verbAgrStack[i].pos === PartsOfSpeech.TO) {
+            return verbAgrStack.splice(i, 1)[0]
+        }
+    }
+    return null
+}
+
+export function removePassiveAgr(verbAgrStack: Pair[]): Pair | null {
+    for (let i = 0; i < verbAgrStack.length; i++) {
+        if (verbAgrStack[i].pos === PartsOfSpeech.VBAGR &&
+            isBeVerb(verbAgrStack[i])
+        ) {
+            return verbAgrStack.splice(i, 1)[0]
+        }
     }
     return null
 }
