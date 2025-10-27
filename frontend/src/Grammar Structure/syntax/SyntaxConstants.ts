@@ -46,7 +46,7 @@ export enum PartsOfSpeech {
     XX,
 
     // Constants that the model doesn't use but that I am
-    VBINF, // verbs that are nonfinite
+    VBINF,
     TENSE,
     NEGATION,
     PERFECTIVE,
@@ -54,7 +54,9 @@ export enum PartsOfSpeech {
     CAUSATIVE,
     PASSIVE,
     PsvAgr,
-    InfAgr
+    InfAgr,
+    AdvAgr,
+    SUPERLATIVE
 }
 
 export enum Case {

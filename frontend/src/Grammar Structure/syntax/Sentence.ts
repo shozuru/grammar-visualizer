@@ -5,7 +5,7 @@ import {
     createNounPhrase,
     createPrepositionalPhrase,
     fixPartsOfSpeech,
-    isAdverb, isCausative, isConjunction, isNoun, isNounModifier,
+    isAdverb, isAdverbAgr, isAdverbMod, isCausative, isConjunction, isNoun, isNounModifier,
     isPassive,
     isPredicate,
     isPreposition,
@@ -21,6 +21,8 @@ import { Verb } from "./partsOfSpeech/Verb"
 import { PartsOfSpeech, } from "./SyntaxConstants"
 import type { Pair } from "../types/Pair"
 import { Clause } from "./partsOfSpeech/Clause"
+import { Mod } from "./Mod"
+import { Agr } from "./Agr"
 
 export class Sentence {
 
@@ -30,12 +32,14 @@ export class Sentence {
 
     private wordPairs: Pair[]
     private currentPredicate: Verb | null
-    private verbAgrStack: Pair[]
+    private predAgrStack: Pair[]
     private nounStack: Noun[]
-    private NounAgrStack: Pair[]
+    private nounAgrStack: Pair[]
     private nounModStack: Pair[]
     private adjunctStack: (Preposition | Adverb)[]
     private predModStack: Pair[]
+    private adverbModStack: Mod[]
+    private adverbAgrStack: Agr[]
 
     constructor(pairList: Pair[]) {
         this.wordPairs = fixPartsOfSpeech(pairList)
@@ -43,14 +47,18 @@ export class Sentence {
         this.clauses = []
         this.numberOfClauses = 0
         this.wordPairs = pairList
+
         this.currentPredicate = null
-        this.verbAgrStack = []
+        this.predAgrStack = []
         this.predModStack = []
+
         this.nounStack = []
         this.nounModStack = []
-        this.NounAgrStack = []
-        this.adjunctStack = []
+        this.nounAgrStack = []
 
+        this.adjunctStack = []
+        this.adverbAgrStack = []
+        this.adverbModStack = []
     }
 
     public generateClauses(): void {
@@ -58,16 +66,23 @@ export class Sentence {
         while (this.wordPairs.length > 0) {
 
             let currentPair: Pair | undefined = this.wordPairs.shift()
+            console.log(currentPair)
 
             if (currentPair !== undefined) {
                 if (isNounModifier(currentPair, this.wordPairs)) {
                     this.nounModStack.push(currentPair)
 
+                } else if (isAdverbMod(currentPair)) {
+                    this.adverbModStack.push(new Mod(currentPair))
+
+                } else if (isAdverbAgr(currentPair)) {
+                    this.adverbAgrStack.push(new Agr(currentPair))
+
                 } else if (isVerbModifier(currentPair)) {
                     this.predModStack.push(currentPair)
 
                 } else if (isVerbAgr(currentPair)) {
-                    this.verbAgrStack.push(currentPair)
+                    this.predAgrStack.push(currentPair)
 
                 } else if (
                     this.nounStack.length > 0 &&
@@ -88,9 +103,11 @@ export class Sentence {
                     this.adjunctStack.push(questionModifier)
 
                 } else if (isAdverb(currentPair)) {
+                    let currentAdverb: Adverb = new Adverb(currentPair.name)
+                    this.handleAdverbModsAndArgs(currentAdverb)
                     let modPhrase: Preposition | Adverb =
                         resolveAdverbAttachment(
-                            currentPair,
+                            currentAdverb,
                             this.wordPairs
                         )
                     this.adjunctStack.push(modPhrase)
@@ -130,7 +147,7 @@ export class Sentence {
                     this.nounStack = []
                     this.adjunctStack = []
                     this.currentPredicate = null
-                    this.verbAgrStack = []
+                    this.predAgrStack = []
 
                 } else if (
                     isPreposition(currentPair) &&
@@ -170,7 +187,7 @@ export class Sentence {
                 completeClause.addPredicateModifier(modifier)
             }
 
-            for (const agr of this.verbAgrStack) {
+            for (const agr of this.predAgrStack) {
                 completeClause.addVerbAgr(agr)
             }
 
@@ -197,14 +214,31 @@ export class Sentence {
     private handlePreVerbAgrs(): void {
         if (this.currentPredicate) {
             let passiveAgr: Pair | null =
-                removeAgr(this.verbAgrStack, PartsOfSpeech.PsvAgr)
+                removeAgr(this.predAgrStack, PartsOfSpeech.PsvAgr)
             let infAgr: Pair | null =
-                removeAgr(this.verbAgrStack, PartsOfSpeech.InfAgr)
+                removeAgr(this.predAgrStack, PartsOfSpeech.InfAgr)
             if (passiveAgr) {
                 this.currentPredicate.addAgr(passiveAgr)
             }
             if (infAgr) {
                 this.currentPredicate.addAgr(infAgr)
+            }
+        }
+    }
+
+    private handleAdverbModsAndArgs(adverb: Adverb): void {
+        if (
+            this.adverbModStack.length > 0
+        ) {
+            for (const modifier of this.adverbModStack) {
+                adverb.addModifier(modifier)
+            }
+        }
+        if (
+            this.adverbAgrStack.length > 0
+        ) {
+            for (const agr of this.adverbAgrStack) {
+                adverb.addAdverbAgr(agr)
             }
         }
     }

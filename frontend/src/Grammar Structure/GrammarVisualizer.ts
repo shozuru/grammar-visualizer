@@ -42,22 +42,34 @@ export class GrammarVisualizer {
     }
 }
 
+// TODO: questions, relative clauses, adjectives
 
-// identify the subjects and objects that go with each clause
+// adjectives:
+// base form, comparative form, superlative form
+// the movie was the(adverb agreement) longest 
 
-// account for things like questions, relative clauses, passive 
+
+// the most terrible movie (DT, RBS, JJ, NN) -> (AdvAgr, SUPERLATIVE, RB, NN)
+// the most fun movie (DT, JJS, NN, NN) -> (AdvAgr, SUPERLATIVE, RB, NN)
+// the longest movie (DT, JJS, NN) -> (AdvAgr, RBS, NN)
+
+// i want to change the pos of 'the' in these cases to AdvAgr
+// i want to change NN to RB
+// most should be SUPERLATIVE
+//  JJS should be RBS
+// AdvAgr should go in Adverb agr list while superlative should go in adverb 
+// modifier list
+
 
 // the movie has been watched by (everyone [that is] in the room)
 // the amazing movie --> the movie that is amazing
-// the movie (that) i saw
+// the movie (that) i saw was really good.
 // the person who i knew --> the person that I knew
 
 // account for adjectives
 // I made the game (be) easier
 
-// he was used to win (by me)
-// I wanted the book to be written
-
+// -----------------------------------------------------------------------------
 // experiencer verbs might be super limited
 // determining if intransitive verb is unaccusative or unergative might prove more challenging
 // might want to look into an ML model that can classify it or make one yourself

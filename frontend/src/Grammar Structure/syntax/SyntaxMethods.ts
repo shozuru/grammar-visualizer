@@ -10,7 +10,6 @@ import {
 } from "./SyntaxConstants"
 
 
-
 export function addCaustiveModifier(
     agentNoun: Noun,
     causativePair: Pair
@@ -239,12 +238,39 @@ export function fixPartsOfSpeech(pairedList: Pair[]): Pair[] {
             )
         ) {
             pairedList[i].pos = PartsOfSpeech.CAUSATIVE
-        }
-        else if (
+        } else if (
+            pairedList[i].pos === PartsOfSpeech.DT &&
+            (
+                pairedList[i + 1].pos === PartsOfSpeech.RBS ||
+                pairedList[i + 1].pos === PartsOfSpeech.JJS
+            )
+        ) {
+            pairedList[i].pos = PartsOfSpeech.AdvAgr
+            if (pairedList[i + 1].name === "most") {
+                pairedList[i + 1].pos = PartsOfSpeech.SUPERLATIVE
+            }
+        } else if (
+            pairedList[i].pos === PartsOfSpeech.SUPERLATIVE &&
+            pairedList[i + 1].pos === PartsOfSpeech.NN
+        ) {
+            pairedList[i + 1].pos = PartsOfSpeech.RB
+        } else if (
             pairedList[i].pos === PartsOfSpeech.TO &&
             pairedList[i].name === "to"
         ) {
             pairedList[i].pos = PartsOfSpeech.InfAgr
+        } else if (
+            pairedList[i].pos === PartsOfSpeech.JJ
+        ) {
+            pairedList[i].pos = PartsOfSpeech.RB
+        } else if (
+            pairedList[i].pos === PartsOfSpeech.JJR
+        ) {
+            pairedList[i].pos = PartsOfSpeech.RBR
+        } else if (
+            pairedList[i].pos === PartsOfSpeech.JJS
+        ) {
+            pairedList[i].pos = PartsOfSpeech.RBS
         }
     }
     return pairedList
@@ -263,16 +289,24 @@ export function isAdverb(wordPair: Pair): boolean {
     )
 }
 
-export function isBeVerb(word: Pair): boolean {
+export function isAdverbAgr(wordPair: Pair): boolean {
+    return wordPair.pos === PartsOfSpeech.AdvAgr
+}
+
+export function isAdverbMod(wordPair: Pair): boolean {
+    return wordPair.pos === PartsOfSpeech.SUPERLATIVE
+}
+
+export function isBeVerb(wordPair: Pair): boolean {
     if (
-        word.name === "am" ||
-        word.name === "are" ||
-        word.name === "is" ||
-        word.name === "was" ||
-        word.name === "were" ||
-        word.name === "been" ||
-        word.name === "be" ||
-        word.name === "being"
+        wordPair.name === "am" ||
+        wordPair.name === "are" ||
+        wordPair.name === "is" ||
+        wordPair.name === "was" ||
+        wordPair.name === "were" ||
+        wordPair.name === "been" ||
+        wordPair.name === "be" ||
+        wordPair.name === "being"
     ) {
         return true
     }
@@ -454,11 +488,11 @@ export function removeAgr(verbAgrStack: Pair[], agrPos: PartsOfSpeech) {
 }
 
 export function resolveAdverbAttachment(
-    adverbPair: Pair,
+    thisAdverb: Adverb,
     listOfNextWords: Pair[]
 ): Preposition | Adverb {
 
-    let thisAdverb: Adverb = new Adverb(adverbPair.name)
+    // let thisAdverb: Adverb = new Adverb(firstarg.name)
     let nextWord: Pair = listOfNextWords[0]
 
     if (nextWord && isPreposition(nextWord)) {
