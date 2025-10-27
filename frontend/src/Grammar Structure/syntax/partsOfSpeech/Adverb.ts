@@ -1,4 +1,3 @@
-import type { Pair } from "../../types/Pair"
 import type { Agr } from "../Agr"
 import type { Mod } from "../Mod"
 

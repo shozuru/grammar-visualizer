@@ -8,6 +8,8 @@ import {
     conjunctions, ecmVerbs, objectControlVerbs, PartsOfSpeech,
     raisingVerbs
 } from "./SyntaxConstants"
+import { Mod } from "./Mod"
+import { Agr } from "./Agr"
 
 
 export function addCaustiveModifier(
@@ -59,8 +61,8 @@ export function addMatrixClauseArguments(
         addNounsToSubjectControlPred(matrixClause, nounArguments)
     } else if (
         matrixClause
-            .getVerbAgrs()
-            .some((pair) => pair.pos === PartsOfSpeech.PsvAgr)
+            .getPredAgrs()
+            .some((pair) => pair.getPos() === PartsOfSpeech.PsvAgr)
     ) {
         let matrixSubject: Noun = nounArguments.shift() as Noun
         matrixClause.addNounToClause(matrixSubject)
@@ -73,13 +75,21 @@ export function addMatrixClauseArguments(
     return matrixClause
 }
 
+export function addMatrixClauseMods(
+    matrixPred: Verb, listOfMods: Mod[]
+): void {
+    while (listOfMods.length > 0) {
+        let mod: Mod = listOfMods.shift() as Mod
+        matrixPred.addMod(mod)
+    }
+}
+
 export function addMatrixClauseModifiers(
     matrixPred: Verb, listOfTamms: Pair[]
 ): void {
     while (listOfTamms.length > 0) {
         let tammPair: Pair = listOfTamms.shift() as Pair
-        let tamm: string = tammPair.name
-        matrixPred.addTamm(tamm)
+        matrixPred.addMod(new Mod(tammPair))
     }
 }
 
@@ -478,9 +488,9 @@ export function passiveByPhraseIndex(
     return null
 }
 
-export function removeAgr(verbAgrStack: Pair[], agrPos: PartsOfSpeech) {
+export function removeAgr(verbAgrStack: Agr[], agrPos: PartsOfSpeech) {
     for (let i = 0; i < verbAgrStack.length; i++) {
-        if (verbAgrStack[i].pos === agrPos) {
+        if (verbAgrStack[i].getPos() === agrPos) {
             return verbAgrStack.splice(i, 1)[0]
         }
     }
@@ -519,9 +529,23 @@ export function resolveAdverbAttachment(
     }
 }
 
-export function uncontractVerbalModifiers(modifier: string): string[] {
-    if (modifier === "didn't") {
-        return ["did", "not"]
+export function uncontractVerbalModifiers(modifier: Mod): Mod[] {
+    if (modifier.getName() === "didn't") {
+        return [
+            new Mod(
+                {
+                    name: "did",
+                    pos: PartsOfSpeech.TENSE
+
+                }
+            ),
+            new Mod(
+                {
+                    name: "not",
+                    pos: PartsOfSpeech.NEGATION
+                }
+            )
+        ]
     } else {
         return [modifier]
     }

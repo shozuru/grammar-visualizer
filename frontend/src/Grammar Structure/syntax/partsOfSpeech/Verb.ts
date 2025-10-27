@@ -1,4 +1,5 @@
-import type { Pair } from "../../types/Pair"
+import type { Agr } from "../Agr"
+import type { Mod } from "../Mod"
 import { uncontractVerbalModifiers } from "../SyntaxMethods"
 import { CanTakeObject } from "./CanTakeObject"
 export class Verb extends CanTakeObject {
@@ -8,8 +9,8 @@ export class Verb extends CanTakeObject {
     // private experiencer: Noun | null
     // private patient: Noun | null
     private name: string
-    private tammList: string[]
-    private agrList: Pair[]
+    private modList: Mod[]
+    private agrList: Agr[]
 
     constructor(name: string) {
         super()
@@ -17,7 +18,7 @@ export class Verb extends CanTakeObject {
         // this.agent = null
         // this.experiencer = null
         // this.patient = null
-        this.tammList = []
+        this.modList = []
         this.agrList = []
     }
 
@@ -65,26 +66,26 @@ export class Verb extends CanTakeObject {
     //     this.patient = p
     // }
 
-    public addTamm(gramMod: string): void {
-        if (gramMod.includes("'")) {
-            let mods: string[] = uncontractVerbalModifiers(gramMod)
+    public addMod(tamm: Mod): void {
+        if (tamm.getName().includes("'")) {
+            let mods: Mod[] = uncontractVerbalModifiers(tamm)
             for (const mod of mods) {
-                this.tammList.push(mod)
+                this.modList.push(mod)
             }
         } else {
-            this.tammList.push(gramMod)
+            this.modList.push(tamm)
         }
     }
 
-    public getTammList(): string[] {
-        return this.tammList
+    public getMods(): Mod[] {
+        return this.modList
     }
 
-    public getAgrList(): Pair[] {
+    public getAgrList(): Agr[] {
         return this.agrList
     }
 
-    public addAgr(agr: Pair): void {
+    public addAgr(agr: Agr): void {
         this.agrList.push(agr)
     }
 }

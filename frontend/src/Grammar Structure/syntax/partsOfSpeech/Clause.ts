@@ -2,8 +2,8 @@ import { Noun } from "./Noun"
 import { Preposition } from "./Preposition"
 import { Adverb } from "./Adverb"
 import { Verb } from "./Verb"
-import type { Pair } from "../../types/Pair"
-import { PartsOfSpeech } from "../SyntaxConstants"
+import type { Agr } from "../Agr"
+import type { Mod } from "../Mod"
 
 export class Clause {
 
@@ -29,22 +29,34 @@ export class Clause {
         this.verb = predicate
     }
 
-    public getPredicateModifiers(): null | string[] {
+    public getPredMods(): Mod[] {
         if (this.verb) {
-            return this.verb.getTammList()
+            return this.verb.getMods()
         }
-        return null
+        return []
     }
 
-    public addPredicateModifier(modifier: Pair): void {
+    public addPredMod(modifier: Mod): void {
         if (this.verb) {
-            if (modifier.pos === PartsOfSpeech.PsvAgr ||
-                modifier.pos === PartsOfSpeech.InfAgr
-            ) {
-                this.verb.addAgr(modifier)
-            } else {
-                this.verb.addTamm(modifier.name)
-            }
+            this.verb.addMod(modifier)
+        }
+    }
+
+    /**
+     * gets list of Agr objects that are agreement markers of this clause's 
+     * predicate if there is a main predicate
+     * @returns list of Agrs
+     */
+    public getPredAgrs(): Agr[] {
+        if (this.verb) {
+            return this.verb.getAgrList()
+        }
+        return []
+    }
+
+    public addPredAgr(agr: Agr): void {
+        if (this.verb) {
+            this.verb.addAgr(agr)
         }
     }
 
@@ -78,22 +90,5 @@ export class Clause {
 
     public setCausativeNoun(noun: Noun): void {
         this.causativeNoun = noun
-    }
-    /**
-     * gets list of strings that are agreement markers of this clause's 
-     * predicate if there is a main predicate
-     * @returns list of agreement markers as strings
-     */
-    public getVerbAgrs(): Pair[] {
-        if (this.verb) {
-            return this.verb.getAgrList()
-        }
-        return []
-    }
-
-    public addVerbAgr(agr: Pair): void {
-        if (this.verb) {
-            this.verb.addAgr(agr)
-        }
     }
 }

@@ -1,18 +1,10 @@
 import {
-    addCaustiveModifier,
-    addMatrixClauseArguments,
-    addMatrixClauseModifiers,
-    createNounPhrase,
-    createPrepositionalPhrase,
-    fixPartsOfSpeech,
-    isAdverb, isAdverbAgr, isAdverbMod, isCausative, isConjunction, isNoun, isNounModifier,
-    isPassive,
-    isPredicate,
-    isPreposition,
-    isVerbAgr,
-    isVerbModifier,
-    removeAgr,
-    resolveAdverbAttachment,
+    addCaustiveModifier, addMatrixClauseArguments,
+    addMatrixClauseMods,
+    createNounPhrase, createPrepositionalPhrase, fixPartsOfSpeech,
+    isAdverb, isAdverbAgr, isAdverbMod, isCausative, isConjunction, isNoun,
+    isNounModifier, isPassive, isPredicate, isPreposition, isVerbAgr,
+    isVerbModifier, removeAgr, resolveAdverbAttachment,
 } from "./SyntaxMethods"
 import { Adverb } from "./partsOfSpeech/Adverb"
 import { Noun } from "./partsOfSpeech/Noun"
@@ -31,13 +23,16 @@ export class Sentence {
     public numberOfClauses: number
 
     private wordPairs: Pair[]
+
     private currentPredicate: Verb | null
-    private predAgrStack: Pair[]
+    private predModStack: Mod[]
+    private predAgrStack: Agr[]
+
     private nounStack: Noun[]
-    private nounAgrStack: Pair[]
     private nounModStack: Pair[]
+    private nounAgrStack: Pair[]
+
     private adjunctStack: (Preposition | Adverb)[]
-    private predModStack: Pair[]
     private adverbModStack: Mod[]
     private adverbAgrStack: Agr[]
 
@@ -79,10 +74,10 @@ export class Sentence {
                     this.adverbAgrStack.push(new Agr(currentPair))
 
                 } else if (isVerbModifier(currentPair)) {
-                    this.predModStack.push(currentPair)
+                    this.predModStack.push(new Mod(currentPair))
 
                 } else if (isVerbAgr(currentPair)) {
-                    this.predAgrStack.push(currentPair)
+                    this.predAgrStack.push(new Agr(currentPair))
 
                 } else if (
                     this.nounStack.length > 0 &&
@@ -123,7 +118,6 @@ export class Sentence {
                     this.handlePreVerbAgrs()
 
                 } else if (isNoun(currentPair)) {
-
                     let nPhrase: Noun =
                         createNounPhrase(
                             currentPair,
@@ -179,16 +173,16 @@ export class Sentence {
                     completeClause.addNounToClause(noun)
                 }
             }
-            for (const modifier of this.adjunctStack) {
-                completeClause.addAdjunct(modifier)
+            for (const adjunct of this.adjunctStack) {
+                completeClause.addAdjunct(adjunct)
             }
 
-            for (const modifier of this.predModStack) {
-                completeClause.addPredicateModifier(modifier)
+            for (const mod of this.predModStack) {
+                completeClause.addPredMod(mod)
             }
 
             for (const agr of this.predAgrStack) {
-                completeClause.addVerbAgr(agr)
+                completeClause.addPredAgr(agr)
             }
 
             this.clauses.push(completeClause)
@@ -202,20 +196,20 @@ export class Sentence {
                 this.nounStack
             )
         )
-        addMatrixClauseModifiers(
+        addMatrixClauseMods(
             currentPred,
-            this.predModStack
+            this.predModStack,
         )
-        this.predModStack.push(
-            { pos: PartsOfSpeech.VBINF, name: "inf" }
-        )
+        this.predModStack.push(new Mod(
+            { name: "inf", pos: PartsOfSpeech.VBINF }
+        ))
     }
 
     private handlePreVerbAgrs(): void {
         if (this.currentPredicate) {
-            let passiveAgr: Pair | null =
+            let passiveAgr: Agr | null =
                 removeAgr(this.predAgrStack, PartsOfSpeech.PsvAgr)
-            let infAgr: Pair | null =
+            let infAgr: Agr | null =
                 removeAgr(this.predAgrStack, PartsOfSpeech.InfAgr)
             if (passiveAgr) {
                 this.currentPredicate.addAgr(passiveAgr)
