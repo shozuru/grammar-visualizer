@@ -8,7 +8,6 @@ import type { Relativize } from "../Relativize"
 
 export class Clause {
     private predicate: Predicate
-    // private verb: Verb | null
     private nounList: (Noun | Relativize)[]
     private adjunctList: (Adverb | Preposition)[]
 
@@ -16,7 +15,6 @@ export class Clause {
 
     constructor(predicate: Predicate) {
         this.predicate = predicate
-        // this.verb = null
         this.nounList = []
         this.adjunctList = []
 

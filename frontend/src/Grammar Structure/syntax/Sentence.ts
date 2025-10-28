@@ -206,7 +206,6 @@ export class Sentence {
         if (this.currentPredicate) {
 
             let completeClause: Clause = new Clause(this.currentPredicate)
-            // completeClause.setPredicate(this.currentPredicate)
 
             for (const noun of this.nounStack) {
                 if (noun.getModifiers().some(
