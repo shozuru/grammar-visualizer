@@ -285,6 +285,11 @@ export function fixPartsOfSpeech(pairedList: Pair[]): Pair[] {
             pairedList[i].pos === PartsOfSpeech.JJS
         ) {
             pairedList[i].pos = PartsOfSpeech.RBS
+        } else if (
+            pairedList[i].pos === PartsOfSpeech.RB &&
+            pairedList[i].name === "not"
+        ) {
+            pairedList[i].pos = PartsOfSpeech.NEGATION
         }
     }
     return pairedList

@@ -44,11 +44,6 @@ export class GrammarVisualizer {
 
 // TODO: questions, relative clauses, adjectives
 
-// adjectives:
-// base form, comparative form, superlative form
-// the movie was the(adverb agreement) longest 
-
-
 // the most terrible movie (DT, RBS, JJ, NN) -> (AdvAgr, SUPERLATIVE, RB, NN)
 // the most fun movie (DT, JJS, NN, NN) -> (AdvAgr, SUPERLATIVE, RB, NN)
 // the longest movie (DT, JJS, NN) -> (AdvAgr, RBS, NN)
