@@ -10,6 +10,7 @@ import {
 } from "./SyntaxConstants"
 import { Mod } from "./Mod"
 import { Agr } from "./Agr"
+import type { Predicate } from "./Predicate"
 
 
 export function addCaustiveModifier(
@@ -21,12 +22,11 @@ export function addCaustiveModifier(
 }
 
 export function addMatrixClauseArguments(
-    matrixPredicate: Verb,
+    matrixPredicate: Predicate,
     nounArguments: Noun[]
 ): Clause {
 
-    let matrixClause: Clause = new Clause()
-    matrixClause.setPredicate(matrixPredicate)
+    let matrixClause: Clause = new Clause(matrixPredicate)
     if (
         nounArguments[0]
             .getModifiers()
@@ -44,9 +44,9 @@ export function addMatrixClauseArguments(
         hasMultipleNouns(nounArguments) &&
         (
             // I expected him to win
-            isRaisingVerb(matrixPredicate) ||
+            isRaisingVerb(matrixPredicate.getVerb()) ||
             // I saw him win
-            isECMVerb(matrixPredicate)
+            isECMVerb(matrixPredicate.getVerb())
         )
     ) {
         // move first noun to matrix clause
@@ -55,7 +55,7 @@ export function addMatrixClauseArguments(
     } else if (
         // I asked him to win
         hasMultipleNouns(nounArguments) &&
-        isObjectControl(matrixPredicate)
+        isObjectControl(matrixPredicate.getVerb())
     ) {
         addNounsToObjectControlPred(matrixClause, nounArguments)
     } else if (
@@ -80,7 +80,7 @@ export function addMatrixClauseArguments(
 }
 
 export function addMatrixClauseMods(
-    matrixPred: Verb, listOfMods: Mod[]
+    matrixPred: Predicate, listOfMods: Mod[]
 ): void {
     while (listOfMods.length > 0) {
         let mod: Mod = listOfMods.shift() as Mod
@@ -88,14 +88,14 @@ export function addMatrixClauseMods(
     }
 }
 
-export function addMatrixClauseModifiers(
-    matrixPred: Verb, listOfTamms: Pair[]
-): void {
-    while (listOfTamms.length > 0) {
-        let tammPair: Pair = listOfTamms.shift() as Pair
-        matrixPred.addMod(new Mod(tammPair))
-    }
-}
+// export function addMatrixClauseModifiers(
+//     matrixPred: Verb, listOfTamms: Pair[]
+// ): void {
+//     while (listOfTamms.length > 0) {
+//         let tammPair: Pair = listOfTamms.shift() as Pair
+//         matrixPred.addMod(new Mod(tammPair))
+//     }
+// }
 
 export function addNounsToObjectControlPred(
     matrixClause: Clause,
@@ -194,7 +194,7 @@ export function fixPartsOfSpeech(pairedList: Pair[]): Pair[] {
             )) {
             pairedList[i].pos = PartsOfSpeech.PERFECTIVE
         } else if (
-            isBeVerb(pairedList[i]) &&
+            isBeVerb(pairedList[i].name) &&
             pairedList[i + 1].pos === PartsOfSpeech.VBN
         ) {
             pairedList[i].pos = PartsOfSpeech.PsvAgr
@@ -290,6 +290,11 @@ export function fixPartsOfSpeech(pairedList: Pair[]): Pair[] {
             pairedList[i].name === "not"
         ) {
             pairedList[i].pos = PartsOfSpeech.NEGATION
+        } else if (
+            pairedList[i].pos === PartsOfSpeech.DT &&
+            isVerb(pairedList[i + 1])
+        ) {
+            pairedList[i].pos = PartsOfSpeech.PRP
         }
     }
     return pairedList
@@ -300,11 +305,10 @@ export function hasMultipleNouns(nounList: Noun[]): boolean {
 }
 
 export function isAdverb(wordPair: Pair): boolean {
-    let currentPOS: number = wordPair.pos
     return (
-        currentPOS === PartsOfSpeech.RB ||
-        currentPOS === PartsOfSpeech.RBR ||
-        currentPOS === PartsOfSpeech.RBS
+        wordPair.pos === PartsOfSpeech.RB ||
+        wordPair.pos === PartsOfSpeech.RBR ||
+        wordPair.pos === PartsOfSpeech.RBS
     )
 }
 
@@ -316,20 +320,17 @@ export function isAdverbMod(wordPair: Pair): boolean {
     return wordPair.pos === PartsOfSpeech.SUPERLATIVE
 }
 
-export function isBeVerb(wordPair: Pair): boolean {
-    if (
-        wordPair.name === "am" ||
-        wordPair.name === "are" ||
-        wordPair.name === "is" ||
-        wordPair.name === "was" ||
-        wordPair.name === "were" ||
-        wordPair.name === "been" ||
-        wordPair.name === "be" ||
-        wordPair.name === "being"
-    ) {
-        return true
-    }
-    return false
+export function isBeVerb(verbName: string): boolean {
+    return (
+        verbName === "am" ||
+        verbName === "are" ||
+        verbName === "is" ||
+        verbName === "was" ||
+        verbName === "were" ||
+        verbName === "been" ||
+        verbName === "be" ||
+        verbName === "being"
+    )
 }
 
 export function isCausative(wordPair: Pair): boolean {
@@ -439,8 +440,7 @@ export function isPredicate(
 }
 
 export function isPreposition(wordPair: Pair): boolean {
-    let currentPOS: number = wordPair.pos
-    return currentPOS === PartsOfSpeech.IN
+    return wordPair.pos === PartsOfSpeech.IN
 }
 
 export function isRaisingVerb(matrixPred: Verb): boolean {
@@ -454,27 +454,37 @@ export function isRaisingVerb(matrixPred: Verb): boolean {
     )
 }
 
-export function isRelativeClause(wordPair: Pair): boolean {
-    return false
+export function isRelative(wordPair: Pair): boolean {
+    return (
+        wordPair.pos === PartsOfSpeech.WDT
+    )
 }
 
 export function isVerbAgr(wordPair: Pair): boolean {
-    let wordPos: number = wordPair.pos
     return (
-        wordPos === PartsOfSpeech.PsvAgr ||
-        wordPos === PartsOfSpeech.InfAgr ||
-        wordPos === PartsOfSpeech.TO
+        wordPair.pos === PartsOfSpeech.PsvAgr ||
+        wordPair.pos === PartsOfSpeech.InfAgr ||
+        wordPair.pos === PartsOfSpeech.TO
+    )
+}
+
+export function isVerb(wordPair: Pair): boolean {
+    return (
+        wordPair.pos === PartsOfSpeech.VB ||
+        wordPair.pos === PartsOfSpeech.VBD ||
+        wordPair.pos === PartsOfSpeech.VBN ||
+        wordPair.pos === PartsOfSpeech.VBP ||
+        wordPair.pos === PartsOfSpeech.VBZ
     )
 }
 
 export function isVerbModifier(wordPair: Pair): boolean {
-    let wordPos: number = wordPair.pos
     return (
-        wordPos === PartsOfSpeech.TENSE ||
-        wordPos === PartsOfSpeech.PERFECTIVE ||
-        wordPos === PartsOfSpeech.NEGATION ||
-        wordPos === PartsOfSpeech.QuestionTense ||
-        wordPos === PartsOfSpeech.MD
+        wordPair.pos === PartsOfSpeech.TENSE ||
+        wordPair.pos === PartsOfSpeech.PERFECTIVE ||
+        wordPair.pos === PartsOfSpeech.NEGATION ||
+        wordPair.pos === PartsOfSpeech.QuestionTense ||
+        wordPair.pos === PartsOfSpeech.MD
     )
 }
 

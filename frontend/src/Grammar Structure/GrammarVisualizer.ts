@@ -42,20 +42,8 @@ export class GrammarVisualizer {
     }
 }
 
-// TODO: questions, relative clauses, adjectives
-
-// the most terrible movie (DT, RBS, JJ, NN) -> (AdvAgr, SUPERLATIVE, RB, NN)
-// the most fun movie (DT, JJS, NN, NN) -> (AdvAgr, SUPERLATIVE, RB, NN)
-// the longest movie (DT, JJS, NN) -> (AdvAgr, RBS, NN)
-
-// i want to change the pos of 'the' in these cases to AdvAgr
-// i want to change NN to RB
-// most should be SUPERLATIVE
-//  JJS should be RBS
-// AdvAgr should go in Adverb agr list while superlative should go in adverb 
-// modifier list
-
-
+// TODO: questions, relative clauses
+// if DT followed by tensed verb, DT should be 
 // the movie has been watched by (everyone [that is] in the room)
 // the amazing movie --> the movie that is amazing
 // the movie (that) i saw was really good.

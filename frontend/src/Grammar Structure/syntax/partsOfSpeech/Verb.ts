@@ -9,8 +9,8 @@ export class Verb extends CanTakeObject {
     // private experiencer: Noun | null
     // private patient: Noun | null
     private name: string
-    private modList: Mod[]
-    private agrList: Agr[]
+    // private modList: Mod[]
+    // private agrList: Agr[]
 
     constructor(name: string) {
         super()
@@ -18,8 +18,8 @@ export class Verb extends CanTakeObject {
         // this.agent = null
         // this.experiencer = null
         // this.patient = null
-        this.modList = []
-        this.agrList = []
+        // this.modList = []
+        // this.agrList = []
     }
 
     public getName(): string {
@@ -66,26 +66,26 @@ export class Verb extends CanTakeObject {
     //     this.patient = p
     // }
 
-    public addMod(tamm: Mod): void {
-        if (tamm.getName().includes("'")) {
-            let mods: Mod[] = uncontractVerbalModifiers(tamm)
-            for (const mod of mods) {
-                this.modList.push(mod)
-            }
-        } else {
-            this.modList.push(tamm)
-        }
-    }
+    // public addMod(tamm: Mod): void {
+    //     if (tamm.getName().includes("'")) {
+    //         let mods: Mod[] = uncontractVerbalModifiers(tamm)
+    //         for (const mod of mods) {
+    //             this.modList.push(mod)
+    //         }
+    //     } else {
+    //         this.modList.push(tamm)
+    //     }
+    // }
 
-    public getMods(): Mod[] {
-        return this.modList
-    }
+    // public getMods(): Mod[] {
+    //     return this.modList
+    // }
 
-    public getAgrList(): Agr[] {
-        return this.agrList
-    }
+    // public getAgrList(): Agr[] {
+    //     return this.agrList
+    // }
 
-    public addAgr(agr: Agr): void {
-        this.agrList.push(agr)
-    }
+    // public addAgr(agr: Agr): void {
+    //     this.agrList.push(agr)
+    // }
 }

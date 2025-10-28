@@ -2,9 +2,9 @@ import {
     addCaustiveModifier, addMatrixClauseArguments,
     addMatrixClauseMods,
     createNounPhrase, createPrepositionalPhrase, fixPartsOfSpeech,
-    isAdverb, isAdverbAgr, isAdverbMod, isCausative, isConjunction, isNoun,
-    isNounModifier, isPassive, isPredicate, isPreposition, isVerbAgr,
-    isVerbModifier, removeAgr, resolveAdverbAttachment,
+    isAdverb, isAdverbAgr, isAdverbMod, isBeVerb, isCausative, isConjunction,
+    isNoun, isNounModifier, isPassive, isPreposition, isRelative, isVerb,
+    isVerbAgr, isVerbModifier, removeAgr, resolveAdverbAttachment,
 } from "./SyntaxMethods"
 import { Adverb } from "./partsOfSpeech/Adverb"
 import { Noun } from "./partsOfSpeech/Noun"
@@ -15,6 +15,8 @@ import type { Pair } from "../types/Pair"
 import { Clause } from "./partsOfSpeech/Clause"
 import { Mod } from "./Mod"
 import { Agr } from "./Agr"
+import { Predicate } from "./Predicate"
+import { Relativize } from "./Relativize"
 
 export class Sentence {
 
@@ -24,7 +26,7 @@ export class Sentence {
 
     private wordPairs: Pair[]
 
-    private currentPredicate: Verb | null
+    private currentPredicate: Predicate | null
     private predModStack: Mod[]
     private predAgrStack: Agr[]
 
@@ -107,15 +109,28 @@ export class Sentence {
                             currentAdverb,
                             this.wordPairs
                         )
-                    this.adjunctStack.push(modPhrase)
 
-                } else if (isPredicate(currentPair, this.wordPairs)) {
+                    if (this.currentPredicate &&
+                        isBeVerb(
+                            this.currentPredicate
+                                .getVerb()
+                                .getName()
+                        )
+                    ) {
+                        this.currentPredicate.setSemanticElement(
+                            modPhrase
+                        )
+                    } else {
+                        this.adjunctStack.push(modPhrase)
+                    }
+
+                } else if (isVerb(currentPair)) {
                     if (this.currentPredicate !== null) {
                         this.handleMatrixClause(this.currentPredicate)
                     }
 
                     let vPhrase: Verb = new Verb(currentPair.name)
-                    this.currentPredicate = vPhrase
+                    this.currentPredicate = new Predicate(vPhrase)
                     this.numberOfClauses += 1
                     this.handlePreVerbAgrs()
 
@@ -125,25 +140,21 @@ export class Sentence {
                             currentPair,
                             this.nounModStack
                         )
-                    this.nounStack.push(nPhrase)
+                    this.checkForRelativeClause(nPhrase)
 
-                } else if (
-                    this.currentPredicate &&
-                    isConjunction(currentPair)
-                ) {
-                    let completeClause: Clause = new Clause()
-
-                    for (const noun of this.nounStack) {
-                        completeClause.addNounToClause(noun)
+                    if (this.currentPredicate &&
+                        isBeVerb(
+                            this.currentPredicate
+                                .getVerb()
+                                .getName()
+                        )
+                    ) {
+                        this.currentPredicate.setSemanticElement(
+                            nPhrase
+                        )
+                    } else {
+                        this.nounStack.push(nPhrase)
                     }
-                    for (const modifier of this.adjunctStack) {
-                        completeClause.addAdjunct(modifier)
-                    }
-
-                    this.nounStack = []
-                    this.adjunctStack = []
-                    this.currentPredicate = null
-                    this.predAgrStack = []
 
                 } else if (
                     isPreposition(currentPair) &&
@@ -154,15 +165,48 @@ export class Sentence {
                             currentPair,
                             this.wordPairs
                         )
-                    this.adjunctStack.push(pPhrase)
+
+                    if (this.currentPredicate &&
+                        isBeVerb(
+                            this.currentPredicate
+                                .getVerb()
+                                .getName()
+                        )
+                    ) {
+                        this.currentPredicate.setSemanticElement(
+                            pPhrase
+                        )
+                    } else {
+                        this.adjunctStack.push(pPhrase)
+                    }
+
+
                 }
+                // else if (
+                //     this.currentPredicate &&
+                //     isConjunction(currentPair)
+                // ) {
+                //     let completeClause: Clause = new Clause()
+
+                //     for (const noun of this.nounStack) {
+                //         completeClause.addNounToClause(noun)
+                //     }
+                //     for (const modifier of this.adjunctStack) {
+                //         completeClause.addAdjunct(modifier)
+                //     }
+
+                //     this.nounStack = []
+                //     this.adjunctStack = []
+                //     this.currentPredicate = null
+                //     this.predAgrStack = []
+                // }
             }
         }
 
         if (this.currentPredicate) {
 
-            let completeClause: Clause = new Clause()
-            completeClause.setPredicate(this.currentPredicate)
+            let completeClause: Clause = new Clause(this.currentPredicate)
+            // completeClause.setPredicate(this.currentPredicate)
 
             for (const noun of this.nounStack) {
                 if (noun.getModifiers().some(
@@ -192,7 +236,7 @@ export class Sentence {
         }
     }
 
-    private handleMatrixClause(currentPred: Verb): void {
+    private handleMatrixClause(currentPred: Predicate): void {
         this.clauses.push(
             addMatrixClauseArguments(
                 currentPred,
@@ -259,6 +303,22 @@ export class Sentence {
                     }
                 )
             )
+        }
+    }
+
+    private checkForRelativeClause(currentNoun: Noun): void {
+        if (isRelative(this.wordPairs[0])) {
+            let relPair: Pair = this.wordPairs.shift() as Pair
+            let relSystem: Relativize = new Relativize(relPair.name)
+            currentNoun.setRelativizer(relSystem)
+            if (isVerb(this.wordPairs[0])) {
+                let relVerbPair: Pair = this.wordPairs.shift() as Pair
+                let relVerb: Verb = new Verb(relVerbPair.name)
+                let relPred: Predicate = new Predicate(relVerb)
+                let relClause: Clause = new Clause(relPred)
+                relClause.addNounToClause(relSystem)
+                this.clauses.push(relClause)
+            }
         }
     }
 }

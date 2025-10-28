@@ -1,4 +1,5 @@
 import type { Mod } from "../Mod"
+import type { Relativize } from "../Relativize"
 import type { Case } from "../SyntaxConstants"
 
 export class Noun {
@@ -6,11 +7,13 @@ export class Noun {
     private case: Case | null
     private modifiers: Mod[]
     private name: string
+    private relativizer: Relativize | null
 
     constructor(name: string) {
         this.name = name
         this.case = null
         this.modifiers = []
+        this.relativizer = null
     }
 
     public setName(newName: string) {
@@ -39,5 +42,13 @@ export class Noun {
 
     public addModifier(mod: Mod): void {
         this.modifiers.push(mod)
+    }
+
+    public getRelativizer(): Relativize | null {
+        return this.relativizer
+    }
+
+    public setRelativizer(rel: Relativize): void {
+        this.relativizer = rel
     }
 }

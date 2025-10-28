@@ -1,44 +1,42 @@
 import { Noun } from "./Noun"
 import { Preposition } from "./Preposition"
 import { Adverb } from "./Adverb"
-import { Verb } from "./Verb"
 import type { Agr } from "../Agr"
 import type { Mod } from "../Mod"
+import { Predicate } from "../Predicate"
+import type { Relativize } from "../Relativize"
 
 export class Clause {
-
-    private verb: Verb | null
-    private nounList: Noun[]
+    private predicate: Predicate
+    // private verb: Verb | null
+    private nounList: (Noun | Relativize)[]
     private adjunctList: (Adverb | Preposition)[]
 
     private causativeNoun: Noun | null
 
-    constructor() {
-        this.verb = null
+    constructor(predicate: Predicate) {
+        this.predicate = predicate
+        // this.verb = null
         this.nounList = []
         this.adjunctList = []
 
         this.causativeNoun = null
     }
 
-    public getPredicate(): Verb | null {
-        return this.verb
-    }
-
-    public setPredicate(predicate: Verb): void {
-        this.verb = predicate
+    public getPredicate(): Predicate {
+        return this.predicate
     }
 
     public getPredMods(): Mod[] {
-        if (this.verb) {
-            return this.verb.getMods()
+        if (this.predicate) {
+            return this.predicate.getMods()
         }
         return []
     }
 
     public addPredMod(modifier: Mod): void {
-        if (this.verb) {
-            this.verb.addMod(modifier)
+        if (this.predicate) {
+            this.predicate.addMod(modifier)
         }
     }
 
@@ -48,23 +46,23 @@ export class Clause {
      * @returns list of Agrs
      */
     public getPredAgrs(): Agr[] {
-        if (this.verb) {
-            return this.verb.getAgrList()
+        if (this.predicate) {
+            return this.predicate.getAgrList()
         }
         return []
     }
 
     public addPredAgr(agr: Agr): void {
-        if (this.verb) {
-            this.verb.addAgr(agr)
+        if (this.predicate) {
+            this.predicate.addAgr(agr)
         }
     }
 
-    public getNouns(): Noun[] {
+    public getNouns(): (Noun | Relativize)[] {
         return this.nounList
     }
 
-    public addNounToClause(noun: Noun): void {
+    public addNounToClause(noun: Noun | Relativize): void {
         this.nounList.push(noun)
     }
 
