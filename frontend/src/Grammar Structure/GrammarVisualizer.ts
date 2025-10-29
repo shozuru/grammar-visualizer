@@ -42,7 +42,7 @@ export class GrammarVisualizer {
     }
 }
 
-// TODO: questions, conjunctions, punctuation, relative clauses
+// TODO: questions, punctuation, conjunctions, relative clauses
 
 // the amazing movie --> the movie that is amazing
 // the movie (that) i saw was really good.

@@ -3,7 +3,7 @@ import {
     addCaustiveModifier, addMatrixClauseArguments,
     addMatrixClauseMods,
     createNounPhrase, createPrepositionalPhrase, createRel, fixPartsOfSpeech,
-    isAdverb, isAdverbAgr, isAdverbMod, isBeVerb, isCausative, isConjunction,
+    isAdverb, isAdverbAgr, isAdverbMod, isBeVerb, isCausative,
     isNoun, isNounModifier, isPassive, isPreposition, isRelative, isVerb,
     isVerbAgr, isVerbModifier, removeAgr, resolveAdverbAttachment,
 } from "./SyntaxMethods"
@@ -17,8 +17,6 @@ import { Clause } from "./partsOfSpeech/Clause"
 import { Mod } from "./Mod"
 import { Agr } from "./Agr"
 import { Predicate } from "./Predicate"
-import { Relativize } from "./Relativize"
-import { createRef } from "react"
 
 export class Sentence {
 
@@ -34,7 +32,7 @@ export class Sentence {
 
     private nounStack: Noun[]
     private nounModStack: Mod[]
-    private nounAgrStack: Pair[]
+    // private nounAgrStack: Pair[]
 
     private adjunctStack: (Preposition | Adverb)[]
     private adverbModStack: Mod[]
@@ -53,7 +51,7 @@ export class Sentence {
 
         this.nounStack = []
         this.nounModStack = []
-        this.nounAgrStack = []
+        // this.nounAgrStack = []
 
         this.adjunctStack = []
         this.adverbAgrStack = []
@@ -144,7 +142,8 @@ export class Sentence {
                             currentPair,
                             this.nounModStack
                         )
-                    if (isRelative(this.wordPairs[0])) {
+                    if (this.wordPairs[0] &&
+                        isRelative(this.wordPairs[0])) {
                         let relClause: Clause | null =
                             createRel(this.wordPairs, nPhrase)
                         if (relClause !== null) {

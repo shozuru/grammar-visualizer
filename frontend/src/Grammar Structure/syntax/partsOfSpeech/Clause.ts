@@ -8,7 +8,7 @@ import type { Relativize } from "../Relativize"
 
 export class Clause {
     private predicate: Predicate
-    private nounList: (Noun | Relativize)[]
+    private nounList: (Noun)[]
     private adjunctList: (Adverb | Preposition)[]
 
     private causativeNoun: Noun | null
@@ -56,11 +56,11 @@ export class Clause {
         }
     }
 
-    public getNouns(): (Noun | Relativize)[] {
+    public getNouns(): Noun[] {
         return this.nounList
     }
 
-    public addNounToClause(noun: Noun | Relativize): void {
+    public addNounToClause(noun: Noun): void {
         this.nounList.push(noun)
     }
 

@@ -57,13 +57,33 @@ export function addClauseArgumentsAndAdjuncts(
 
         let currentWPair: Pair = listOfPairs.shift() as Pair
 
+        // this part is literally the same as in the main sentence method i feel
+        // like we need to move stuff so that we can just reuse the same code
+
         if (isNounModifier(currentWPair, listOfPairs)) {
             nounModStack.push(new Mod(currentWPair))
         } else if (isAdverbMod(currentWPair)) {
             adverbModStack.push(new Mod(currentWPair))
         } else if (isAdverbAgr(currentWPair)) {
             adverbAgrStack.push(new Agr(currentWPair))
-        } else if (isNoun(currentWPair)) {
+        }
+
+        // else if (
+        //     this.nounStack.length > 0 &&
+        //     isCausative(currentPair)
+        // ) {
+        //     let agentNoun: Noun = this.nounStack.pop() as Noun
+        //     this.nounStack.push(
+        //         addCaustiveModifier(agentNoun, currentPair)
+        //     )
+        // } 
+
+        else if (
+            isPassive(currentWPair)
+        ) {
+            nounModStack.push(new Mod(currentWPair))
+        }
+        else if (isNoun(currentWPair)) {
             let nPhrase: Noun = createNounPhrase(
                 currentWPair,
                 nounModStack
@@ -81,6 +101,18 @@ export function addClauseArgumentsAndAdjuncts(
         } else if (isPreposition(currentWPair)) {
             let pPhrase: Preposition = new Preposition(currentWPair.name)
             addPhraseToClause(pPhrase, relClause)
+        }
+        if (nounModStack.length > 0 &&
+            nounModStack[0].getName() === "by"
+        ) {
+            relClause
+                .getNouns()
+                .forEach(noun => {
+                    if (noun.getName() === "that") {
+                        let passiveMod: Mod = nounModStack.shift() as Mod
+                        noun.addModifier(passiveMod)
+                    }
+                })
         }
     }
 }
@@ -229,15 +261,40 @@ export function createRel(listOfPairs: Pair[], noun: Noun): Clause | null {
     let relSystem: Relativize = new Relativize(relPair.name)
     noun.setRelativizer(relSystem)
 
-    let relClause: Clause | null = createRelClause(relSystem, listOfPairs)
+    let relNoun: Noun = new Noun(relSystem.getName())
+    console.log(noun)
+
+    let relClause: Clause | null = createRelClause(relNoun, listOfPairs)
     return relClause
 }
 
 export function createRelClause(
-    relSystem: Relativize, listOfPairs: Pair[]
+    relNoun: Noun,
+    listOfPairs: Pair[]
 ): Clause | null {
 
-    // assumes subject controlled relative clause
+    let relClauseSubject: Noun | null = null
+
+    if (isNominalElement(listOfPairs[0], listOfPairs.slice(1))) {
+        let nounModStack: Mod[] = []
+
+        while (!isNoun(listOfPairs[0])) {
+            if (isNounModifier(listOfPairs[0], listOfPairs.slice(1))) {
+                let nounModPair: Pair = listOfPairs.shift() as Pair
+                let nounMod: Mod = new Mod(nounModPair)
+                nounModStack.push(nounMod)
+            }
+        }
+        let relSubPair: Pair = listOfPairs.shift() as Pair
+        relClauseSubject = createNounPhrase(
+            relSubPair,
+            nounModStack
+        )
+    }
+    console.log("I am drawing such a line")
+    console.log(relClauseSubject)
+    console.log(listOfPairs)
+
     if (isVerbalElement(listOfPairs[0])) {
 
         let verbModStack: Mod[] = []
@@ -256,7 +313,7 @@ export function createRelClause(
         }
 
         if (isVerb(listOfPairs[0])) {
-            // adds predicate to relative clause
+            // add predicate to relative clause
             let relVerbPair: Pair = listOfPairs.shift() as Pair
             let relVerb: Verb = new Verb(relVerbPair.name)
 
@@ -269,7 +326,10 @@ export function createRelClause(
                 relPred.addAgr(agr)
             }
             let relClause: Clause = new Clause(relPred)
-            relClause.addNounToClause(relSystem)
+            if (relClauseSubject !== null) {
+                relClause.addNounToClause(relClauseSubject)
+            }
+            relClause.addNounToClause(relNoun)
 
             addClauseArgumentsAndAdjuncts(relClause, listOfPairs)
             return relClause
@@ -336,10 +396,10 @@ export function fixPartsOfSpeech(pairedList: Pair[]): Pair[] {
         ) {
             pairedList[i].pos = PartsOfSpeech.PsvAgr
 
-            let index: null | number =
+            let index: number =
                 passiveByPhraseIndex(pairedList.slice(i))
 
-            if (index) {
+            if (index >= 0) {
                 pairedList[i + index].pos = PartsOfSpeech.PASSIVE
             }
         }
@@ -504,6 +564,13 @@ export function isECMVerb(matrixPred: Verb): boolean {
     )
 }
 
+export function isNominalElement(wordPair: Pair, listOfPairs: Pair[]): boolean {
+    return (
+        isNoun(wordPair) ||
+        isNounModifier(wordPair, listOfPairs)
+    )
+}
+
 export function isNoun(wordPair: Pair): boolean {
     let currentPOS: number = wordPair.pos
     return (currentPOS === PartsOfSpeech.NN ||
@@ -636,20 +703,20 @@ export function isVerbModifier(wordPair: Pair): boolean {
 export function passiveByPhraseIndex(
     listOfPairs: Pair[]
 
-): number | null {
+): number {
     let index: number = listOfPairs.length - 1
 
-    if (!isNoun(listOfPairs[index])) {
-        return null
-    }
-    index -= 1
+    // if (!isNoun(listOfPairs[index])) {
+    //     return null
+    // }
+    // index -= 1
     while (index >= 0) {
         if (listOfPairs[index].name === "by") {
             return index
         }
         index -= 1
     }
-    return null
+    return index
 }
 
 export function removeAgr(verbAgrStack: Agr[], agrPos: PartsOfSpeech) {
