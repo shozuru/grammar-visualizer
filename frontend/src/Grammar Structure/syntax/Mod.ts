@@ -15,7 +15,7 @@ export class Mod {
         return this.name
     }
 
-    public setname(newName: string): void {
+    public setName(newName: string): void {
         this.name = newName
     }
 

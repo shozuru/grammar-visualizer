@@ -1,7 +1,8 @@
 import {
+    addAdverbModsAndArgs,
     addCaustiveModifier, addMatrixClauseArguments,
     addMatrixClauseMods,
-    createNounPhrase, createPrepositionalPhrase, fixPartsOfSpeech,
+    createNounPhrase, createPrepositionalPhrase, createRel, fixPartsOfSpeech,
     isAdverb, isAdverbAgr, isAdverbMod, isBeVerb, isCausative, isConjunction,
     isNoun, isNounModifier, isPassive, isPreposition, isRelative, isVerb,
     isVerbAgr, isVerbModifier, removeAgr, resolveAdverbAttachment,
@@ -17,6 +18,7 @@ import { Mod } from "./Mod"
 import { Agr } from "./Agr"
 import { Predicate } from "./Predicate"
 import { Relativize } from "./Relativize"
+import { createRef } from "react"
 
 export class Sentence {
 
@@ -103,7 +105,9 @@ export class Sentence {
                     this.addModsIfPresent(currentPair)
 
                     let currentAdverb: Adverb = new Adverb(currentPair.name)
-                    this.handleAdverbModsAndArgs(currentAdverb)
+                    addAdverbModsAndArgs(currentAdverb,
+                        this.adverbModStack, this.adverbAgrStack
+                    )
                     let modPhrase: Preposition | Adverb =
                         resolveAdverbAttachment(
                             currentAdverb,
@@ -140,7 +144,13 @@ export class Sentence {
                             currentPair,
                             this.nounModStack
                         )
-                    this.checkForRelativeClause(nPhrase)
+                    if (isRelative(this.wordPairs[0])) {
+                        let relClause: Clause | null =
+                            createRel(this.wordPairs, nPhrase)
+                        if (relClause !== null) {
+                            this.clauses.push(relClause)
+                        }
+                    }
 
                     if (this.currentPredicate &&
                         isBeVerb(
@@ -166,13 +176,11 @@ export class Sentence {
                             this.wordPairs
                         )
 
-                    if (this.currentPredicate &&
-                        isBeVerb(
-                            this.currentPredicate
-                                .getVerb()
-                                .getName()
-                        )
-                    ) {
+                    if (isBeVerb(
+                        this.currentPredicate
+                            .getVerb()
+                            .getName()
+                    )) {
                         this.currentPredicate.setSemanticElement(
                             pPhrase
                         )
@@ -266,23 +274,6 @@ export class Sentence {
         }
     }
 
-    private handleAdverbModsAndArgs(adverb: Adverb): void {
-        if (
-            this.adverbModStack.length > 0
-        ) {
-            for (const modifier of this.adverbModStack) {
-                adverb.addModifier(modifier)
-            }
-        }
-        if (
-            this.adverbAgrStack.length > 0
-        ) {
-            for (const agr of this.adverbAgrStack) {
-                adverb.addAdverbAgr(agr)
-            }
-        }
-    }
-
     private addModsIfPresent(adverbPair: Pair): void {
         if (adverbPair.pos === PartsOfSpeech.RBS) {
             this.adverbModStack.push(
@@ -302,22 +293,6 @@ export class Sentence {
                     }
                 )
             )
-        }
-    }
-
-    private checkForRelativeClause(currentNoun: Noun): void {
-        if (isRelative(this.wordPairs[0])) {
-            let relPair: Pair = this.wordPairs.shift() as Pair
-            let relSystem: Relativize = new Relativize(relPair.name)
-            currentNoun.setRelativizer(relSystem)
-            if (isVerb(this.wordPairs[0])) {
-                let relVerbPair: Pair = this.wordPairs.shift() as Pair
-                let relVerb: Verb = new Verb(relVerbPair.name)
-                let relPred: Predicate = new Predicate(relVerb)
-                let relClause: Clause = new Clause(relPred)
-                relClause.addNounToClause(relSystem)
-                this.clauses.push(relClause)
-            }
         }
     }
 }

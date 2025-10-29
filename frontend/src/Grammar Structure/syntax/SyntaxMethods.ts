@@ -10,7 +10,8 @@ import {
 } from "./SyntaxConstants"
 import { Mod } from "./Mod"
 import { Agr } from "./Agr"
-import type { Predicate } from "./Predicate"
+import { Predicate } from "./Predicate"
+import { Relativize } from "./Relativize"
 
 
 export function addCaustiveModifier(
@@ -121,6 +122,25 @@ export function addNounsToSubjectControlPred(
     matrixClause.addNounToClause(matrixObject)
 }
 
+export function addPhraseToClause(
+    phrase: Noun | Preposition | Adverb,
+    clause: Clause
+): void {
+    if (isBeVerb(clause
+        .getPredicate()
+        .getVerb()
+        .getName()
+    )) {
+        clause
+            .getPredicate()
+            .setSemanticElement(phrase)
+    } else if (phrase instanceof Noun) {
+        clause.addNounToClause(phrase)
+    } else {
+        clause.addAdjunct(phrase)
+    }
+}
+
 export function createNounPhrase(nounPair: Pair, modifiers: Mod[]): Noun {
     let nounPhrase: Noun = new Noun(nounPair.name)
     while (modifiers.length > 0) {
@@ -139,6 +159,74 @@ export function createPrepositionalPhrase(
     prepositionalPhrase.tagIfObject(restOfSent)
 
     return prepositionalPhrase
+}
+
+export function createRel(listOfPairs: Pair[], noun: Noun): Clause | null {
+    let relPair: Pair = listOfPairs.shift() as Pair
+    let relSystem: Relativize = new Relativize(relPair.name)
+    noun.setRelativizer(relSystem)
+
+    let relClause: Clause | null = createRelClause(relSystem, listOfPairs)
+    return relClause
+}
+
+export function createRelClause(
+    relSystem: Relativize, listOfPairs: Pair[]
+): Clause | null {
+
+    // assumes subject controlled relative clause that doesn't have mods or agrs
+    if (isVerb(listOfPairs[0])) {
+
+        // adds predicate to relative clause
+        let relVerbPair: Pair = listOfPairs.shift() as Pair
+        let relVerb: Verb = new Verb(relVerbPair.name)
+        let relPred: Predicate = new Predicate(relVerb)
+        let relClause: Clause = new Clause(relPred)
+        relClause.addNounToClause(relSystem)
+
+        // gets clause arguments and modifiers and adds it to the clause
+
+        let nounModStack: Mod[] = []
+        let adverbModStack: Mod[] = []
+        let adverbAgrStack: Agr[] = []
+
+        while (listOfPairs[0] &&
+            !isVerb(listOfPairs[0]) &&
+            !isVerbAgr(listOfPairs[0]) &&
+            !isVerbModifier(listOfPairs[0])
+        ) {
+            let currentWPair: Pair = listOfPairs.shift() as Pair
+
+            if (isNounModifier(currentWPair, listOfPairs)) {
+                nounModStack.push(new Mod(currentWPair))
+
+            } else if (isAdverbMod(currentWPair)) {
+                adverbModStack.push(new Mod(currentWPair))
+            } else if (isAdverbAgr(currentWPair)) {
+                adverbAgrStack.push(new Agr(currentWPair))
+            } else if (isNoun(currentWPair)) {
+                let nPhrase: Noun = createNounPhrase(
+                    currentWPair,
+                    nounModStack
+                )
+                addPhraseToClause(nPhrase, relClause)
+
+            } else if (isAdverb(currentWPair)) {
+                let aPhrase: Adverb = new Adverb(currentWPair.name)
+                addAdverbModsAndArgs(aPhrase, adverbModStack, adverbAgrStack)
+
+                let modPhrase: Adverb | Preposition =
+                    resolveAdverbAttachment(aPhrase, listOfPairs)
+                addPhraseToClause(modPhrase, relClause)
+
+            } else if (isPreposition(currentWPair)) {
+                let pPhrase: Preposition = new Preposition(currentWPair.name)
+                addPhraseToClause(pPhrase, relClause)
+            }
+        }
+        return relClause
+    }
+    return null
 }
 
 /**
@@ -298,6 +386,27 @@ export function fixPartsOfSpeech(pairedList: Pair[]): Pair[] {
         }
     }
     return pairedList
+}
+
+export function addAdverbModsAndArgs(
+    adverb: Adverb,
+    adverbModStack: Mod[],
+    adverbAgrStack: Agr[]
+): void {
+    if (
+        adverbModStack.length > 0
+    ) {
+        for (const modifier of adverbModStack) {
+            adverb.addModifier(modifier)
+        }
+    }
+    if (
+        adverbAgrStack.length > 0
+    ) {
+        for (const agr of adverbAgrStack) {
+            adverb.addAdverbAgr(agr)
+        }
+    }
 }
 
 export function hasMultipleNouns(nounList: Noun[]): boolean {

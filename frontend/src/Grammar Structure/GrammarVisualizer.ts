@@ -42,19 +42,23 @@ export class GrammarVisualizer {
     }
 }
 
-// TODO: questions, relative clauses
-// if DT followed by tensed verb, DT should be 
-// the movie has been watched by (everyone [that is] in the room)
+// TODO: questions, conjunctions, punctuation, relative clauses
+
 // the amazing movie --> the movie that is amazing
 // the movie (that) i saw was really good.
-// the person who i knew --> the person that I knew
+// the person that went to spain
+// the person (that was) in the bathroom came back
+// the person (that was) fired from his job came back
+// the man that is a soccer player came back --> the soccer player man came back
+// who i knew was great --> the person that I knew was great
 
 // account for adjectives
 // I made the game (be) easier
 
 // -----------------------------------------------------------------------------
 // experiencer verbs might be super limited
-// determining if intransitive verb is unaccusative or unergative might prove more challenging
+// determining if intransitive verb is unaccusative or unergative might prove 
+// more challenging
 // might want to look into an ML model that can classify it or make one yourself
 
 // might want to do stuff for case and agreement on nouns and verbs
