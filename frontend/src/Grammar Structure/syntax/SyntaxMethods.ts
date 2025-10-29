@@ -14,12 +14,75 @@ import { Predicate } from "./Predicate"
 import { Relativize } from "./Relativize"
 
 
+export function addAdverbModsAndArgs(
+    adverb: Adverb,
+    adverbModStack: Mod[],
+    adverbAgrStack: Agr[]
+): void {
+    if (
+        adverbModStack.length > 0
+    ) {
+        for (const modifier of adverbModStack) {
+            adverb.addModifier(modifier)
+        }
+    }
+    if (
+        adverbAgrStack.length > 0
+    ) {
+        for (const agr of adverbAgrStack) {
+            adverb.addAdverbAgr(agr)
+        }
+    }
+}
+
 export function addCaustiveModifier(
     agentNoun: Noun,
     causativePair: Pair
 ): Noun {
     agentNoun.addModifier(new Mod(causativePair))
     return agentNoun
+}
+
+export function addClauseArgumentsAndAdjuncts(
+    relClause: Clause,
+    listOfPairs: Pair[]
+): void {
+    // gets clause arguments and modifiers and adds them to the clause
+
+    let nounModStack: Mod[] = []
+    let adverbModStack: Mod[] = []
+    let adverbAgrStack: Agr[] = []
+
+    while (listOfPairs[0] && !isVerbalElement(listOfPairs[0])) {
+
+        let currentWPair: Pair = listOfPairs.shift() as Pair
+
+        if (isNounModifier(currentWPair, listOfPairs)) {
+            nounModStack.push(new Mod(currentWPair))
+        } else if (isAdverbMod(currentWPair)) {
+            adverbModStack.push(new Mod(currentWPair))
+        } else if (isAdverbAgr(currentWPair)) {
+            adverbAgrStack.push(new Agr(currentWPair))
+        } else if (isNoun(currentWPair)) {
+            let nPhrase: Noun = createNounPhrase(
+                currentWPair,
+                nounModStack
+            )
+            addPhraseToClause(nPhrase, relClause)
+
+        } else if (isAdverb(currentWPair)) {
+            let aPhrase: Adverb = new Adverb(currentWPair.name)
+            addAdverbModsAndArgs(aPhrase, adverbModStack, adverbAgrStack)
+
+            let modPhrase: Adverb | Preposition =
+                resolveAdverbAttachment(aPhrase, listOfPairs)
+            addPhraseToClause(modPhrase, relClause)
+
+        } else if (isPreposition(currentWPair)) {
+            let pPhrase: Preposition = new Preposition(currentWPair.name)
+            addPhraseToClause(pPhrase, relClause)
+        }
+    }
 }
 
 export function addMatrixClauseArguments(
@@ -174,57 +237,43 @@ export function createRelClause(
     relSystem: Relativize, listOfPairs: Pair[]
 ): Clause | null {
 
-    // assumes subject controlled relative clause that doesn't have mods or agrs
-    if (isVerb(listOfPairs[0])) {
+    // assumes subject controlled relative clause
+    if (isVerbalElement(listOfPairs[0])) {
 
-        // adds predicate to relative clause
-        let relVerbPair: Pair = listOfPairs.shift() as Pair
-        let relVerb: Verb = new Verb(relVerbPair.name)
-        let relPred: Predicate = new Predicate(relVerb)
-        let relClause: Clause = new Clause(relPred)
-        relClause.addNounToClause(relSystem)
+        let verbModStack: Mod[] = []
+        let verbAgrStack: Agr[] = []
 
-        // gets clause arguments and modifiers and adds it to the clause
-
-        let nounModStack: Mod[] = []
-        let adverbModStack: Mod[] = []
-        let adverbAgrStack: Agr[] = []
-
-        while (listOfPairs[0] &&
-            !isVerb(listOfPairs[0]) &&
-            !isVerbAgr(listOfPairs[0]) &&
-            !isVerbModifier(listOfPairs[0])
-        ) {
-            let currentWPair: Pair = listOfPairs.shift() as Pair
-
-            if (isNounModifier(currentWPair, listOfPairs)) {
-                nounModStack.push(new Mod(currentWPair))
-
-            } else if (isAdverbMod(currentWPair)) {
-                adverbModStack.push(new Mod(currentWPair))
-            } else if (isAdverbAgr(currentWPair)) {
-                adverbAgrStack.push(new Agr(currentWPair))
-            } else if (isNoun(currentWPair)) {
-                let nPhrase: Noun = createNounPhrase(
-                    currentWPair,
-                    nounModStack
-                )
-                addPhraseToClause(nPhrase, relClause)
-
-            } else if (isAdverb(currentWPair)) {
-                let aPhrase: Adverb = new Adverb(currentWPair.name)
-                addAdverbModsAndArgs(aPhrase, adverbModStack, adverbAgrStack)
-
-                let modPhrase: Adverb | Preposition =
-                    resolveAdverbAttachment(aPhrase, listOfPairs)
-                addPhraseToClause(modPhrase, relClause)
-
-            } else if (isPreposition(currentWPair)) {
-                let pPhrase: Preposition = new Preposition(currentWPair.name)
-                addPhraseToClause(pPhrase, relClause)
+        while (!isVerb(listOfPairs[0])) {
+            if (isVerbModifier(listOfPairs[0])) {
+                let verbModPair: Pair = listOfPairs.shift() as Pair
+                let verbMod: Mod = new Mod(verbModPair)
+                verbModStack.push(verbMod)
+            } else {
+                let verbAgrPair: Pair = listOfPairs.shift() as Pair
+                let verbAgr: Agr = new Agr(verbAgrPair)
+                verbAgrStack.push(verbAgr)
             }
         }
-        return relClause
+
+        if (isVerb(listOfPairs[0])) {
+            // adds predicate to relative clause
+            let relVerbPair: Pair = listOfPairs.shift() as Pair
+            let relVerb: Verb = new Verb(relVerbPair.name)
+
+            let relPred: Predicate = new Predicate(relVerb)
+            // add mods and agrs
+            for (let mod of verbModStack) {
+                relPred.addMod(mod)
+            }
+            for (let agr of verbAgrStack) {
+                relPred.addAgr(agr)
+            }
+            let relClause: Clause = new Clause(relPred)
+            relClause.addNounToClause(relSystem)
+
+            addClauseArgumentsAndAdjuncts(relClause, listOfPairs)
+            return relClause
+        }
     }
     return null
 }
@@ -386,27 +435,6 @@ export function fixPartsOfSpeech(pairedList: Pair[]): Pair[] {
         }
     }
     return pairedList
-}
-
-export function addAdverbModsAndArgs(
-    adverb: Adverb,
-    adverbModStack: Mod[],
-    adverbAgrStack: Agr[]
-): void {
-    if (
-        adverbModStack.length > 0
-    ) {
-        for (const modifier of adverbModStack) {
-            adverb.addModifier(modifier)
-        }
-    }
-    if (
-        adverbAgrStack.length > 0
-    ) {
-        for (const agr of adverbAgrStack) {
-            adverb.addAdverbAgr(agr)
-        }
-    }
 }
 
 export function hasMultipleNouns(nounList: Noun[]): boolean {
@@ -574,6 +602,14 @@ export function isVerbAgr(wordPair: Pair): boolean {
         wordPair.pos === PartsOfSpeech.PsvAgr ||
         wordPair.pos === PartsOfSpeech.InfAgr ||
         wordPair.pos === PartsOfSpeech.TO
+    )
+}
+
+export function isVerbalElement(wordPair: Pair): boolean {
+    return (
+        isVerb(wordPair) ||
+        isVerbAgr(wordPair) ||
+        isVerbModifier(wordPair)
     )
 }
 
