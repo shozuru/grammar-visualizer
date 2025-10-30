@@ -28,57 +28,14 @@ export class ClauseAssemblyWorkbench {
         this.adjunctStack = []
         this.clause = null
         this.sortClause(wordList)
-        this.createCompleteClause()
     }
 
-    private createCompleteClause(): void {
-        if (
-            this.mainPredicate !== null &&
-            this.clauseSubject !== null
-        ) {
-            console.log(this.clauseSubject)
-            let clause: Clause = new Clause(this.mainPredicate)
-            clause.addNounToClause(this.clauseSubject)
-            if (this.nounStack.length > 0) {
-                for (let noun of this.nounStack) {
-                    clause.addNounToClause(noun)
-                }
-            }
-            if (this.adjunctStack.length > 0) {
-                for (let adjunct of this.adjunctStack) {
-                    clause.addAdjunct(adjunct)
-                }
-            }
-            this.clause = clause
-            console.log(this.clause)
-        }
-    }
 
     private sortClause(wordList: Word[]): void {
 
         while (wordList[0]) {
 
-            if (isNominalElement(wordList[0], wordList.slice(1))) {
-                if (this.clauseSubject === null) {
-                    this.clauseSubject = handleNounPhrase(wordList)
-                } else {
-                    this.nounStack.push(handleNounPhrase(wordList))
-                }
-            }
-            else if (isVerbalElement(wordList[0])) {
-                this.mainPredicate = handlePredicatePhrase(wordList)
-            }
-            else if (isAdverbElement(wordList[0])) {
-                this.adjunctStack.push(
-                    handleAdverbPhrase(wordList)
-                )
-            }
-            else if (isPreposition(wordList[0])) {
-                this.adjunctStack.push(
-                    handlePrepositionPhrase(wordList)
-                )
-            }
-            else if (isCausative(wordList[0])) {
+            if (isCausative(wordList[0])) {
                 let causeWord: Word = wordList.shift() as Word
                 let causeMod: Mod = new Mod(causeWord)
                 if (this.clauseSubject !== null) {

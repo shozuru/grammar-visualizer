@@ -431,17 +431,17 @@ export function createRosClause(
     adjunctStack: (Adverb | Preposition)[],
     wordList: Word[]
 ): {
-    rosClause: Clause
-    nextClauseSubject: Noun | null
+    clause: Clause
+    nextSubject: Noun | null
 } {
-    let rosClause = new Clause(rosPred)
-    rosClause.addNounToClause(subject)
+    let clause = new Clause(rosPred)
+    clause.addNounToClause(subject)
     for (let adjunct of adjunctStack) {
-        rosClause.addAdjunct(adjunct)
+        clause.addAdjunct(adjunct)
     }
-    let nextClauseSubject: Noun | null =
-        handleRosObjects(rosClause, wordList)
-    return { rosClause, nextClauseSubject }
+    let nextSubject: Noun | null =
+        handleRosObjects(clause, wordList)
+    return { clause, nextSubject }
 }
 
 /**
@@ -618,6 +618,11 @@ export function handleAdverbPhrase(wordList: Word[]): Adverb | Preposition {
             agrStack.push(agr)
         }
     }
+    let supletiveMod: Mod | null = addModsIfPresent(wordList[0])
+    if (supletiveMod !== null) {
+        modStack.push(supletiveMod)
+    }
+
     let headWord: Word = wordList.shift() as Word
     let headPhrase: Adverb = new Adverb(headWord.name)
 
@@ -627,6 +632,31 @@ export function handleAdverbPhrase(wordList: Word[]): Adverb | Preposition {
         resolveAdverbAttachment(headPhrase, wordList)
     return modPhrase
 }
+
+export function addModsIfPresent(adverbWord: Word): Mod | null {
+    if (adverbWord.pos === PartsOfSpeech.RBS) {
+
+        let superlative: Mod = new Mod(
+            {
+                name: "superlative",
+                pos: PartsOfSpeech.SUPERLATIVE
+            }
+        )
+        return superlative
+
+    } else if (adverbWord.pos === PartsOfSpeech.RBR) {
+
+        let comparative: Mod = new Mod(
+            {
+                name: "comparative",
+                pos: PartsOfSpeech.COMPARATIVE
+            }
+        )
+        return comparative
+    }
+    return null
+}
+
 
 export function handleNounPhrase(listOfWords: Word[]): Noun {
     let nounModStack: Mod[] = []
@@ -672,19 +702,6 @@ export function handlePredicatePhrase(wordList: Word[]): Predicate {
     return pred
 }
 
-export function handlePreVerbAgrs(pred: Predicate): void {
-    let passiveAgr: Agr | null =
-        removeAgr(this.predAgrStack, PartsOfSpeech.PsvAgr)
-    let infAgr: Agr | null =
-        removeAgr(this.predAgrStack, PartsOfSpeech.InfAgr)
-    if (passiveAgr) {
-        this.currentPredicate.addAgr(passiveAgr)
-    }
-    if (infAgr) {
-        this.currentPredicate.addAgr(infAgr)
-    }
-}
-
 export function handleRosObjects(
     rosClause: Clause,
     wordList: Word[]
@@ -726,7 +743,10 @@ export function isAdverbElement(word: Word): boolean {
 }
 
 export function isAdverbMod(word: Word): boolean {
-    return word.pos === PartsOfSpeech.SUPERLATIVE
+    return (
+        word.pos === PartsOfSpeech.SUPERLATIVE ||
+        word.pos === PartsOfSpeech.COMPARATIVE
+    )
 }
 
 export function isBeVerb(verbName: string): boolean {
@@ -878,23 +898,9 @@ export function isRelative(word: Word): boolean {
 
 export function isRosVerb(pred: Predicate): boolean {
     return (
-        raisingVerbs.some(
-            raisingVerb => pred
-                .getVerb()
-                .getName()
-                .includes(raisingVerb)
-        ) ||
-        objectControlVerbs.some(
-            objectVerb => pred
-                .getVerb()
-                .getName()
-                .includes(objectVerb)
-        ) ||
-        ecmVerbs.some(ecmVerb => pred
-            .getVerb()
-            .getName()
-            .includes(ecmVerb)
-        )
+        isRaisingPred(pred) ||
+        isObjectControlPred(pred) ||
+        isECMPred(pred)
     )
 }
 

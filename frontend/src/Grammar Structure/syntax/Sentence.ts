@@ -49,7 +49,7 @@ export class Sentence {
 
         while (this.wordList[0]) {
 
-            let currentWord: Word = this.wordList.shift() as Word
+            let currentWord: Word = this.wordList[0]
             console.log(currentWord)
 
             if (isNominalElement(currentWord, this.wordList)) {
@@ -91,9 +91,10 @@ export class Sentence {
                     this.currentSubject !== null &&
                     isRosVerb(this.currentPredicate)
                 ) {
-                    let clause: {
-                        rosClause: Clause
-                        nextClauseSubject: Noun | null
+
+                    let ros: {
+                        clause: Clause
+                        nextSubject: Noun | null
                     } =
                         createRosClause(
                             this.currentPredicate,
@@ -101,17 +102,15 @@ export class Sentence {
                             this.adjunctStack,
                             this.wordList
                         )
-                    this.clauses.push(clause.rosClause)
+                    this.clauses.push(ros.clause)
                     this.clearCurrentClause()
-                    if (clause.nextClauseSubject !== null) {
-                        this.nounStack.push(clause.nextClauseSubject)
+                    if (ros.nextSubject !== null) {
+                        this.currentSubject = ros.nextSubject
                     }
 
-                    // need to add inf marker to next clause but we don't have
-                    // access to it yet
+                    // when you deal with tense in general, you can deal with 
+                    // inf, since you don't deal with tense in the main clause
                 }
-
-                // handlePreVerbAgrs(this.currentPredicate)
             }
             //             } else if (
             //                 this.nounStack.length > 0 &&
@@ -126,43 +125,7 @@ export class Sentence {
             //                 isPassive(currentWord)
             //             ) {
             //                 this.nounModStack.push(new Mod(currentWord))
-            //             } else if (
-            //                 currentWord.pos === PartsOfSpeech.QuestionTense
-            //             ) {
-            //                 let questionModifier: Adverb = new Adverb(currentWord.name)
-            //                 this.adjunctStack.push(questionModifier)
-
-
-            //             } else if (isVerb(currentWord)) {
-            //                 if (this.currentPredicate !== null) {
-            //                     this.handleMatrixClause(this.currentPredicate)
-            //                 }
-
-            //                 let vPhrase: Verb = new Verb(currentWord.name)
-            //                 this.currentPredicate = new Predicate(vPhrase)
-            //                 this.numberOfClauses += 1
-            //                 this.handlePreVerbAgrs()
-
-            //         
-            //             // else if (
-            //             //     this.currentPredicate &&
-            //             //     isConjunction(currentWord)
-            //             // ) {
-            //             //     let completeClause: Clause = new Clause()
-
-            //             //     for (const noun of this.nounStack) {
-            //             //         completeClause.addNounToClause(noun)
-            //             //     }
-            //             //     for (const modifier of this.adjunctStack) {
-            //             //         completeClause.addAdjunct(modifier)
-            //             //     }
-
-            //             //     this.nounStack = []
-            //             //     this.adjunctStack = []
-            //             //     this.currentPredicate = null
-            //             //     this.predAgrStack = []
-            //             // }
-            //     }
+            //
 
             //     if (this.currentPredicate) {
 
@@ -180,20 +143,10 @@ export class Sentence {
             //                 completeClause.addNounToClause(noun)
             //             }
             //         }
-            //         for (const adjunct of this.adjunctStack) {
-            //             completeClause.addAdjunct(adjunct)
-            //         }
-
-            //         for (const mod of this.predModStack) {
-            //             completeClause.addPredMod(mod)
-            //         }
-
-            //         for (const agr of this.predAgrStack) {
-            //             completeClause.addPredAgr(agr)
-            //         }
-
-            //         this.clauses.push(completeClause)
+            //         
         }
+
+        this.createCompleteClause()
     }
 
     private createCompleteClause(): void {
@@ -227,43 +180,6 @@ export class Sentence {
         //       
     }
 
-    // private handleMatrixClause(currentPred: Predicate): void {
-    //     this.clauses.push(
-    //         addMatrixClauseArguments(
-    //             currentPred,
-    //             this.nounStack
-    //         )
-    //     )
-    //     addMatrixClauseMods(
-    //         currentPred,
-    //         this.predModStack,
-    //     )
-    //     this.predModStack.push(new Mod(
-    //         { name: "inf", pos: PartsOfSpeech.VBINF }
-    //     ))
-    // }
-
-    // private addModsIfPresent(adverbWord: Word): void {
-    //     if (adverbWord.pos === PartsOfSpeech.RBS) {
-    //         this.adverbModStack.push(
-    //             new Mod(
-    //                 {
-    //                     name: "superlative",
-    //                     pos: PartsOfSpeech.SUPERLATIVE
-    //                 }
-    //             )
-    //         )
-    //     } else if (adverbWord.pos === PartsOfSpeech.RBR) {
-    //         this.adverbModStack.push(
-    //             new Mod(
-    //                 {
-    //                     name: "comparative",
-    //                     pos: PartsOfSpeech.COMPARATIVE
-    //                 }
-    //             )
-    //         )
-    //     }
-    // }
 
     /**
      * Adds phrase as the predicate if the predicate is a dummy verb. 
