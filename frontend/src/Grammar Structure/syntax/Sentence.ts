@@ -1,5 +1,4 @@
 import {
-    addInfModToPred,
     createRosClause,
     fixPartsOfSpeech,
     handleAdverbPhrase,
@@ -81,7 +80,7 @@ export class Sentence {
                     this.adjunctStack = []
                     this.nounStack = []
 
-                    addInfModToPred(pred)
+                    // addInfModToPred(pred)
                 }
 
                 this.currentPredicate = pred
