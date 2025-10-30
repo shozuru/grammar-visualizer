@@ -1,4 +1,4 @@
-import type { Pair } from "../types/Pair"
+import type { Pair } from "../types/Word"
 import type { PartsOfSpeech } from "./SyntaxConstants"
 
 export class Agr {

@@ -4,11 +4,10 @@ import { Adverb } from "./Adverb"
 import type { Agr } from "../Agr"
 import type { Mod } from "../Mod"
 import { Predicate } from "../Predicate"
-import type { Relativize } from "../Relativize"
 
 export class Clause {
     private predicate: Predicate
-    private nounList: (Noun)[]
+    private nounList: Noun[]
     private adjunctList: (Adverb | Preposition)[]
 
     private causativeNoun: Noun | null

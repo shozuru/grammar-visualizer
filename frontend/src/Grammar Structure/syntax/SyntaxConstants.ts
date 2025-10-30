@@ -109,7 +109,7 @@ export const posDictionary: PosDictionary = {
     XX: "Unknown",
 }
 
-export const conjunctions: Set<string> = new Set(
+export const conjunctions: string[] =
     [
         "that",
         "if",
@@ -118,9 +118,8 @@ export const conjunctions: Set<string> = new Set(
         "or",
         "while"
     ]
-)
 
-export const ecmVerbs: Set<string> = new Set(
+export const ecmVerbs: string[] =
     [
         "see",
         "saw",
@@ -134,9 +133,9 @@ export const ecmVerbs: Set<string> = new Set(
         "felt",
         "notice"
     ]
-)
 
-export const objectControlVerbs: Set<string> = new Set(
+
+export const objectControlVerbs: string[] =
     [
         "ask",
         "tell",
@@ -156,9 +155,9 @@ export const objectControlVerbs: Set<string> = new Set(
         "pay",
         "paid"
     ]
-)
 
-export const raisingVerbs: Set<string> = new Set(
+
+export const raisingVerbs: string[] =
     [
         "want",
         "expect",
@@ -179,4 +178,3 @@ export const raisingVerbs: Set<string> = new Set(
         "judge",
         "report"
     ]
-)

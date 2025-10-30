@@ -1,20 +1,20 @@
 import { type SentenceInfo } from "./types/SentenceInfo"
 import { Sentence } from "./syntax/Sentence"
-import type { Pair } from "./types/Pair"
+import type { Word } from "./types/Word"
 
 export class GrammarVisualizer {
 
     public sentence: Sentence
-    private sentencePairsList: Pair[]
+    private sentenceWordList: Word[]
 
     constructor(inputSentence: SentenceInfo) {
-        this.sentencePairsList = this.createZippedPairs(
+        this.sentenceWordList = this.createZippedWords(
             inputSentence.posList,
             inputSentence.wordList
         )
 
         this.sentence = new Sentence(
-            this.sentencePairsList
+            this.sentenceWordList
         )
         this.sentence.generateClauses()
 
@@ -24,25 +24,27 @@ export class GrammarVisualizer {
         console.log(this.sentence.clauses)
     }
 
-    private createZippedPairs(
+    private createZippedWords(
         listOfPos: number[],
         listOfWords: string[]
-    ): Pair[] {
-        let zipped: Pair[] = []
+    ): Word[] {
+        let zipped: Word[] = []
 
         for (let i = 0; i < listOfPos.length; i++) {
-            let pair: Pair = {
+            let Word: Word = {
 
                 pos: listOfPos[i],
                 name: listOfWords[i]
             }
-            zipped.push(pair)
+            zipped.push(Word)
         }
         return zipped
     }
 }
 
 // TODO: questions, punctuation, conjunctions, relative clauses
+
+// doesn't work: That is the woman that let me go
 
 // the amazing movie --> the movie that is amazing
 // the movie (that) i saw was really good.

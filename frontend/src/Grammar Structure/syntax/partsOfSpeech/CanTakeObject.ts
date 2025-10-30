@@ -1,6 +1,6 @@
 import { isNoun, isNounModifier } from "../SyntaxMethods"
 import { Noun } from "./Noun"
-import type { Pair } from "../../types/Pair"
+import type { Pair } from "../../types/Word"
 
 export abstract class CanTakeObject {
 
