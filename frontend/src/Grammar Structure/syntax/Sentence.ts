@@ -1,4 +1,5 @@
 import {
+    addInfModToPred,
     createRosClause,
     fixPartsOfSpeech,
     handleAdverbPhrase,
@@ -79,6 +80,8 @@ export class Sentence {
                     this.createCompleteClause()
                     this.adjunctStack = []
                     this.nounStack = []
+
+                    addInfModToPred(pred)
                 }
 
                 this.currentPredicate = pred
@@ -99,10 +102,13 @@ export class Sentence {
                             this.wordList
                         )
                     this.clauses.push(clause.rosClause)
-                    this.resetCurrentClause()
+                    this.clearCurrentClause()
                     if (clause.nextClauseSubject !== null) {
                         this.nounStack.push(clause.nextClauseSubject)
                     }
+
+                    // need to add inf marker to next clause but we don't have
+                    // access to it yet
                 }
 
                 // handlePreVerbAgrs(this.currentPredicate)
@@ -280,7 +286,7 @@ export class Sentence {
         }
     }
 
-    private resetCurrentClause(): void {
+    private clearCurrentClause(): void {
         this.adjunctStack = []
         this.currentSubject = null
         this.currentPredicate = null

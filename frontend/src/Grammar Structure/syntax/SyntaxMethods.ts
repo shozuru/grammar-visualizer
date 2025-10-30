@@ -14,6 +14,12 @@ import { Predicate } from "./Predicate"
 import { Relativize } from "./Relativize"
 
 
+export function addInfModToPred(pred: Predicate): void {
+    let infMod: Mod =
+        new Mod({ name: "inf", pos: PartsOfSpeech.VBINF })
+    pred.addMod(infMod)
+}
+
 export function addAdverbModsAndArgs(
     adverb: Adverb,
     adverbModStack: Mod[],
