@@ -1,35 +1,36 @@
 import { isNoun, isNounModifier } from "../SyntaxMethods"
 import { Noun } from "./Noun"
-import type { Pair } from "../../types/Word"
+import type { Word } from "../../types/Word"
+import { Mod } from "../Mod"
 
 export abstract class CanTakeObject {
 
     protected object: Noun | null = null
 
-    public tagIfObject(listOfNextWords: Pair[]): void {
-        let nounModiferList: string[] = []
-        if (listOfNextWords.length > 0) {
-            let i: number = 0
-            let nextPair: Pair = listOfNextWords[i]
-            while (nextPair && !isNoun(nextPair)) {
-                if (isNounModifier(nextPair, listOfNextWords)) {
+    public tagIfObject(listOfNextWords: Word[]): void {
+        let nounModiferList: Mod[] = []
+        let i: number = 0
+        if (listOfNextWords[i]) {
+            let nextWord: Word = listOfNextWords[i]
+            while (nextWord && !isNoun(nextWord)) {
+                if (isNounModifier(nextWord, listOfNextWords)) {
                     // shift off the element and add to mod list
-                    let nounModifierPair: Pair =
-                        listOfNextWords.shift() as Pair
-                    nounModiferList.push(nounModifierPair.name)
-
-                    nextPair = listOfNextWords[i]
+                    let modWord: Word =
+                        listOfNextWords.shift() as Word
+                    let mod: Mod = new Mod(modWord)
+                    nounModiferList.push(mod)
+                    nextWord = listOfNextWords[i]
                 } else {
-                    nextPair = listOfNextWords[i + 1]
+                    nextWord = listOfNextWords[i + 1]
                 }
             }
-            if (nextPair !== undefined) {
+            if (nextWord !== undefined) {
                 // element has noun object
-                let [nounPair]: Pair[] = listOfNextWords.splice(i, 1)
-                let nounObject: Noun = new Noun(nounPair.name)
+                let [nounWord]: Word[] = listOfNextWords.splice(i, 1)
+                let nounObject: Noun = new Noun(nounWord.name)
                 if (nounModiferList.length > 0) {
                     // add modifiers to noun
-                    for (const modifier of nounModiferList) {
+                    for (let modifier of nounModiferList) {
                         nounObject.addModifier(modifier)
                     }
                 }

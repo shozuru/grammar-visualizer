@@ -1,4 +1,4 @@
-import type { Pair } from "../types/Word"
+import type { Word } from "../types/Word"
 import type { PartsOfSpeech } from "./SyntaxConstants"
 
 export class Agr {
@@ -6,7 +6,7 @@ export class Agr {
     private name: string
     private pos: PartsOfSpeech
 
-    constructor(word: Pair) {
+    constructor(word: Word) {
         this.name = word.name
         this.pos = word.pos
     }

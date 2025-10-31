@@ -10,14 +10,17 @@ export class Clause {
     private nounList: Noun[]
     private adjunctList: (Adverb | Preposition)[]
 
-    private causativeNoun: Noun | null
+
+    // maybe this should wait until semantics are dealt with since it introduces
+    // an Effector 
+    // private causativeNoun: Noun | null
 
     constructor(predicate: Predicate) {
         this.predicate = predicate
         this.nounList = []
         this.adjunctList = []
 
-        this.causativeNoun = null
+        // this.causativeNoun = null
     }
 
     public getPredicate(): Predicate {
@@ -79,11 +82,11 @@ export class Clause {
         noun.addModifier(mod)
     }
 
-    public getCausativeNoun(): Noun | null {
-        return this.causativeNoun
-    }
+    // public getCausativeNoun(): Noun | null {
+    //     return this.causativeNoun
+    // }
 
-    public setCausativeNoun(noun: Noun): void {
-        this.causativeNoun = noun
-    }
+    // public setCausativeNoun(noun: Noun): void {
+    //     this.causativeNoun = noun
+    // }
 }

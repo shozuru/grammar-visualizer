@@ -14,7 +14,7 @@ export class Preposition extends CanTakeObject {
     }
 
     public hasObject(): boolean {
-        return this.object !== null
+        return this.object instanceof Noun
     }
 
     public getObject(): Noun | null {

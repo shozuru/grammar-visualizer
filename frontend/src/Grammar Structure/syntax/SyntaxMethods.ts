@@ -11,8 +11,6 @@ import {
 import { Mod } from "./Mod"
 import { Agr } from "./Agr"
 import { Predicate } from "./Predicate"
-import { Relativize } from "./Relativize"
-
 
 // export function addInfModToPred(pred: Predicate): void {
 //     let infMod: Mod =
@@ -22,26 +20,85 @@ import { Relativize } from "./Relativize"
 
 export function addAdverbModsAndArgs(
     adverb: Adverb,
-    adverbModStack: Mod[],
-    adverbAgrStack: Agr[]
+    modStack: Mod[],
+    agrStack: Agr[]
 ): void {
     if (
-        adverbModStack.length > 0
+        modStack.length > 0
     ) {
-        for (const modifier of adverbModStack) {
+        for (const modifier of modStack) {
             adverb.addModifier(modifier)
         }
     }
     if (
-        adverbAgrStack.length > 0
+        agrStack.length > 0
     ) {
-        for (const agr of adverbAgrStack) {
+        for (const agr of agrStack) {
             adverb.addAdverbAgr(agr)
         }
     }
 }
 
-export function addPredModsAndArgs(
+export function addCaustiveModifier(
+    agentNoun: Noun,
+    causeWord: Word
+): void {
+    agentNoun.addModifier(new Mod(causeWord))
+}
+
+export function addMatrixClauseMods(
+    matrixPred: Predicate, listOfMods: Mod[]
+): void {
+    while (listOfMods.length > 0) {
+        let mod: Mod = listOfMods.shift() as Mod
+        matrixPred.addMod(mod)
+    }
+}
+
+export function addModsIfPresent(adverbWord: Word): Mod | null {
+    if (adverbWord.pos === PartsOfSpeech.RBS) {
+
+        let superlative: Mod = new Mod(
+            {
+                name: "superlative",
+                pos: PartsOfSpeech.SUPERLATIVE
+            }
+        )
+        return superlative
+
+    } else if (adverbWord.pos === PartsOfSpeech.RBR) {
+
+        let comparative: Mod = new Mod(
+            {
+                name: "comparative",
+                pos: PartsOfSpeech.COMPARATIVE
+            }
+        )
+        return comparative
+    }
+    return null
+}
+
+export function addPhraseToClause(
+    phrase: Noun | Preposition | Adverb,
+    clause: Clause
+): void {
+    if (isBeVerb(clause
+        .getPredicate()
+        .getVerb()
+        .getName()
+    )) {
+        clause
+            .getPredicate()
+            .setSemanticElement(phrase)
+    } else if (phrase instanceof Noun) {
+        clause.addNounToClause(phrase)
+    } else {
+        clause.addAdjunct(phrase)
+    }
+}
+
+export function addPredModsAndAgrs(
     pred: Predicate,
     modStack: Mod[],
     agrStack: Agr[]
@@ -62,17 +119,9 @@ export function addPredModsAndArgs(
     }
 }
 
-// export function addCaustiveModifier(
-//     agentNoun: Noun,
-//     causativePair: Pair
-// ): Noun {
-//     agentNoun.addModifier(new Mod(causativePair))
-//     return agentNoun
-// }
-
 // export function addClauseArgumentsAndAdjuncts(
 //     relClause: Clause,
-//     listOfWords: Word[]
+//     wordList: Word[]
 // ): void {
 //     // gets clause arguments and modifiers and adds them to the clause
 
@@ -80,14 +129,14 @@ export function addPredModsAndArgs(
 //     let adverbModStack: Mod[] = []
 //     let adverbAgrStack: Agr[] = []
 
-//     while (listOfWords[0] && !isVerbalElement(listOfWords[0])) {
+//     while (wordList[0] && !isVerbalElement(wordList[0])) {
 
-//         let currentWord: Word = listOfWords.shift() as Word
+//         let currentWord: Word = wordList.shift() as Word
 
 //         // this part is literally the same as in the main sentence method i feel
 //         // like we need to move stuff so that we can just reuse the same code
 
-//         if (isNounModifier(currentWord, listOfWords)) {
+//         if (isNounModifier(currentWord, wordList)) {
 //             nounModStack.push(new Mod(currentWord))
 //         } else if (isAdverbMod(currentWord)) {
 //             adverbModStack.push(new Mod(currentWord))
@@ -129,7 +178,7 @@ export function addPredModsAndArgs(
 //             addAdverbModsAndArgs(aPhrase, adverbModStack, adverbAgrStack)
 
 //             let modPhrase: Adverb | Preposition =
-//                 resolveAdverbAttachment(aPhrase, listOfWords)
+//                 resolveAdverbAttachment(aPhrase, wordList)
 //             addPhraseToClause(modPhrase, relClause)
 
 //         } else if (isPreposition(currentWord)) {
@@ -209,43 +258,6 @@ export function addPredModsAndArgs(
 //     return matrixClause
 // }
 
-export function addMatrixClauseMods(
-    matrixPred: Predicate, listOfMods: Mod[]
-): void {
-    while (listOfMods.length > 0) {
-        let mod: Mod = listOfMods.shift() as Mod
-        matrixPred.addMod(mod)
-    }
-}
-
-// export function addMatrixClauseModifiers(
-//     matrixPred: Verb, listOfTamms: Pair[]
-// ): void {
-//     while (listOfTamms.length > 0) {
-//         let tammPair: Pair = listOfTamms.shift() as Pair
-//         matrixPred.addMod(new Mod(tammPair))
-//     }
-// }
-
-export function addPhraseToClause(
-    phrase: Noun | Preposition | Adverb,
-    clause: Clause
-): void {
-    if (isBeVerb(clause
-        .getPredicate()
-        .getVerb()
-        .getName()
-    )) {
-        clause
-            .getPredicate()
-            .setSemanticElement(phrase)
-    } else if (phrase instanceof Noun) {
-        clause.addNounToClause(phrase)
-    } else {
-        clause.addAdjunct(phrase)
-    }
-}
-
 export function createNounPhrase(nounWord: Word, modifiers: Mod[]): Noun {
     let nounPhrase: Noun = new Noun(nounWord.name)
     while (modifiers.length > 0) {
@@ -266,21 +278,40 @@ export function createPrepositionalPhrase(
     return prepositionalPhrase
 }
 
-// export function createRel(listOfWords: Word[], noun: Noun): Clause | null {
-//     let relWord: Word = listOfWords.shift() as Word
+export function createRosClause(
+    rosPred: Predicate,
+    subject: Noun,
+    adjunctStack: (Adverb | Preposition)[],
+    wordList: Word[]
+): {
+    clause: Clause
+    nextSubject: Noun | null
+} {
+    let clause = new Clause(rosPred)
+    clause.addNounToClause(subject)
+    for (let adjunct of adjunctStack) {
+        clause.addAdjunct(adjunct)
+    }
+    let nextSubject: Noun | null =
+        handleRosObjects(clause, wordList)
+    return { clause, nextSubject }
+}
+
+// export function createRel(wordList: Word[], noun: Noun): Clause | null {
+//     let relWord: Word = wordList.shift() as Word
 //     let relSystem: Relativize = new Relativize(relWord.name)
 //     noun.setRelativizer(relSystem)
 
 //     let relNoun: Noun = new Noun(relSystem.getName())
 //     console.log(noun)
 
-//     let relClause: Clause | null = createRelClause(relNoun, listOfWords)
+//     let relClause: Clause | null = createRelClause(relNoun, wordList)
 //     return relClause
 // }
 
 // export function createRelClause(
 //     relSystemNoun: Noun,
-//     listOfWords: Word[]
+//     wordList: Word[]
 // ): Clause | null {
 
 //     let relSubject: Noun | null = null
@@ -290,9 +321,9 @@ export function createPrepositionalPhrase(
 //     // this is the man -that- [let me go]
 //     // this is the man -that- [i let go]
 
-//     while (!isVerbalElement(listOfWords[0])) {
-//         if (isNominalElement(listOfWords[0], listOfWords.slice(1))) {
-//             relSubject = handleNounPhrase(listOfWords)
+//     while (!isVerbalElement(wordList[0])) {
+//         if (isNominalElement(wordList[0], wordList.slice(1))) {
+//             relSubject = handleNounPhrase(wordList)
 //         }
 
 //         // if (isNominalElement(listOfPairs[0], listOfPairs.slice(1))) {
@@ -311,8 +342,8 @@ export function createPrepositionalPhrase(
 //         //         nounModStack
 //         //     )
 //         // } 
-//         if (isCausative(listOfWords[0])) {
-//             let causeWord: Word = listOfWords.shift() as Word
+//         if (isCausative(wordList[0])) {
+//             let causeWord: Word = wordList.shift() as Word
 //             let causeMod: Mod = new Mod(causeWord)
 //             if (relSubject !== null) {
 //                 relSubject.addModifier(causeMod)
@@ -323,14 +354,14 @@ export function createPrepositionalPhrase(
 //         // this is the man that slowly ran
 //         // this is the man that ran slowly
 //         // this is the man that the slowest woman beat
-//         if (isAdverb(listOfWords[0])) {
-//             let adverbWord: Word = listOfWords.shift() as Word
+//         if (isAdverb(wordList[0])) {
+//             let adverbWord: Word = wordList.shift() as Word
 //             let aPhrase: Adverb = new Adverb(adverbWord.name)
 
 //             addAdverbModsAndArgs(aPhrase, adverbModStack, adverbAgrStack)
 
 //             let modPhrase: Adverb | Preposition =
-//                 resolveAdverbAttachment(aPhrase, listOfWords)
+//                 resolveAdverbAttachment(aPhrase, wordList)
 //             addPhraseToClause(modPhrase, relClause)
 
 //         }
@@ -342,21 +373,21 @@ export function createPrepositionalPhrase(
 //     let verbModStack: Mod[] = []
 //     let verbAgrStack: Agr[] = []
 
-//     while (listOfWords[0] && !isVerb(listOfWords[0])) {
-//         if (isVerbModifier(listOfWords[0])) {
-//             let verbModWord: Word = listOfWords.shift() as Word
+//     while (wordList[0] && !isVerb(wordList[0])) {
+//         if (isVerbModifier(wordList[0])) {
+//             let verbModWord: Word = wordList.shift() as Word
 //             let verbMod: Mod = new Mod(verbModWord)
 //             verbModStack.push(verbMod)
 //         } else {
-//             let verbAgrWord: Word = listOfWords.shift() as Word
+//             let verbAgrWord: Word = wordList.shift() as Word
 //             let verbAgr: Agr = new Agr(verbAgrWord)
 //             verbAgrStack.push(verbAgr)
 //         }
 //     }
 
-//     if (isVerb(listOfWords[0])) {
+//     if (isVerb(wordList[0])) {
 //         // add predicate to relative clause
-//         let relVerbWord: Word = listOfWords.shift() as Word
+//         let relVerbWord: Word = wordList.shift() as Word
 //         let relVerb: Verb = new Verb(relVerbWord.name)
 
 //         let relPred: Predicate = new Predicate(relVerb)
@@ -395,30 +426,11 @@ export function createPrepositionalPhrase(
 //         } else {
 //             relClause.addNounToClause(relSystemNoun)
 //         }
-//         addClauseArgumentsAndAdjuncts(relClause, listOfWords)
+//         addClauseArgumentsAndAdjuncts(relClause, wordList)
 //         return relClause
 //     }
 //     return null
 // }
-
-export function createRosClause(
-    rosPred: Predicate,
-    subject: Noun,
-    adjunctStack: (Adverb | Preposition)[],
-    wordList: Word[]
-): {
-    clause: Clause
-    nextSubject: Noun | null
-} {
-    let clause = new Clause(rosPred)
-    clause.addNounToClause(subject)
-    for (let adjunct of adjunctStack) {
-        clause.addAdjunct(adjunct)
-    }
-    let nextSubject: Noun | null =
-        handleRosObjects(clause, wordList)
-    return { clause, nextSubject }
-}
 
 /**
    * should probably break this up into smaller functions
@@ -595,7 +607,7 @@ export function handleAdverbPhrase(wordList: Word[]): Adverb | Preposition {
         }
     }
     let supletiveMod: Mod | null = addModsIfPresent(wordList[0])
-    if (supletiveMod !== null) {
+    if (supletiveMod instanceof Mod) {
         modStack.push(supletiveMod)
     }
 
@@ -609,41 +621,24 @@ export function handleAdverbPhrase(wordList: Word[]): Adverb | Preposition {
     return modPhrase
 }
 
-export function addModsIfPresent(adverbWord: Word): Mod | null {
-    if (adverbWord.pos === PartsOfSpeech.RBS) {
-
-        let superlative: Mod = new Mod(
-            {
-                name: "superlative",
-                pos: PartsOfSpeech.SUPERLATIVE
-            }
-        )
-        return superlative
-
-    } else if (adverbWord.pos === PartsOfSpeech.RBR) {
-
-        let comparative: Mod = new Mod(
-            {
-                name: "comparative",
-                pos: PartsOfSpeech.COMPARATIVE
-            }
-        )
-        return comparative
-    }
-    return null
-}
-
-export function handleNounPhrase(listOfWords: Word[]): Noun {
+export function handleNounPhrase(wordList: Word[]): Noun {
     let nounModStack: Mod[] = []
 
-    while (!isNoun(listOfWords[0])) {
-        if (isNounModifier(listOfWords[0], listOfWords.slice(1))) {
-            let modWord: Word = listOfWords.shift() as Word
+    while (!isNoun(wordList[0])) {
+        if (isNounModifier(wordList[0], wordList.slice(1))) {
+            let modWord: Word = wordList.shift() as Word
             let mod: Mod = new Mod(modWord)
             nounModStack.push(mod)
         }
     }
-    let headWord: Word = listOfWords.shift() as Word
+    let headWord: Word = wordList.shift() as Word
+    if (
+        wordList[0] &&
+        isCausative(wordList[0])
+    ) {
+        let causeWord: Word = wordList.shift() as Word
+        nounModStack.push(new Mod(causeWord))
+    }
     return (createNounPhrase(headWord, nounModStack))
 }
 
@@ -652,19 +647,35 @@ export function handlePrepositionPhrase(wordList: Word[]) {
     return createPrepositionalPhrase(headWord, wordList)
 }
 
-export function handlePredicatePhrase(wordList: Word[]): Predicate {
+export function handlePredicatePhrase(
+    subject: Noun | null,
+    wordList: Word[]
+): {
+    pred: Predicate
+    experiencer: Noun | null
+} {
     let modStack: Mod[] = []
     let agrStack: Agr[] = []
+    let experiencer: Noun | null = null
 
     while (!isVerb(wordList[0])) {
         if (isVerbModifier(wordList[0])) {
             let modWord: Word = wordList.shift() as Word
             let mod: Mod = new Mod(modWord)
             modStack.push(mod)
-        } else {
+        } else if (isVerbAgr(wordList[0])) {
             let agrWord: Word = wordList.shift() as Word
             let agr: Agr = new Agr(agrWord)
             agrStack.push(agr)
+        } else if (
+            subject instanceof Noun &&
+            isCausative(wordList[0])
+        ) {
+            let causMod: Mod = new Mod(wordList.shift() as Word)
+            subject.addModifier(causMod)
+        }
+        else if (isNominalElement(wordList)) {
+            experiencer = handleNounPhrase(wordList)
         }
     }
 
@@ -673,8 +684,8 @@ export function handlePredicatePhrase(wordList: Word[]): Predicate {
     let verb: Verb = new Verb(headWord.name)
     let pred: Predicate = new Predicate(verb)
 
-    addPredModsAndArgs(pred, modStack, agrStack)
-    return pred
+    addPredModsAndAgrs(pred, modStack, agrStack)
+    return { pred, experiencer }
 }
 
 export function handleRosObjects(
@@ -682,7 +693,7 @@ export function handleRosObjects(
     wordList: Word[]
 ): Noun | null {
 
-    if (isNominalElement(wordList[0], wordList.slice(1))) {
+    if (isNominalElement(wordList)) {
         let nPhrase: Noun = handleNounPhrase(wordList)
 
         if (isObjectControlPred(rosClause.getPredicate())) {
@@ -734,12 +745,9 @@ export function isBeVerb(verbName: string): boolean {
 }
 
 export function isCausative(word: Word): boolean {
-    if (
+    return (
         word.pos === PartsOfSpeech.CAUSATIVE
-    ) {
-        return true
-    }
-    return false
+    )
 }
 
 // export function isConjunction(word: Word): boolean {
@@ -766,10 +774,10 @@ export function isECMPred(pred: Predicate): boolean {
     )
 }
 
-export function isNominalElement(word: Word, listOfWords: Word[]): boolean {
+export function isNominalElement(wordList: Word[]): boolean {
     return (
-        isNoun(word) ||
-        isNounModifier(word, listOfWords)
+        isNoun(wordList[0]) ||
+        isNounModifier(wordList[0], wordList.slice(1))
     )
 }
 
@@ -789,6 +797,7 @@ export function isNounModifier(word: Word, restOfSent: Word[]): boolean {
     return (
         currentPOS === PartsOfSpeech.DT ||
         currentPOS === PartsOfSpeech.PRPQ ||
+        currentPOS === PartsOfSpeech.PASSIVE ||
         (
             currentPOS === PartsOfSpeech.NNP &&
             restOfSent[0].pos === PartsOfSpeech.NN
@@ -808,22 +817,15 @@ export function isObjectControlPred(pred: Predicate): boolean {
 }
 
 export function isPassive(word: Word): boolean {
-    if (
+    return (
         word.pos === PartsOfSpeech.PASSIVE
-    ) {
-        return true
-    }
-    return false
+    )
 }
 
-export function isPredicate(
-    word: Word,
-    restOfSent: Word[]
-): boolean {
+export function isPredicate(word: Word, restOfSent: Word[]): boolean {
 
     let currentPOS: number = word.pos
-
-    if (
+    return (
         currentPOS === PartsOfSpeech.VB ||
         currentPOS === PartsOfSpeech.VBD ||
         currentPOS === PartsOfSpeech.VBN ||
@@ -840,10 +842,7 @@ export function isPredicate(
                     restOfSent[0].pos === PartsOfSpeech.NNS
                 )
             ))
-    ) {
-        return true
-    }
-    return false
+    )
 }
 
 export function isPreposition(word: Word): boolean {
@@ -875,6 +874,16 @@ export function isRosVerb(pred: Predicate): boolean {
     )
 }
 
+export function isVerb(word: Word): boolean {
+    return (
+        word.pos === PartsOfSpeech.VB ||
+        word.pos === PartsOfSpeech.VBD ||
+        word.pos === PartsOfSpeech.VBN ||
+        word.pos === PartsOfSpeech.VBP ||
+        word.pos === PartsOfSpeech.VBZ
+    )
+}
+
 export function isVerbAgr(word: Word): boolean {
     return (
         word.pos === PartsOfSpeech.PsvAgr ||
@@ -891,16 +900,6 @@ export function isVerbalElement(word: Word): boolean {
     )
 }
 
-export function isVerb(word: Word): boolean {
-    return (
-        word.pos === PartsOfSpeech.VB ||
-        word.pos === PartsOfSpeech.VBD ||
-        word.pos === PartsOfSpeech.VBN ||
-        word.pos === PartsOfSpeech.VBP ||
-        word.pos === PartsOfSpeech.VBZ
-    )
-}
-
 export function isVerbModifier(word: Word): boolean {
     return (
         word.pos === PartsOfSpeech.TENSE ||
@@ -911,18 +910,15 @@ export function isVerbModifier(word: Word): boolean {
     )
 }
 
-export function passiveByPhraseIndex(
-    listOfWords: Word[]
+export function passiveByPhraseIndex(wordList: Word[]): number {
+    let index: number = wordList.length - 1
 
-): number {
-    let index: number = listOfWords.length - 1
-
-    // if (!isNoun(listOfWords[index])) {
+    // if (!isNoun(wordList[index])) {
     //     return null
     // }
     // index -= 1
     while (index >= 0) {
-        if (listOfWords[index].name === "by") {
+        if (wordList[index].name === "by") {
             return index
         }
         index -= 1

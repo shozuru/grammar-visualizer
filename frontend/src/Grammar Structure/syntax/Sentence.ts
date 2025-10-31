@@ -51,7 +51,7 @@ export class Sentence {
             let currentWord: Word = this.wordList[0]
             console.log(currentWord)
 
-            if (isNominalElement(currentWord, this.wordList)) {
+            if (isNominalElement(this.wordList)) {
                 let nPhrase: Noun = handleNounPhrase(this.wordList)
                 if (this.currentSubject === null) {
                     this.currentSubject = nPhrase
@@ -71,10 +71,13 @@ export class Sentence {
 
             } else if (isVerbalElement(currentWord)) {
 
-                let pred: Predicate = handlePredicatePhrase(this.wordList)
+                let predInfo: {
+                    pred: Predicate
+                    experiencer: Noun | null
+                } =
+                    handlePredicatePhrase(this.currentSubject, this.wordList)
 
-                if (this.currentPredicate !== null) {
-
+                if (this.currentPredicate instanceof Predicate) {
                     // handle subject control
                     this.createCompleteClause()
                     this.adjunctStack = []
@@ -83,11 +86,13 @@ export class Sentence {
                     // addInfModToPred(pred)
                 }
 
-                this.currentPredicate = pred
+                this.currentPredicate = predInfo.pred
                 this.numberOfClauses += 1
-
+                if (predInfo.experiencer instanceof Noun) {
+                    this.nounStack.push(predInfo.experiencer)
+                }
                 if (
-                    this.currentSubject !== null &&
+                    this.currentSubject instanceof Noun &&
                     isRosVerb(this.currentPredicate)
                 ) {
 
@@ -103,7 +108,7 @@ export class Sentence {
                         )
                     this.clauses.push(ros.clause)
                     this.clearCurrentClause()
-                    if (ros.nextSubject !== null) {
+                    if (ros.nextSubject instanceof Noun) {
                         this.currentSubject = ros.nextSubject
                     }
 
@@ -111,47 +116,14 @@ export class Sentence {
                     // inf, since you don't deal with tense in the main clause
                 }
             }
-            //             } else if (
-            //                 this.nounStack.length > 0 &&
-            //                 isCausative(currentWord)
-            //             ) {
-            //                 let agentNoun: Noun = this.nounStack.pop() as Noun
-            //                 let causeMod: Mod = new Mod(currentWord)
-            //                 agentNoun.addModifier(causeMod)
-            //                 this.nounStack.push(agentNoun)
-
-            //             } else if (
-            //                 isPassive(currentWord)
-            //             ) {
-            //                 this.nounModStack.push(new Mod(currentWord))
-            //
-
-            //     if (this.currentPredicate) {
-
-            //         let completeClause: Clause = new Clause(this.currentPredicate)
-
-            //         for (const noun of this.nounStack) {
-            //             if (noun.getModifiers().some(
-            //                 mod =>
-            //                     mod.getName() === "made" ||
-            //                     mod.getName() === "make" ||
-            //                     mod.getName() === "let")
-            //             ) {
-            //                 completeClause.setCausativeNoun(noun)
-            //             } else {
-            //                 completeClause.addNounToClause(noun)
-            //             }
-            //         }
-            //         
         }
-
         this.createCompleteClause()
     }
 
     private createCompleteClause(): void {
         if (
-            this.currentPredicate !== null &&
-            this.currentSubject !== null
+            this.currentPredicate instanceof Predicate &&
+            this.currentSubject instanceof Noun
         ) {
             let completeClause: Clause = new Clause(this.currentPredicate)
             completeClause.addNounToClause(this.currentSubject)
@@ -162,7 +134,6 @@ export class Sentence {
             for (let adjunct of this.adjunctStack) {
                 completeClause.addAdjunct(adjunct)
             }
-
             this.clauses.push(completeClause)
         }
 
