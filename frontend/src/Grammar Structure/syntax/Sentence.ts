@@ -1,15 +1,10 @@
 import {
-    createRosClause,
-    fixPartsOfSpeech,
-    handleAdverbPhrase,
-    handleNounPhrase,
-    handlePredicatePhrase,
-    handlePrepositionPhrase,
-    isAdverbElement, isBeVerb,
-    isNominalElement,
-    isPreposition,
-    isRosVerb,
-    isVerbalElement,
+    createRelativeNoun,
+    createRosClause, fixPartsOfSpeech, handleAdverbPhrase, handleNounPhrase,
+    handlePredicatePhrase, handlePrepositionPhrase,
+    isAdverbElement, isBeVerb, isNominalElement, isPreposition, isRelative,
+    isRosCondition,
+    isRosVerb, isVerbalElement,
 } from "./SyntaxMethods"
 import { Adverb } from "./partsOfSpeech/Adverb"
 import { Noun } from "./partsOfSpeech/Noun"
@@ -89,6 +84,7 @@ export class Sentence {
 
                 this.currentPredicate = predInfo.pred
                 this.numberOfClauses += 1
+
                 if (predInfo.experiencer instanceof Noun) {
                     this.nounStack.push(predInfo.experiencer)
                 }
@@ -96,9 +92,8 @@ export class Sentence {
                     this.adjunctStack.push(...predInfo.adverbStack)
                 }
 
-                if (
-                    this.currentSubject instanceof Noun &&
-                    isRosVerb(this.currentPredicate)
+                if (this.currentSubject instanceof Noun &&
+                    isRosCondition(this.currentPredicate, this.wordList)
                 ) {
 
                     let ros: {
@@ -111,6 +106,9 @@ export class Sentence {
                             this.adjunctStack,
                             this.wordList
                         )
+                    for (let noun of this.nounStack) {
+                        ros.clause.addNounToClause(noun)
+                    }
                     this.clauses.push(ros.clause)
                     this.clearCurrentClause()
                     if (ros.nextSubject instanceof Noun) {
@@ -119,6 +117,16 @@ export class Sentence {
 
                     // when you deal with tense in general, you can deal with 
                     // inf, since you don't deal with tense in the main clause
+                }
+            } else if (isRelative(currentWord)) {
+                this.createCompleteClause()
+                this.clearCurrentClause()
+                let relNoun: Noun = createRelativeNoun(this.wordList)
+
+                if (isNominalElement(this.wordList)) {
+                    this.nounStack.push(relNoun)
+                } else {
+                    this.currentSubject = relNoun
                 }
             }
         }

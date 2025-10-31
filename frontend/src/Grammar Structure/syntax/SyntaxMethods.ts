@@ -648,6 +648,12 @@ export function handleNounPhrase(wordList: Word[]): Noun {
         let causeWord: Word = wordList.shift() as Word
         nounModStack.push(new Mod(causeWord))
     }
+    if (
+        wordList[0] &&
+        isRelative(wordList[0])
+    ) {
+        nounModStack.push(new Mod(wordList[0]))
+    }
     return (createNounPhrase(headWord, nounModStack))
 }
 
@@ -700,6 +706,11 @@ export function handlePredicatePhrase(
 
     addPredModsAndAgrs(pred, modStack, agrStack)
     return { pred, experiencer, adverbStack }
+}
+
+export function createRelativeNoun(wordList: Word[]): Noun {
+    let relWord: Word = wordList.shift() as Word
+    return new Noun(relWord.name)
 }
 
 export function handleRosObjects(
@@ -790,8 +801,11 @@ export function isECMPred(pred: Predicate): boolean {
 
 export function isNominalElement(wordList: Word[]): boolean {
     return (
-        isNoun(wordList[0]) ||
-        isNounModifier(wordList[0], wordList.slice(1))
+        wordList[0] &&
+        (
+            isNoun(wordList[0]) ||
+            isNounModifier(wordList[0], wordList.slice(1))
+        )
     )
 }
 
@@ -878,6 +892,28 @@ export function isRelative(word: Word): boolean {
     return (
         word.pos === PartsOfSpeech.WDT
     )
+}
+
+export function isRosCondition(
+    predicate: Predicate,
+    wordList: Word[]
+): boolean {
+    let i: number = 0
+    while (
+        wordList[i] &&
+        !isVerb(wordList[i]) &&
+        wordList[i].pos !== PartsOfSpeech.TO
+    ) {
+        i += 1
+    }
+    if (
+        wordList[i] &&
+        wordList[i].pos === PartsOfSpeech.TO &&
+        isRosVerb(predicate)
+    ) {
+        return true
+    }
+    return false
 }
 
 export function isRosVerb(pred: Predicate): boolean {
