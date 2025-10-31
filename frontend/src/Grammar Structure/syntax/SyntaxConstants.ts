@@ -44,7 +44,6 @@ export enum PartsOfSpeech {
     WPQ,
     WR,
     XX,
-
     // Constants that the model doesn't use but that I am
     VBINF,
     TENSE,
