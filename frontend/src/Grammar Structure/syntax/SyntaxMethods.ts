@@ -435,166 +435,169 @@ export function createRosClause(
 /**
    * should probably break this up into smaller functions
    */
-export function fixPartsOfSpeech(WordedList: Word[]): Word[] {
-    for (let i = 0; i < WordedList.length; i++) {
+export function fixPartsOfSpeech(wordList: Word[]): Word[] {
+    for (let i = 0; i < wordList.length; i++) {
         if (
             (
-                WordedList[i].name === "don't" ||
-                WordedList[i].name === "doesn't" ||
-                WordedList[i].name === "didn't"
+                wordList[i].name === "don't" ||
+                wordList[i].name === "doesn't" ||
+                wordList[i].name === "didn't"
             ) && (
-                WordedList[i].pos === PartsOfSpeech.RB
+                wordList[i].pos === PartsOfSpeech.RB
             )
         ) {
-            WordedList[i].pos = PartsOfSpeech.NEGATION
+            wordList[i].pos = PartsOfSpeech.NEGATION
 
         } else if (
             (
-                WordedList[i].name === "do" ||
-                WordedList[i].name === "does" ||
-                WordedList[i].name === "did"
+                wordList[i].name === "do" ||
+                wordList[i].name === "does" ||
+                wordList[i].name === "did"
             ) && (
                 (
-                    WordedList[i + 1].name === "n't" ||
-                    WordedList[i + 1].name === "not"
+                    wordList[i + 1].name === "n't" ||
+                    wordList[i + 1].name === "not"
                 )
             )
         ) {
-            WordedList[i].pos = PartsOfSpeech.TENSE
-            if (WordedList[i + 1].name === "not") {
-                WordedList[i + 1].pos = PartsOfSpeech.NEGATION
+            wordList[i].pos = PartsOfSpeech.TENSE
+            if (wordList[i + 1].name === "not") {
+                wordList[i + 1].pos = PartsOfSpeech.NEGATION
             }
 
         } else if ((
-            WordedList[i].name === "have" ||
-            WordedList[i].name === "has" ||
-            WordedList[i].name === "had"
+            wordList[i].name === "have" ||
+            wordList[i].name === "has" ||
+            wordList[i].name === "had"
         ) && (
-                WordedList[i + 1].pos === PartsOfSpeech.RB
+                wordList[i + 1].pos === PartsOfSpeech.RB
             )
         ) {
-            WordedList[i].pos = PartsOfSpeech.PERFECTIVE
+            wordList[i].pos = PartsOfSpeech.PERFECTIVE
 
         } else if (
             (
-                WordedList[i].name === "have" ||
-                WordedList[i].name === "has" ||
-                WordedList[i].name === "had"
+                wordList[i].name === "have" ||
+                wordList[i].name === "has" ||
+                wordList[i].name === "had"
             ) && (
-                WordedList[i + 1].pos == PartsOfSpeech.VBN
+                wordList[i + 1].pos == PartsOfSpeech.VBN
             )) {
-            WordedList[i].pos = PartsOfSpeech.PERFECTIVE
-        } else if (isBeVerb(WordedList[i].name)) {
+            wordList[i].pos = PartsOfSpeech.PERFECTIVE
+        } else if (isBeVerb(wordList[i].name)) {
             let j: number = i + 1
             while (
-                WordedList[j].pos !== PartsOfSpeech.VBN &&
-                WordedList[j].pos !== PartsOfSpeech.IN
+                wordList[j] &&
+                wordList[j].pos !== PartsOfSpeech.VBN &&
+                wordList[j].pos !== PartsOfSpeech.IN
             ) {
                 j += 1
             }
-            if (WordedList[j].pos === PartsOfSpeech.VBN) {
-                WordedList[i].pos = PartsOfSpeech.PsvAgr
+            if (wordList[j] &&
+                wordList[j].pos === PartsOfSpeech.VBN
+            ) {
+                wordList[i].pos = PartsOfSpeech.PsvAgr
 
                 let index: number =
-                    passiveByPhraseIndex(WordedList.slice(j))
+                    passiveByPhraseIndex(wordList.slice(j))
 
                 if (index >= 0) {
-                    WordedList[i + index].pos = PartsOfSpeech.PASSIVE
+                    wordList[i + index].pos = PartsOfSpeech.PASSIVE
                 }
             }
         }
 
         if ((
             i === 0 && (
-                WordedList[i].pos === PartsOfSpeech.VBD ||
-                WordedList[i].pos === PartsOfSpeech.VBZ ||
-                WordedList[i].pos === PartsOfSpeech.VBP ||
-                WordedList[i].pos === PartsOfSpeech.MD ||
-                WordedList[i].pos === PartsOfSpeech.TENSE
+                wordList[i].pos === PartsOfSpeech.VBD ||
+                wordList[i].pos === PartsOfSpeech.VBZ ||
+                wordList[i].pos === PartsOfSpeech.VBP ||
+                wordList[i].pos === PartsOfSpeech.MD ||
+                wordList[i].pos === PartsOfSpeech.TENSE
             )
 
         ) && (
                 isNoun(
                     {
-                        pos: WordedList[i + 1].pos,
-                        name: WordedList[i + 1].name
+                        pos: wordList[i + 1].pos,
+                        name: wordList[i + 1].name
                     }
                 ) || (
                     isAdverb(
                         {
-                            pos: WordedList[i + 1].pos,
-                            name: WordedList[i + 1].name
+                            pos: wordList[i + 1].pos,
+                            name: wordList[i + 1].name
                         }
                     )
                     &&
                     isNoun(
                         {
-                            pos: WordedList[i + 2].pos,
-                            name: WordedList[i + 2].name
+                            pos: wordList[i + 2].pos,
+                            name: wordList[i + 2].name
                         }
                     )
                 )
             )
         ) {
-            WordedList[i].pos = PartsOfSpeech.QuestionTense
+            wordList[i].pos = PartsOfSpeech.QuestionTense
         } else if (
             (
-                WordedList[i].name === "make" ||
-                WordedList[i].name === "made" ||
-                WordedList[i].name === "let"
+                wordList[i].name === "make" ||
+                wordList[i].name === "made" ||
+                wordList[i].name === "let"
             ) && (
-                WordedList
+                wordList
                     .slice(i)
                     .some(item => item.pos === PartsOfSpeech.VB)
             )
         ) {
-            WordedList[i].pos = PartsOfSpeech.CAUSATIVE
+            wordList[i].pos = PartsOfSpeech.CAUSATIVE
         } else if (
-            WordedList[i].pos === PartsOfSpeech.DT &&
+            wordList[i].pos === PartsOfSpeech.DT &&
             (
-                WordedList[i + 1].pos === PartsOfSpeech.RBS ||
-                WordedList[i + 1].pos === PartsOfSpeech.JJS
+                wordList[i + 1].pos === PartsOfSpeech.RBS ||
+                wordList[i + 1].pos === PartsOfSpeech.JJS
             )
         ) {
-            WordedList[i].pos = PartsOfSpeech.AdvAgr
-            if (WordedList[i + 1].name === "most") {
-                WordedList[i + 1].pos = PartsOfSpeech.SUPERLATIVE
+            wordList[i].pos = PartsOfSpeech.AdvAgr
+            if (wordList[i + 1].name === "most") {
+                wordList[i + 1].pos = PartsOfSpeech.SUPERLATIVE
             }
         } else if (
-            WordedList[i].pos === PartsOfSpeech.SUPERLATIVE &&
-            WordedList[i + 1].pos === PartsOfSpeech.NN
+            wordList[i].pos === PartsOfSpeech.SUPERLATIVE &&
+            wordList[i + 1].pos === PartsOfSpeech.NN
         ) {
-            WordedList[i + 1].pos = PartsOfSpeech.RB
+            wordList[i + 1].pos = PartsOfSpeech.RB
         } else if (
-            WordedList[i].pos === PartsOfSpeech.TO &&
-            WordedList[i].name === "to"
+            wordList[i].pos === PartsOfSpeech.TO &&
+            wordList[i].name === "to"
         ) {
-            WordedList[i].pos = PartsOfSpeech.InfAgr
+            wordList[i].pos = PartsOfSpeech.InfAgr
         } else if (
-            WordedList[i].pos === PartsOfSpeech.JJ
+            wordList[i].pos === PartsOfSpeech.JJ
         ) {
-            WordedList[i].pos = PartsOfSpeech.RB
+            wordList[i].pos = PartsOfSpeech.RB
         } else if (
-            WordedList[i].pos === PartsOfSpeech.JJR
+            wordList[i].pos === PartsOfSpeech.JJR
         ) {
-            WordedList[i].pos = PartsOfSpeech.RBR
+            wordList[i].pos = PartsOfSpeech.RBR
         } else if (
-            WordedList[i].pos === PartsOfSpeech.JJS
+            wordList[i].pos === PartsOfSpeech.JJS
         ) {
-            WordedList[i].pos = PartsOfSpeech.RBS
+            wordList[i].pos = PartsOfSpeech.RBS
         } else if (
-            WordedList[i].pos === PartsOfSpeech.RB &&
-            WordedList[i].name === "not"
+            wordList[i].pos === PartsOfSpeech.RB &&
+            wordList[i].name === "not"
         ) {
-            WordedList[i].pos = PartsOfSpeech.NEGATION
+            wordList[i].pos = PartsOfSpeech.NEGATION
         } else if (
-            WordedList[i].pos === PartsOfSpeech.DT &&
-            isVerb(WordedList[i + 1])
+            wordList[i].pos === PartsOfSpeech.DT &&
+            isVerb(wordList[i + 1])
         ) {
-            WordedList[i].pos = PartsOfSpeech.PRP
+            wordList[i].pos = PartsOfSpeech.PRP
         }
     }
-    return WordedList
+    return wordList
 }
 
 export function handleAdverbPhrase(wordList: Word[]): Adverb | Preposition {
