@@ -4,7 +4,7 @@ import {
     handlePredicatePhrase, handlePrepositionPhrase,
     isAdverbElement, isBeVerb, isNominalElement, isPreposition, isRelative,
     isRosCondition,
-    isRosVerb, isVerbalElement,
+    isVerbalElement,
 } from "./SyntaxMethods"
 import { Adverb } from "./partsOfSpeech/Adverb"
 import { Noun } from "./partsOfSpeech/Noun"
