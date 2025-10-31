@@ -143,7 +143,6 @@ export class Sentence {
         }
     }
 
-
     /**
      * Adds phrase as the predicate if the predicate is a dummy verb. 
      * Otherwise adds the phrase to the noun list if it is an NP, or to the
