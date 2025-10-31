@@ -653,10 +653,12 @@ export function handlePredicatePhrase(
 ): {
     pred: Predicate
     experiencer: Noun | null
+    adverbStack: Adverb[]
 } {
     let modStack: Mod[] = []
     let agrStack: Agr[] = []
     let experiencer: Noun | null = null
+    let adverbStack: Adverb[] = []
 
     while (!isVerb(wordList[0])) {
         if (isVerbModifier(wordList[0])) {
@@ -673,9 +675,12 @@ export function handlePredicatePhrase(
         ) {
             let causMod: Mod = new Mod(wordList.shift() as Word)
             subject.addModifier(causMod)
-        }
-        else if (isNominalElement(wordList)) {
+        } else if (isNominalElement(wordList)) {
             experiencer = handleNounPhrase(wordList)
+        } else if (isAdverb(wordList[0])) {
+            let adverbWord: Word = wordList.shift() as Word
+            let aPhrase: Adverb = new Adverb(adverbWord.name)
+            adverbStack.push(aPhrase)
         }
     }
 
@@ -685,7 +690,7 @@ export function handlePredicatePhrase(
     let pred: Predicate = new Predicate(verb)
 
     addPredModsAndAgrs(pred, modStack, agrStack)
-    return { pred, experiencer }
+    return { pred, experiencer, adverbStack }
 }
 
 export function handleRosObjects(

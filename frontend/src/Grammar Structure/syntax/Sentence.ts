@@ -74,6 +74,7 @@ export class Sentence {
                 let predInfo: {
                     pred: Predicate
                     experiencer: Noun | null
+                    adverbStack: Adverb[]
                 } =
                     handlePredicatePhrase(this.currentSubject, this.wordList)
 
@@ -91,6 +92,10 @@ export class Sentence {
                 if (predInfo.experiencer instanceof Noun) {
                     this.nounStack.push(predInfo.experiencer)
                 }
+                if (predInfo.adverbStack.length > 0) {
+                    this.adjunctStack.push(...predInfo.adverbStack)
+                }
+
                 if (
                     this.currentSubject instanceof Noun &&
                     isRosVerb(this.currentPredicate)
@@ -136,18 +141,6 @@ export class Sentence {
             }
             this.clauses.push(completeClause)
         }
-
-        //        
-        //             if (noun.getModifiers().some(
-        //                 mod =>
-        //                     mod.getName() === "made" ||
-        //                     mod.getName() === "make" ||
-        //                     mod.getName() === "let")
-        //             ) {
-        //                 completeClause.setCausativeNoun(noun)
-        //             } 
-        //         }
-        //       
     }
 
 
