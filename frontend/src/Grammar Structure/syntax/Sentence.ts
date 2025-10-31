@@ -47,7 +47,8 @@ export class Sentence {
             console.log(currentWord)
 
             if (isNominalElement(this.wordList)) {
-                let nPhrase: Noun = handleNounPhrase(this.wordList)
+                let nPhrase: Noun =
+                    handleNounPhrase(this.wordList, this.nounStack)
                 if (this.currentSubject === null) {
                     this.currentSubject = nPhrase
                 } else {

@@ -489,7 +489,10 @@ export function fixPartsOfSpeech(wordList: Word[]): Word[] {
             while (
                 wordList[j] &&
                 wordList[j].pos !== PartsOfSpeech.VBN &&
-                wordList[j].pos !== PartsOfSpeech.IN
+                wordList[j].pos !== PartsOfSpeech.IN &&
+                wordList[j].pos !== PartsOfSpeech.WDT &&
+                wordList[j].pos !== PartsOfSpeech.TO
+
             ) {
                 j += 1
             }
@@ -502,7 +505,7 @@ export function fixPartsOfSpeech(wordList: Word[]): Word[] {
                     passiveByPhraseIndex(wordList.slice(j))
 
                 if (index >= 0) {
-                    wordList[i + index].pos = PartsOfSpeech.PASSIVE
+                    wordList[j + index].pos = PartsOfSpeech.PASSIVE
                 }
             }
         }
@@ -630,7 +633,10 @@ export function handleAdverbPhrase(wordList: Word[]): Adverb | Preposition {
     return modPhrase
 }
 
-export function handleNounPhrase(wordList: Word[]): Noun {
+export function handleNounPhrase(
+    wordList: Word[],
+    nounStack: Noun[]
+): Noun | null {
     let nounModStack: Mod[] = []
 
     while (!isNoun(wordList[0])) {
@@ -640,21 +646,34 @@ export function handleNounPhrase(wordList: Word[]): Noun {
             nounModStack.push(mod)
         }
     }
-    let headWord: Word = wordList.shift() as Word
     if (
-        wordList[0] &&
-        isCausative(wordList[0])
+        wordList[0] === undefined &&
+        nounModStack.some(
+            mod => mod.getPos() === PartsOfSpeech.PASSIVE
+        )
+        // if passive is in mod stack but no noun found (wordList is undefined)
+
     ) {
-        let causeWord: Word = wordList.shift() as Word
-        nounModStack.push(new Mod(causeWord))
+        // 'by' needs to be added to 'that' of the relative clause which is in 
+        // noun stack 
+        return null
+    } else {
+        let headWord: Word = wordList.shift() as Word
+        if (
+            wordList[0] &&
+            isCausative(wordList[0])
+        ) {
+            let causeWord: Word = wordList.shift() as Word
+            nounModStack.push(new Mod(causeWord))
+        }
+        if (
+            wordList[0] &&
+            isRelative(wordList[0])
+        ) {
+            nounModStack.push(new Mod(wordList[0]))
+        }
+        return (createNounPhrase(headWord, nounModStack))
     }
-    if (
-        wordList[0] &&
-        isRelative(wordList[0])
-    ) {
-        nounModStack.push(new Mod(wordList[0]))
-    }
-    return (createNounPhrase(headWord, nounModStack))
 }
 
 export function handlePrepositionPhrase(wordList: Word[]) {
