@@ -484,17 +484,23 @@ export function fixPartsOfSpeech(WordedList: Word[]): Word[] {
                 WordedList[i + 1].pos == PartsOfSpeech.VBN
             )) {
             WordedList[i].pos = PartsOfSpeech.PERFECTIVE
-        } else if (
-            isBeVerb(WordedList[i].name) &&
-            WordedList[i + 1].pos === PartsOfSpeech.VBN
-        ) {
-            WordedList[i].pos = PartsOfSpeech.PsvAgr
+        } else if (isBeVerb(WordedList[i].name)) {
+            let j: number = i + 1
+            while (
+                WordedList[j].pos !== PartsOfSpeech.VBN &&
+                WordedList[j].pos !== PartsOfSpeech.IN
+            ) {
+                j += 1
+            }
+            if (WordedList[j].pos === PartsOfSpeech.VBN) {
+                WordedList[i].pos = PartsOfSpeech.PsvAgr
 
-            let index: number =
-                passiveByPhraseIndex(WordedList.slice(i))
+                let index: number =
+                    passiveByPhraseIndex(WordedList.slice(j))
 
-            if (index >= 0) {
-                WordedList[i + index].pos = PartsOfSpeech.PASSIVE
+                if (index >= 0) {
+                    WordedList[i + index].pos = PartsOfSpeech.PASSIVE
+                }
             }
         }
 
