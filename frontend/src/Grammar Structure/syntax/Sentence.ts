@@ -1,8 +1,10 @@
 import {
+    addStrandedPassive,
     createRelativeNoun,
     createRosClause, fixPartsOfSpeech, handleAdverbPhrase, handleNounPhrase,
     handlePredicatePhrase, handlePrepositionPhrase,
-    isAdverbElement, isBeVerb, isNominalElement, isPreposition, isRelative,
+    isAdverbElement, isBeVerb, isNominalElement, isPassive, isPreposition,
+    isRelative,
     isRosCondition,
     isVerbalElement,
 } from "./SyntaxMethods"
@@ -47,12 +49,25 @@ export class Sentence {
             console.log(currentWord)
 
             if (isNominalElement(this.wordList)) {
-                let nPhrase: Noun =
-                    handleNounPhrase(this.wordList, this.nounStack)
-                if (this.currentSubject === null) {
-                    this.currentSubject = nPhrase
+                // maybe the logic should be handled here
+                // if the element is PASSIVE and there is 'that' in the nounstack:
+                // add the element to the passive. else:
+                if (
+                    isPassive(currentWord) &&
+                    this.nounStack.some(
+                        noun => noun.getName() === 'that'
+                    )
+                ) {
+                    addStrandedPassive(this.wordList, this.nounStack)
                 } else {
-                    this.attachElementCorrectly(nPhrase)
+                    let nPhrase: Noun =
+                        handleNounPhrase(this.wordList)
+                    // , this.nounStack)
+                    if (this.currentSubject === null) {
+                        this.currentSubject = nPhrase
+                    } else {
+                        this.attachElementCorrectly(nPhrase)
+                    }
                 }
 
             } else if (isAdverbElement(currentWord)) {
