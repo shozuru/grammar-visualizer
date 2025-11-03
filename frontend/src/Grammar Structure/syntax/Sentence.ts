@@ -18,8 +18,8 @@ import { Predicate } from "./Predicate"
 export class Sentence {
 
     // list of completed clauses
-    public clauses: Clause[]
-    public numberOfClauses: number
+    static clauses: Clause[]
+    static numberOfClauses: number
 
     private wordList: Word[]
 
@@ -31,8 +31,8 @@ export class Sentence {
     constructor(wordList: Word[]) {
         this.wordList = fixPartsOfSpeech(wordList)
 
-        this.clauses = []
-        this.numberOfClauses = 0
+        Sentence.clauses = []
+        Sentence.numberOfClauses = 0
         this.wordList = wordList
 
         this.currentPredicate = null
@@ -49,9 +49,6 @@ export class Sentence {
             console.log(currentWord)
 
             if (isNominalElement(this.wordList)) {
-                // maybe the logic should be handled here
-                // if the element is PASSIVE and there is 'that' in the nounstack:
-                // add the element to the passive. else:
                 if (
                     isPassive(currentWord) &&
                     this.nounStack.some(
@@ -62,7 +59,6 @@ export class Sentence {
                 } else {
                     let nPhrase: Noun =
                         handleNounPhrase(this.wordList)
-                    // , this.nounStack)
                     if (this.currentSubject === null) {
                         this.currentSubject = nPhrase
                     } else {
@@ -71,7 +67,7 @@ export class Sentence {
                 }
 
             } else if (isAdverbElement(currentWord)) {
-                let adjunctPhrase: Adverb | Preposition =
+                let adjunctPhrase: Adverb | Preposition | Noun =
                     handleAdverbPhrase(this.wordList)
                 this.attachElementCorrectly(adjunctPhrase)
 
@@ -94,12 +90,10 @@ export class Sentence {
                     this.createCompleteClause()
                     this.adjunctStack = []
                     this.nounStack = []
-
-                    // addInfModToPred(pred)
                 }
 
                 this.currentPredicate = predInfo.pred
-                this.numberOfClauses += 1
+                Sentence.numberOfClauses += 1
 
                 if (predInfo.experiencer instanceof Noun) {
                     this.nounStack.push(predInfo.experiencer)
@@ -125,7 +119,7 @@ export class Sentence {
                     for (let noun of this.nounStack) {
                         ros.clause.addNounToClause(noun)
                     }
-                    this.clauses.push(ros.clause)
+                    Sentence.clauses.push(ros.clause)
                     this.clearCurrentClause()
                     if (ros.nextSubject instanceof Noun) {
                         this.currentSubject = ros.nextSubject
@@ -163,7 +157,7 @@ export class Sentence {
             for (let adjunct of this.adjunctStack) {
                 completeClause.addAdjunct(adjunct)
             }
-            this.clauses.push(completeClause)
+            Sentence.clauses.push(completeClause)
         }
     }
 

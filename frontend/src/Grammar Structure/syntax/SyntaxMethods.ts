@@ -11,6 +11,7 @@ import {
 import { Mod } from "./Mod"
 import { Agr } from "./Agr"
 import { Predicate } from "./Predicate"
+import { Sentence } from "./Sentence"
 
 // export function addInfModToPred(pred: Predicate): void {
 //     let infMod: Mod =
@@ -117,6 +118,29 @@ export function addPredModsAndAgrs(
             pred.addAgr(agr)
         }
     }
+}
+
+export function addRelClauseToNounPhrase(
+    wordList: Word[],
+    nounModStack: Mod[]
+): Clause {
+    let relBeVerb: Verb = new Verb('BE')
+    let relPred: Predicate = new Predicate(relBeVerb)
+
+    let relPredWord: Word = wordList.shift() as Word
+    let advPred: Adverb = new Adverb(relPredWord.name)
+    relPred.setSemanticElement(advPred)
+
+    let relClause: Clause = new Clause(relPred)
+
+    let relWord: Word = { name: 'that', pos: PartsOfSpeech.WDT }
+    let relNoun: Noun = new Noun(relWord.name)
+    relClause.addNounToClause(relNoun)
+
+    let relMod: Mod = new Mod(relWord)
+    nounModStack.push(relMod)
+
+    return relClause
 }
 
 export function addStrandedPassive(wordList: Word[], nounStack: Noun[]): void {
@@ -616,7 +640,8 @@ export function fixPartsOfSpeech(wordList: Word[]): Word[] {
     return wordList
 }
 
-export function handleAdverbPhrase(wordList: Word[]): Adverb | Preposition {
+export function handleAdverbPhrase(wordList: Word[]
+): Adverb | Preposition | Noun {
     let modStack: Mod[] = []
     let agrStack: Agr[] = []
 
@@ -635,13 +660,16 @@ export function handleAdverbPhrase(wordList: Word[]): Adverb | Preposition {
     if (supletiveMod instanceof Mod) {
         modStack.push(supletiveMod)
     }
-
+    if (wordList[1] && isNominalElement(wordList.slice(1))) {
+        let nRelPhrase: Noun = handleNounPhrase(wordList)
+        return nRelPhrase
+    }
     let headWord: Word = wordList.shift() as Word
     let headPhrase: Adverb = new Adverb(headWord.name)
 
     addAdverbModsAndArgs(headPhrase, modStack, agrStack)
 
-    let modPhrase: Adverb | Preposition =
+    let modPhrase: Adverb | Preposition | Noun =
         resolveAdverbAttachment(headPhrase, wordList)
     return modPhrase
 }
@@ -656,6 +684,12 @@ export function handleNounPhrase(
             let modWord: Word = wordList.shift() as Word
             let mod: Mod = new Mod(modWord)
             nounModStack.push(mod)
+
+        } else if (isAdverb(wordList[0])) {
+            let relClause: Clause =
+                addRelClauseToNounPhrase(wordList, nounModStack)
+            Sentence.clauses.push(relClause)
+            Sentence.numberOfClauses += 1
         }
     }
 
@@ -1006,28 +1040,27 @@ export function passiveByPhraseIndex(wordList: Word[]): number {
 
 export function resolveAdverbAttachment(
     thisAdverb: Adverb,
-    listOfNextWords: Word[]
+    wordList: Word[]
 ): Preposition | Adverb {
 
-    // let thisAdverb: Adverb = new Adverb(firstarg.name)
-    let nextWord: Word = listOfNextWords[0]
+    let nextWord: Word = wordList[0]
 
     if (nextWord && isPreposition(nextWord)) {
 
         // shift off the preposition
-        let prepositionWord: Word = listOfNextWords.shift() as Word
+        let prepositionWord: Word = wordList.shift() as Word
         // create new preposition using shifted Word
         let currentPreposition: Preposition =
             new Preposition(prepositionWord.name)
         // add adverb to preposition's modifier list
         currentPreposition.addModifier(thisAdverb)
         // add potential following object to preposition
-        currentPreposition.tagIfObject(listOfNextWords)
+        currentPreposition.tagIfObject(wordList)
         return currentPreposition
 
     } else if (nextWord && isAdverb(nextWord)) {
 
-        let nextAdverb: Word = listOfNextWords.shift() as Word
+        let nextAdverb: Word = wordList.shift() as Word
         let aPhrase: Adverb = new Adverb(nextAdverb.name)
         aPhrase.addModifier(thisAdverb)
         return aPhrase

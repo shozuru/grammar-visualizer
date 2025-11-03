@@ -19,9 +19,9 @@ export class GrammarVisualizer {
         this.sentence.generateClauses()
 
         console.log(
-            `Number of clauses in sentence: ${this.sentence.numberOfClauses}`
+            `Number of clauses in sentence: ${Sentence.numberOfClauses}`
         )
-        console.log(this.sentence.clauses)
+        console.log(Sentence.clauses)
     }
 
     private createZippedWords(
@@ -45,6 +45,7 @@ export class GrammarVisualizer {
 // TODO: questions, punctuation, conjunctions, relative clauses
 
 // the amazing movie --> the movie that is amazing
+// those are amazing shoes --> those are shoes that are amazing
 // the movie (that) i saw was really good.
 // the person that went to spain
 // the person (that was) in the bathroom came back
