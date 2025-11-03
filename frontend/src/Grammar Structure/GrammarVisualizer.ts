@@ -44,15 +44,6 @@ export class GrammarVisualizer {
 
 // TODO: questions, punctuation, conjunctions, relative clauses
 
-// i think my goal is to move all methods that create an manipulate phrases
-// to be in the SyntaxMethods file so that i can use them when creating 
-// relative clauses as well, so that there is less duplicate code
-
-// big change: when you encounter a ROS verb, process it when you see it instead
-// of waiting until you encounter the next predicate
-
-// doesn't work: That is the woman that let me go
-
 // the amazing movie --> the movie that is amazing
 // the movie (that) i saw was really good.
 // the person that went to spain
