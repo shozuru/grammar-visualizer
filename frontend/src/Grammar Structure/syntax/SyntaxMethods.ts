@@ -748,7 +748,16 @@ export function handlePredicatePhrase(
 
 export function createRelativeNoun(wordList: Word[]): Noun {
     let relWord: Word = wordList.shift() as Word
-    return new Noun(relWord.name)
+    let relNoun: Noun = new Noun(relWord.name)
+    if (
+        wordList[0] &&
+        isCausative(wordList[0])
+    ) {
+        let causeWord: Word = wordList.shift() as Word
+        let cuaseMod: Mod = new Mod(causeWord)
+        relNoun.addModifier(cuaseMod)
+    }
+    return relNoun
 }
 
 export function handleRosObjects(
