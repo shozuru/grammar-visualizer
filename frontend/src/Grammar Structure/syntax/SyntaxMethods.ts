@@ -658,25 +658,7 @@ export function handleNounPhrase(
             nounModStack.push(mod)
         }
     }
-    // if (
-    //     wordList[0] === undefined &&
-    //     nounModStack.some(
-    //         mod => mod.getPos() === PartsOfSpeech.PsvAgr
-    //     )
-    //     // if passive is in mod stack but no noun found (wordList is undefined)
-    // ) {
-    //     let relNoun: Noun | undefined =
-    //         nounStack.find(noun => noun.getName() === "that")
-    //     if (relNoun) {
-    //         for (let mod of nounModStack) {
-    //             relNoun.addModifier(mod)
-    //         }
-    //     }
-    //     // 'by' needs to be added to 'that' of the relative clause which is in 
-    //     // noun stack 
-    //     return null
 
-    // } else {
     let headWord: Word = wordList.shift() as Word
     if (
         wordList[0] &&
@@ -692,7 +674,6 @@ export function handleNounPhrase(
         nounModStack.push(new Mod(wordList[0]))
     }
     return (createNounPhrase(headWord, nounModStack))
-    // }
 }
 
 export function handlePrepositionPhrase(wordList: Word[]) {
