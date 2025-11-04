@@ -46,8 +46,6 @@ export class GrammarVisualizer {
 
 // TODO: questions, punctuation, conjunctions, relative clauses
 
-// the movie (that) i saw was really good.
-// the person (that was) in the bathroom came back
 // the man that is a soccer player came back --> the soccer player man came back
 // who i knew was great was dead --> the person that I knew was great was dead
 

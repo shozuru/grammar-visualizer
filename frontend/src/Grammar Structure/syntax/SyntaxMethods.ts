@@ -814,6 +814,14 @@ export function isVerbModifier(word: Word): boolean {
     )
 }
 
+export function modStackContainsCaus(modStack: Mod[]): boolean {
+    return (
+        modStack.some(
+            mod => mod.getPos() === PartsOfSpeech.CAUSATIVE
+        )
+    )
+}
+
 export function passiveByPhraseIndex(wordList: Word[]): number {
     let index: number = wordList.length - 1
 

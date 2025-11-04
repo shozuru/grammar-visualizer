@@ -1,15 +1,9 @@
 import {
-    addRelClauseToSubject,
-    addStrandedPassive,
-    createCompleteClause,
-    createRelativeNoun,
-    createRosClause, handleAdverbPhrase, handleNounPhrase,
-    handlePredicatePhrase, handlePrepositionPhrase,
-    isAdverbElement, isBeVerb, isNominalElement, isPassive, isPreposition,
-    isRelative,
-    isRosCondition,
-    isVerbalElement,
-    removeRelClause,
+    addRelClauseToSubject, addStrandedPassive, createCompleteClause,
+    createRelativeNoun, createRosClause, handleAdverbPhrase, handleNounPhrase,
+    handlePredicatePhrase, handlePrepositionPhrase, isAdverbElement, isBeVerb,
+    isNominalElement, isPassive, isPreposition, isRelative, isRosCondition,
+    isVerbalElement, modStackContainsCaus, removeRelClause,
 } from "./SyntaxMethods"
 import { Adverb } from "./partsOfSpeech/Adverb"
 import { Noun } from "./partsOfSpeech/Noun"
@@ -51,7 +45,10 @@ export class Sentence {
 
             if (isNominalElement(this.wordList)) {
                 if (this.currentSubject instanceof Noun &&
-                    !(this.currentPredicate instanceof Predicate)
+                    !(
+                        this.currentPredicate instanceof Predicate ||
+                        modStackContainsCaus(this.currentSubject.getModifiers())
+                    )
                 ) {
                     addRelClauseToSubject(this.currentSubject, this.wordList)
                 } else if (
