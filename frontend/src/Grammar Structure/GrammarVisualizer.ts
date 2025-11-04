@@ -46,17 +46,16 @@ export class GrammarVisualizer {
 
 // TODO: questions, punctuation, conjunctions, relative clauses
 
+// The book on the shelf is old.
 // the movie (that) i saw was really good.
-// the person that went to spain
 // the person (that was) in the bathroom came back
-// the person (that was) fired from his job came back
 // the man that is a soccer player came back --> the soccer player man came back
-// who i knew was great --> the person that I knew was great
+// who i knew was great was dead --> the person that I knew was great was dead
 
-// account for adjectives
 // I made the game (be) easier
 
 // -----------------------------------------------------------------------------
+
 // experiencer verbs might be super limited
 // determining if intransitive verb is unaccusative or unergative might prove 
 // more challenging

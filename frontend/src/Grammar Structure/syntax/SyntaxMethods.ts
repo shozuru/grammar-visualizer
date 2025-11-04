@@ -127,19 +127,27 @@ export function addRelClauseToNounPhrase(
     let relBeVerb: Verb = new Verb('BE')
     let relPred: Predicate = new Predicate(relBeVerb)
 
-    let relPredWord: Word = wordList.shift() as Word
-    let advPred: Adverb = new Adverb(relPredWord.name)
-    relPred.setSemanticElement(advPred)
+    let relPredWord = wordList[0]
+    if (isAdverbElement(relPredWord)) {
+        let AdverbWord: Word = wordList.shift() as Word
+        let advPred: Adverb = new Adverb(AdverbWord.name)
+        relPred.setSemanticElement(advPred)
+    } else if (isPreposition(relPredWord)) {
+        let pPred: Preposition = handlePrepositionPhrase(wordList)
+        relPred.setSemanticElement(pPred)
+    }
 
     let relClause: Clause = new Clause(relPred)
 
     let relWord: Word = { name: 'that', pos: PartsOfSpeech.WDT }
     let relNoun: Noun = new Noun(relWord.name)
+
     relClause.addNounToClause(relNoun)
 
     let relMod: Mod = new Mod(relWord)
-    nounModStack.push(relMod)
-
+    if (!nounModStack.some(mod => mod.getPos() === PartsOfSpeech.WDT)) {
+        nounModStack.push(relMod)
+    }
     return relClause
 }
 
@@ -356,141 +364,6 @@ export function createRosClause(
         handleRosObjects(clause, wordList)
     return { clause, nextSubject }
 }
-
-// export function createRel(wordList: Word[], noun: Noun): Clause | null {
-//     let relWord: Word = wordList.shift() as Word
-//     let relSystem: Relativize = new Relativize(relWord.name)
-//     noun.setRelativizer(relSystem)
-
-//     let relNoun: Noun = new Noun(relSystem.getName())
-//     console.log(noun)
-
-//     let relClause: Clause | null = createRelClause(relNoun, wordList)
-//     return relClause
-// }
-
-// export function createRelClause(
-//     relSystemNoun: Noun,
-//     wordList: Word[]
-// ): Clause | null {
-
-//     let relSubject: Noun | null = null
-
-//     // i think it would be better to causative it here
-//     // this all should be in a 'while not a verb'
-//     // this is the man -that- [let me go]
-//     // this is the man -that- [i let go]
-
-//     while (!isVerbalElement(wordList[0])) {
-//         if (isNominalElement(wordList[0], wordList.slice(1))) {
-//             relSubject = handleNounPhrase(wordList)
-//         }
-
-//         // if (isNominalElement(listOfPairs[0], listOfPairs.slice(1))) {
-//         //     let nounModStack: Mod[] = []
-
-//         //     while (!isNoun(listOfPairs[0])) {
-//         //         if (isNounModifier(listOfPairs[0], listOfPairs.slice(1))) {
-//         //             let nounModPair: Pair = listOfPairs.shift() as Pair
-//         //             let nounMod: Mod = new Mod(nounModPair)
-//         //             nounModStack.push(nounMod)
-//         //         }
-//         //     }
-//         //     let relSubPair: Pair = listOfPairs.shift() as Pair
-//         //     relSubject = createNounPhrase(
-//         //         relSubPair,
-//         //         nounModStack
-//         //     )
-//         // } 
-//         if (isCausative(wordList[0])) {
-//             let causeWord: Word = wordList.shift() as Word
-//             let causeMod: Mod = new Mod(causeWord)
-//             if (relSubject !== null) {
-//                 relSubject.addModifier(causeMod)
-//             } else {
-//                 relSystemNoun.addModifier(causeMod)
-//             }
-//         }
-//         // this is the man that slowly ran
-//         // this is the man that ran slowly
-//         // this is the man that the slowest woman beat
-//         if (isAdverb(wordList[0])) {
-//             let adverbWord: Word = wordList.shift() as Word
-//             let aPhrase: Adverb = new Adverb(adverbWord.name)
-
-//             addAdverbModsAndArgs(aPhrase, adverbModStack, adverbAgrStack)
-
-//             let modPhrase: Adverb | Preposition =
-//                 resolveAdverbAttachment(aPhrase, wordList)
-//             addPhraseToClause(modPhrase, relClause)
-
-//         }
-//     }
-
-//     // if it is passive
-//     // it might be better to handle this here
-
-//     let verbModStack: Mod[] = []
-//     let verbAgrStack: Agr[] = []
-
-//     while (wordList[0] && !isVerb(wordList[0])) {
-//         if (isVerbModifier(wordList[0])) {
-//             let verbModWord: Word = wordList.shift() as Word
-//             let verbMod: Mod = new Mod(verbModWord)
-//             verbModStack.push(verbMod)
-//         } else {
-//             let verbAgrWord: Word = wordList.shift() as Word
-//             let verbAgr: Agr = new Agr(verbAgrWord)
-//             verbAgrStack.push(verbAgr)
-//         }
-//     }
-
-//     if (isVerb(wordList[0])) {
-//         // add predicate to relative clause
-//         let relVerbWord: Word = wordList.shift() as Word
-//         let relVerb: Verb = new Verb(relVerbWord.name)
-
-//         let relPred: Predicate = new Predicate(relVerb)
-//         // add mods and agrs
-//         for (let mod of verbModStack) {
-//             relPred.addMod(mod)
-//         }
-//         for (let agr of verbAgrStack) {
-//             relPred.addAgr(agr)
-//         }
-//         let relClause: Clause = new Clause(relPred)
-
-
-//         if (relSubject !== null) {
-//             if (
-//                 relSubject
-//                     .getModifiers()
-//                     .some(
-//                         mod =>
-//                             mod.getPos() === PartsOfSpeech.CAUSATIVE
-//                     )
-//             ) {
-//                 relClause.setCausativeNoun(relSubject)
-//             } else {
-//                 relClause.addNounToClause(relSubject)
-//             }
-//         }
-//         if (relSystemNoun
-//             .getModifiers()
-//             .some(
-//                 mod =>
-//                     mod.getPos() === PartsOfSpeech.CAUSATIVE
-//             )
-//         ) {
-//             relClause.setCausativeNoun(relSystemNoun)
-//         } else {
-//             relClause.addNounToClause(relSystemNoun)
-//         }
-//         addClauseArgumentsAndAdjuncts(relClause, wordList)
-//         return relClause
-//     }
-//     return null
-// }
 
 /**
    * should probably break this up into smaller functions
@@ -729,6 +602,12 @@ export function handleNounPhrase(
         isRelative(wordList[0])
     ) {
         nounModStack.push(new Mod(wordList[0]))
+    }
+    if (isPreposition(wordList[0])) {
+        let relClause: Clause =
+            addRelClauseToNounPhrase(wordList, nounModStack)
+        Sentence.clauses.push(relClause)
+        Sentence.numberOfClauses += 1
     }
     return (createNounPhrase(headWord, nounModStack))
 }
@@ -1068,7 +947,7 @@ export function removeRelClause(wordList: Word[]): Word[] {
         wordList[index] &&
         verbCounter < 2
     ) {
-        if (isVerb(wordList[index])) {
+        if (isVerbalElement(wordList[index])) {
             verbCounter += 1
         }
         index += 1

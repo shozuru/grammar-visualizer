@@ -72,9 +72,27 @@ export class Sentence {
                 this.attachElementCorrectly(adjunctPhrase)
 
             } else if (isPreposition(currentWord)) {
+                // if (!(this.currentPredicate instanceof Predicate)) {
+                // the book on the shelf is old
+
+                // this.attachElementCorrectly(pPhrase)
+
+                // let relClauseWords: Word[] = removeRelClause(this.wordList)
+                // let relNoun: Noun = createRelativeNoun(relClauseWords)
+
+                // let relSentence: Sentence = new Sentence(relClauseWords)
+                // if (isNominalElement(relClauseWords)) {
+                //     relSentence.nounStack.push(relNoun)
+                // } else {
+                //     relSentence.currentSubject = relNoun
+                // }
+                // relSentence.generateClauses()
+
+                // } else {
                 let pPhrase: Preposition =
                     handlePrepositionPhrase(this.wordList)
                 this.attachElementCorrectly(pPhrase)
+                // }
 
             } else if (isVerbalElement(currentWord)) {
 
