@@ -1,4 +1,5 @@
 import {
+    addRelClauseToSubject,
     addStrandedPassive,
     createCompleteClause,
     createRelativeNoun,
@@ -49,11 +50,13 @@ export class Sentence {
             console.log(currentWord)
 
             if (isNominalElement(this.wordList)) {
-                if (
+                if (this.currentSubject instanceof Noun &&
+                    !(this.currentPredicate instanceof Predicate)
+                ) {
+                    addRelClauseToSubject(this.currentSubject, this.wordList)
+                } else if (
                     isPassive(currentWord) &&
-                    this.nounStack.some(
-                        noun => noun.getName() === 'that'
-                    )
+                    this.nounStack.some(noun => noun.getName() === 'that')
                 ) {
                     addStrandedPassive(this.wordList, this.nounStack)
                 } else {
@@ -104,8 +107,9 @@ export class Sentence {
                     handlePredicatePhrase(this.currentSubject, this.wordList)
 
                 if (
-                    this.currentPredicate &&
-                    this.currentSubject
+                    this.currentPredicate instanceof Predicate &&
+                    this.currentSubject instanceof Noun
+                    // isSubjectControl()
                 ) {
                     // handle subject control
                     createCompleteClause(
@@ -199,6 +203,14 @@ export class Sentence {
                 this.nounStack,
                 this.adjunctStack
             )
+    }
+
+    public getNounStack(): Noun[] {
+        return this.nounStack
+    }
+
+    public setCurrentSubject(noun: Noun): void {
+        this.currentSubject = noun
     }
 
     /**

@@ -13,11 +13,6 @@ import { Agr } from "./Agr"
 import { Predicate } from "./Predicate"
 import { Sentence } from "./Sentence"
 
-// export function addInfModToPred(pred: Predicate): void {
-//     let infMod: Mod =
-//         new Mod({ name: "inf", pos: PartsOfSpeech.VBINF })
-//     pred.addMod(infMod)
-// }
 
 export function addAdverbModsAndArgs(
     adverb: Adverb,
@@ -144,11 +139,39 @@ export function addRelClauseToNounPhrase(
 
     relClause.addNounToClause(relNoun)
 
-    let relMod: Mod = new Mod(relWord)
     if (!nounModStack.some(mod => mod.getPos() === PartsOfSpeech.WDT)) {
+        let relMod: Mod = new Mod(relWord)
         nounModStack.push(relMod)
     }
     return relClause
+}
+
+export function addRelClauseToSubject(
+    subject: Noun,
+    wordList: Word[]
+): void {
+    let relClauseWords: Word[] = removeRelClause(wordList)
+
+    let relWord: Word = { name: "that", pos: PartsOfSpeech.WDT }
+    let relNoun: Noun = new Noun(relWord.name)
+
+    let relSentence: Sentence = new Sentence(relClauseWords)
+    if (isNominalElement(relClauseWords)) {
+        relSentence.getNounStack().push(relNoun)
+    }
+    else {
+        relSentence.setCurrentSubject(relNoun)
+    }
+    relSentence.generateClauses()
+
+    if (!subject
+        .getModifiers()
+        .some(mod =>
+            mod.getPos() === PartsOfSpeech.WDT
+        )) {
+        let relMod: Mod = new Mod(relWord)
+        subject.addModifier(relMod)
+    }
 }
 
 export function addStrandedPassive(wordList: Word[], nounStack: Noun[]): void {
@@ -603,13 +626,16 @@ export function handleNounPhrase(
     ) {
         nounModStack.push(new Mod(wordList[0]))
     }
-    if (isPreposition(wordList[0])) {
+    if (
+        wordList[0] &&
+        isPreposition(wordList[0])
+    ) {
         let relClause: Clause =
             addRelClauseToNounPhrase(wordList, nounModStack)
         Sentence.clauses.push(relClause)
         Sentence.numberOfClauses += 1
     }
-    return (createNounPhrase(headWord, nounModStack))
+    return createNounPhrase(headWord, nounModStack)
 }
 
 export function handlePrepositionPhrase(wordList: Word[]) {
@@ -887,6 +913,11 @@ export function isRosVerb(pred: Predicate): boolean {
         isECMPred(pred)
     )
 }
+
+// export function isSubjectControl(): boolean {
+
+//     return false
+// }
 
 export function isVerb(word: Word): boolean {
     return (
