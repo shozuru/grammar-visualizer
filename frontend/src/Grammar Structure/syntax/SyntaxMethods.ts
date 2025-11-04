@@ -187,145 +187,6 @@ export function addStrandedPassive(wordList: Word[], nounStack: Noun[]): void {
     }
 }
 
-// export function addClauseArgumentsAndAdjuncts(
-//     relClause: Clause,
-//     wordList: Word[]
-// ): void {
-//     // gets clause arguments and modifiers and adds them to the clause
-
-//     let nounModStack: Mod[] = []
-//     let adverbModStack: Mod[] = []
-//     let adverbAgrStack: Agr[] = []
-
-//     while (wordList[0] && !isVerbalElement(wordList[0])) {
-
-//         let currentWord: Word = wordList.shift() as Word
-
-//         // this part is literally the same as in the main sentence method i feel
-//         // like we need to move stuff so that we can just reuse the same code
-
-//         if (isNounModifier(currentWord, wordList)) {
-//             nounModStack.push(new Mod(currentWord))
-//         } else if (isAdverbMod(currentWord)) {
-//             adverbModStack.push(new Mod(currentWord))
-//         } else if (isAdverbAgr(currentWord)) {
-//             adverbAgrStack.push(new Agr(currentWord))
-//         }
-
-//         // else if (
-//         //     isCausative(currentPair)
-//         // ) {
-//         //     if (
-//         //         relClause.getNouns().length > 1
-//         //     ) {
-//         //         relClause
-//         //             .getNouns()[-1]
-//         //             .addModifier(new Mod(currentPair))
-
-//         //     } else {
-//         //         relClause
-//         //             .getNouns()[0]
-//         //             .addModifier(new Mod(currentPair))
-//         //     }
-//         // }
-
-//         else if (
-//             isPassive(currentWord)
-//         ) {
-//             nounModStack.push(new Mod(currentWord))
-//         }
-//         else if (isNoun(currentWord)) {
-//             let nPhrase: Noun = createNounPhrase(
-//                 currentWord,
-//                 nounModStack
-//             )
-//             addPhraseToClause(nPhrase, relClause)
-
-//         } else if (isAdverb(currentWord)) {
-//             let aPhrase: Adverb = new Adverb(currentWord.name)
-//             addAdverbModsAndArgs(aPhrase, adverbModStack, adverbAgrStack)
-
-//             let modPhrase: Adverb | Preposition =
-//                 resolveAdverbAttachment(aPhrase, wordList)
-//             addPhraseToClause(modPhrase, relClause)
-
-//         } else if (isPreposition(currentWord)) {
-//             let pPhrase: Preposition = new Preposition(currentWord.name)
-//             addPhraseToClause(pPhrase, relClause)
-//         }
-//         if (nounModStack.length > 0 &&
-//             nounModStack[0].getName() === "by"
-//         ) {
-//             relClause
-//                 .getNouns()
-//                 .forEach(noun => {
-//                     if (noun.getName() === "that") {
-//                         let passiveMod: Mod = nounModStack.shift() as Mod
-//                         noun.addModifier(passiveMod)
-//                     }
-//                 })
-//         }
-//     }
-// }
-
-// export function addMatrixClauseArguments(
-//     matrixPredicate: Predicate,
-//     nounArguments: Noun[]
-// ): Clause {
-
-//     let matrixClause: Clause = new Clause(matrixPredicate)
-//     if (
-//         nounArguments[0]
-//             .getModifiers()
-//             .some(mod =>
-//                 mod.getName() === "make" ||
-//                 mod.getName() === "made" ||
-//                 mod.getName() === "let"
-//             )
-//     ) {
-//         let agentNoun: Noun = nounArguments.shift() as Noun
-//         matrixClause.setCausativeNoun(agentNoun)
-//     }
-
-//     if (
-//         hasMultipleNouns(nounArguments) &&
-//         (
-//             // I expected him to win
-//             isRaisingVerb(matrixPredicate.getVerb()) ||
-//             // I saw him win
-//             isECMVerb(matrixPredicate.getVerb())
-//         )
-//     ) {
-//         // move first noun to matrix clause
-//         let matrixSubject: Noun = nounArguments.shift() as Noun
-//         matrixClause.addNounToClause(matrixSubject)
-//     } else if (
-//         // I asked him to win
-//         hasMultipleNouns(nounArguments) &&
-//         isObjectControl(matrixPredicate.getVerb())
-//     ) {
-//         addNounsToObjectControlPred(matrixClause, nounArguments)
-//     } else if (
-//         // I used him to win
-//         hasMultipleNouns(nounArguments)
-//     ) {
-//         addNounsToSubjectControlPred(matrixClause, nounArguments)
-//     } else if (
-//         matrixClause
-//             .getPredAgrs()
-//             .some((Word) => Word.getPos() === PartsOfSpeech.PsvAgr)
-//     ) {
-//         let matrixSubject: Noun = nounArguments.shift() as Noun
-//         matrixClause.addNounToClause(matrixSubject)
-
-//     } else {
-//         // copy subject to matrix clause
-//         let matrixSubject: Noun = nounArguments[0]
-//         matrixClause.addNounToClause(matrixSubject)
-//     }
-//     return matrixClause
-// }
-
 export function createCompleteClause(
     pred: Predicate,
     subject: Noun,
@@ -559,7 +420,8 @@ export function fixPartsOfSpeech(wordList: Word[]): Word[] {
     return wordList
 }
 
-export function handleAdverbPhrase(wordList: Word[]
+export function handleAdverbPhrase(
+    wordList: Word[]
 ): Adverb | Preposition | Noun {
     let modStack: Mod[] = []
     let agrStack: Agr[] = []
@@ -880,7 +742,9 @@ export function isRaisingPred(pred: Predicate): boolean {
 
 export function isRelative(word: Word): boolean {
     return (
-        word.pos === PartsOfSpeech.WDT
+        word.pos === PartsOfSpeech.WDT ||
+        word.pos === PartsOfSpeech.WP ||
+        word.pos === PartsOfSpeech.WPQ
     )
 }
 
@@ -913,11 +777,6 @@ export function isRosVerb(pred: Predicate): boolean {
         isECMPred(pred)
     )
 }
-
-// export function isSubjectControl(): boolean {
-
-//     return false
-// }
 
 export function isVerb(word: Word): boolean {
     return (
