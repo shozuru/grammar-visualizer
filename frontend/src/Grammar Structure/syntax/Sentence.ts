@@ -1,12 +1,14 @@
 import {
     addStrandedPassive,
+    createCompleteClause,
     createRelativeNoun,
-    createRosClause, fixPartsOfSpeech, handleAdverbPhrase, handleNounPhrase,
+    createRosClause, handleAdverbPhrase, handleNounPhrase,
     handlePredicatePhrase, handlePrepositionPhrase,
     isAdverbElement, isBeVerb, isNominalElement, isPassive, isPreposition,
     isRelative,
     isRosCondition,
     isVerbalElement,
+    removeRelClause,
 } from "./SyntaxMethods"
 import { Adverb } from "./partsOfSpeech/Adverb"
 import { Noun } from "./partsOfSpeech/Noun"
@@ -22,19 +24,17 @@ export class Sentence {
     static numberOfClauses: number
 
     private wordList: Word[]
-
     private currentPredicate: Predicate | null
     private currentSubject: Noun | null
     private nounStack: Noun[]
     private adjunctStack: (Preposition | Adverb)[]
 
     constructor(wordList: Word[]) {
-        this.wordList = fixPartsOfSpeech(wordList)
 
         Sentence.clauses = []
         Sentence.numberOfClauses = 0
-        this.wordList = wordList
 
+        this.wordList = wordList
         this.currentPredicate = null
         this.currentSubject = null
         this.nounStack = []
@@ -85,9 +85,17 @@ export class Sentence {
                 } =
                     handlePredicatePhrase(this.currentSubject, this.wordList)
 
-                if (this.currentPredicate instanceof Predicate) {
+                if (
+                    this.currentPredicate &&
+                    this.currentSubject
+                ) {
                     // handle subject control
-                    this.createCompleteClause()
+                    createCompleteClause(
+                        this.currentPredicate,
+                        this.currentSubject,
+                        this.nounStack,
+                        this.adjunctStack
+                    )
                     this.adjunctStack = []
                     this.nounStack = []
                 }
@@ -124,41 +132,55 @@ export class Sentence {
                     if (ros.nextSubject instanceof Noun) {
                         this.currentSubject = ros.nextSubject
                     }
-
                     // when you deal with tense in general, you can deal with 
                     // inf, since you don't deal with tense in the main clause
                 }
             } else if (isRelative(currentWord)) {
-                this.createCompleteClause()
-                this.clearCurrentClause()
-                let relNoun: Noun = createRelativeNoun(this.wordList)
 
-                if (isNominalElement(this.wordList)) {
-                    this.nounStack.push(relNoun)
+                if (
+                    this.currentPredicate instanceof Predicate &&
+                    this.currentSubject instanceof Noun
+                ) {
+                    createCompleteClause(
+                        this.currentPredicate,
+                        this.currentSubject,
+                        this.nounStack,
+                        this.adjunctStack
+                    )
+                    this.clearCurrentClause()
+                    let relNoun: Noun = createRelativeNoun(this.wordList)
+
+                    if (isNominalElement(this.wordList)) {
+                        this.nounStack.push(relNoun)
+                    } else {
+                        this.currentSubject = relNoun
+                    }
+
                 } else {
-                    this.currentSubject = relNoun
+
+                    let relClauseWords: Word[] = removeRelClause(this.wordList)
+                    let relNoun: Noun = createRelativeNoun(relClauseWords)
+
+                    let relSentence: Sentence = new Sentence(relClauseWords)
+                    if (isNominalElement(relClauseWords)) {
+                        relSentence.nounStack.push(relNoun)
+                    } else {
+                        relSentence.currentSubject = relNoun
+                    }
+                    relSentence.generateClauses()
                 }
             }
         }
-        this.createCompleteClause()
-    }
-
-    private createCompleteClause(): void {
         if (
-            this.currentPredicate instanceof Predicate &&
-            this.currentSubject instanceof Noun
-        ) {
-            let completeClause: Clause = new Clause(this.currentPredicate)
-            completeClause.addNounToClause(this.currentSubject)
-
-            for (let noun of this.nounStack) {
-                completeClause.addNounToClause(noun)
-            }
-            for (let adjunct of this.adjunctStack) {
-                completeClause.addAdjunct(adjunct)
-            }
-            Sentence.clauses.push(completeClause)
-        }
+            this.currentPredicate &&
+            this.currentSubject
+        )
+            createCompleteClause(
+                this.currentPredicate,
+                this.currentSubject,
+                this.nounStack,
+                this.adjunctStack
+            )
     }
 
     /**

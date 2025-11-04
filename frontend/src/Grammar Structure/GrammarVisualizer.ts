@@ -1,6 +1,7 @@
 import { type SentenceInfo } from "./types/SentenceInfo"
 import { Sentence } from "./syntax/Sentence"
 import type { Word } from "./types/Word"
+import { fixPartsOfSpeech } from "./syntax/SyntaxMethods"
 
 export class GrammarVisualizer {
 
@@ -12,6 +13,7 @@ export class GrammarVisualizer {
             inputSentence.posList,
             inputSentence.wordList
         )
+        this.sentenceWordList = fixPartsOfSpeech(this.sentenceWordList)
 
         this.sentence = new Sentence(
             this.sentenceWordList
@@ -44,8 +46,6 @@ export class GrammarVisualizer {
 
 // TODO: questions, punctuation, conjunctions, relative clauses
 
-// the amazing movie --> the movie that is amazing
-// those are amazing shoes --> those are shoes that are amazing
 // the movie (that) i saw was really good.
 // the person that went to spain
 // the person (that was) in the bathroom came back

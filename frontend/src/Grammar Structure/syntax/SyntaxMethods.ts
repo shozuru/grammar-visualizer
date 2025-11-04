@@ -295,6 +295,29 @@ export function addStrandedPassive(wordList: Word[], nounStack: Noun[]): void {
 //     return matrixClause
 // }
 
+export function createCompleteClause(
+    pred: Predicate,
+    subject: Noun,
+    nounStack: Noun[],
+    adjunctStack: (Adverb | Preposition)[]
+): void {
+    // if (
+    //     this.currentPredicate instanceof Predicate &&
+    //     this.currentSubject instanceof Noun
+    // ) {
+    let completeClause: Clause = new Clause(pred)
+    completeClause.addNounToClause(subject)
+
+    for (let noun of nounStack) {
+        completeClause.addNounToClause(noun)
+    }
+    for (let adjunct of adjunctStack) {
+        completeClause.addAdjunct(adjunct)
+    }
+    Sentence.clauses.push(completeClause)
+    // }
+}
+
 export function createNounPhrase(nounWord: Word, modifiers: Mod[]): Noun {
     let nounPhrase: Noun = new Noun(nounWord.name)
     while (modifiers.length > 0) {
@@ -1036,6 +1059,21 @@ export function passiveByPhraseIndex(wordList: Word[]): number {
         index -= 1
     }
     return index
+}
+
+export function removeRelClause(wordList: Word[]): Word[] {
+    let index: number = 0
+    let verbCounter: number = 0
+    while (
+        wordList[index] &&
+        verbCounter < 2
+    ) {
+        if (isVerb(wordList[index])) {
+            verbCounter += 1
+        }
+        index += 1
+    }
+    return wordList.splice(0, index - 1)
 }
 
 export function resolveAdverbAttachment(
