@@ -27,7 +27,7 @@ const UserInput: React.FC = () => {
     }
 
     useEffect(() => {
-        axios.post('http://127.0.0.1:8000/pos',
+        axios.post('https://grammar-visualizer.duckdns.org/pos/',
             {
                 sentence: submitted
                     .replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()'"]/g, "")
