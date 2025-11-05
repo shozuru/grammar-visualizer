@@ -187,27 +187,23 @@ export function addStrandedPassive(wordList: Word[], nounStack: Noun[]): void {
     }
 }
 
-export function createCompleteClause(
-    pred: Predicate,
-    subject: Noun,
-    nounStack: Noun[],
-    adjunctStack: (Adverb | Preposition)[]
-): void {
-    // if (
-    //     this.currentPredicate instanceof Predicate &&
-    //     this.currentSubject instanceof Noun
-    // ) {
-    let completeClause: Clause = new Clause(pred)
-    completeClause.addNounToClause(subject)
+export function createCompleteClause(sentence: Sentence): void {
+    if (
+        sentence.getCurrentPredicate() instanceof Predicate &&
+        sentence.getCurrentSubject() instanceof Noun
+    ) {
+        let completeClause: Clause =
+            new Clause(sentence.getCurrentPredicate() as Predicate)
+        completeClause.addNounToClause(sentence.getCurrentSubject() as Noun)
 
-    for (let noun of nounStack) {
-        completeClause.addNounToClause(noun)
+        for (let noun of sentence.getNounStack()) {
+            completeClause.addNounToClause(noun)
+        }
+        for (let adjunct of sentence.getAdjunctStack()) {
+            completeClause.addAdjunct(adjunct)
+        }
+        sentence.addClausetoClauseList(completeClause)
     }
-    for (let adjunct of adjunctStack) {
-        completeClause.addAdjunct(adjunct)
-    }
-    Sentence.clauses.push(completeClause)
-    // }
 }
 
 export function createNounPhrase(nounWord: Word, modifiers: Mod[]): Noun {
@@ -230,22 +226,17 @@ export function createPrepositionalPhrase(
     return prepositionalPhrase
 }
 
-export function createRosClause(
-    rosPred: Predicate,
-    subject: Noun,
-    adjunctStack: (Adverb | Preposition)[],
-    wordList: Word[]
-): {
+export function createRosClause(sentence: Sentence): {
     clause: Clause
     nextSubject: Noun | null
 } {
-    let clause = new Clause(rosPred)
-    clause.addNounToClause(subject)
-    for (let adjunct of adjunctStack) {
+    let clause = new Clause(sentence.getCurrentPredicate() as Predicate)
+    clause.addNounToClause(sentence.getCurrentSubject() as Noun)
+    for (let adjunct of sentence.getAdjunctStack()) {
         clause.addAdjunct(adjunct)
     }
     let nextSubject: Noun | null =
-        handleRosObjects(clause, wordList)
+        handleRosObjects(clause, sentence.getWordList(), sentence)
     return { clause, nextSubject }
 }
 
@@ -421,10 +412,11 @@ export function fixPartsOfSpeech(wordList: Word[]): Word[] {
 }
 
 export function handleAdverbPhrase(
-    wordList: Word[]
+    sentence: Sentence
 ): Adverb | Preposition | Noun {
     let modStack: Mod[] = []
     let agrStack: Agr[] = []
+    let wordList: Word[] = sentence.getWordList()
 
     while (!isAdverb(wordList[0])) {
         if (isAdverbMod(wordList[0])) {
@@ -442,7 +434,7 @@ export function handleAdverbPhrase(
         modStack.push(supletiveMod)
     }
     if (wordList[1] && isNominalElement(wordList.slice(1))) {
-        let nRelPhrase: Noun = handleNounPhrase(wordList)
+        let nRelPhrase: Noun = handleNounPhrase(sentence)
         return nRelPhrase
     }
     let headWord: Word = wordList.shift() as Word
@@ -456,9 +448,10 @@ export function handleAdverbPhrase(
 }
 
 export function handleNounPhrase(
-    wordList: Word[]
+    sentence: Sentence
 ): Noun {
     let nounModStack: Mod[] = []
+    let wordList: Word[] = sentence.getWordList()
 
     while (!isNoun(wordList[0])) {
         if (isNounModifier(wordList[0], wordList.slice(1))) {
@@ -469,8 +462,8 @@ export function handleNounPhrase(
         } else if (isAdverb(wordList[0])) {
             let relClause: Clause =
                 addRelClauseToNounPhrase(wordList, nounModStack)
-            Sentence.clauses.push(relClause)
-            Sentence.numberOfClauses += 1
+            sentence.addClausetoClauseList(relClause)
+            sentence.incrementClauseCounter()
         }
     }
 
@@ -494,8 +487,8 @@ export function handleNounPhrase(
     ) {
         let relClause: Clause =
             addRelClauseToNounPhrase(wordList, nounModStack)
-        Sentence.clauses.push(relClause)
-        Sentence.numberOfClauses += 1
+        sentence.addClausetoClauseList(relClause)
+        sentence.incrementClauseCounter()
     }
     return createNounPhrase(headWord, nounModStack)
 }
@@ -506,8 +499,7 @@ export function handlePrepositionPhrase(wordList: Word[]) {
 }
 
 export function handlePredicatePhrase(
-    subject: Noun | null,
-    wordList: Word[]
+    sentence: Sentence
 ): {
     pred: Predicate
     experiencer: Noun | null
@@ -517,6 +509,8 @@ export function handlePredicatePhrase(
     let agrStack: Agr[] = []
     let experiencer: Noun | null = null
     let adverbStack: Adverb[] = []
+
+    let wordList: Word[] = sentence.getWordList()
 
     while (!isVerb(wordList[0])) {
         if (isVerbModifier(wordList[0])) {
@@ -528,13 +522,14 @@ export function handlePredicatePhrase(
             let agr: Agr = new Agr(agrWord)
             agrStack.push(agr)
         } else if (
-            subject instanceof Noun &&
+            sentence.getCurrentSubject() instanceof Noun &&
             isCausative(wordList[0])
         ) {
             let causMod: Mod = new Mod(wordList.shift() as Word)
+            let subject: Noun = sentence.getCurrentSubject() as Noun
             subject.addModifier(causMod)
         } else if (isNominalElement(wordList)) {
-            experiencer = handleNounPhrase(wordList)
+            experiencer = handleNounPhrase(sentence)
         } else if (isAdverb(wordList[0])) {
             let adverbWord: Word = wordList.shift() as Word
             let aPhrase: Adverb = new Adverb(adverbWord.name)
@@ -567,11 +562,12 @@ export function createRelativeNoun(wordList: Word[]): Noun {
 
 export function handleRosObjects(
     rosClause: Clause,
-    wordList: Word[]
+    wordList: Word[],
+    sentence: Sentence
 ): Noun | null {
 
     if (isNominalElement(wordList)) {
-        let nPhrase: Noun = handleNounPhrase(wordList)
+        let nPhrase: Noun = handleNounPhrase(sentence)
 
         if (isObjectControlPred(rosClause.getPredicate())) {
             rosClause.addNounToClause(nPhrase)

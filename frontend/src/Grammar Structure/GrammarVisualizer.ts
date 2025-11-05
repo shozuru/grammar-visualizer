@@ -21,9 +21,9 @@ export class GrammarVisualizer {
         this.sentence.generateClauses()
 
         console.log(
-            `Number of clauses in sentence: ${Sentence.numberOfClauses}`
+            `Number of clauses in sentence: ${this.sentence.getClauseCounter()}`
         )
-        console.log(Sentence.clauses)
+        console.log(this.sentence.getClauseList())
     }
 
     private createZippedWords(

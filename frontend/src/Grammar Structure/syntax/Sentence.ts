@@ -15,8 +15,8 @@ import { Predicate } from "./Predicate"
 export class Sentence {
 
     // list of completed clauses
-    static clauses: Clause[]
-    static numberOfClauses: number
+    private clauses: Clause[]
+    private numberOfClauses: number
 
     private wordList: Word[]
     private currentPredicate: Predicate | null
@@ -26,8 +26,8 @@ export class Sentence {
 
     constructor(wordList: Word[]) {
 
-        Sentence.clauses = []
-        Sentence.numberOfClauses = 0
+        this.clauses = []
+        this.numberOfClauses = 0
 
         this.wordList = wordList
         this.currentPredicate = null
@@ -58,7 +58,7 @@ export class Sentence {
                     addStrandedPassive(this.wordList, this.nounStack)
                 } else {
                     let nPhrase: Noun =
-                        handleNounPhrase(this.wordList)
+                        handleNounPhrase(this)
                     if (this.currentSubject === null) {
                         this.currentSubject = nPhrase
                     } else {
@@ -68,7 +68,7 @@ export class Sentence {
 
             } else if (isAdverbElement(currentWord)) {
                 let adjunctPhrase: Adverb | Preposition | Noun =
-                    handleAdverbPhrase(this.wordList)
+                    handleAdverbPhrase(this)
                 this.attachElementCorrectly(adjunctPhrase)
 
             } else if (isPreposition(currentWord)) {
@@ -83,7 +83,7 @@ export class Sentence {
                     experiencer: Noun | null
                     adverbStack: Adverb[]
                 } =
-                    handlePredicatePhrase(this.currentSubject, this.wordList)
+                    handlePredicatePhrase(this)
 
                 if (
                     // is subject control:
@@ -91,18 +91,13 @@ export class Sentence {
                     this.currentSubject instanceof Noun
                 ) {
                     // handle subject control
-                    createCompleteClause(
-                        this.currentPredicate,
-                        this.currentSubject,
-                        this.nounStack,
-                        this.adjunctStack
-                    )
+                    createCompleteClause(this)
                     this.adjunctStack = []
                     this.nounStack = []
                 }
 
                 this.currentPredicate = predInfo.pred
-                Sentence.numberOfClauses += 1
+                this.incrementClauseCounter()
 
                 if (predInfo.experiencer instanceof Noun) {
                     this.nounStack.push(predInfo.experiencer)
@@ -119,16 +114,11 @@ export class Sentence {
                         clause: Clause
                         nextSubject: Noun | null
                     } =
-                        createRosClause(
-                            this.currentPredicate,
-                            this.currentSubject,
-                            this.adjunctStack,
-                            this.wordList
-                        )
+                        createRosClause(this)
                     for (let noun of this.nounStack) {
                         ros.clause.addNounToClause(noun)
                     }
-                    Sentence.clauses.push(ros.clause)
+                    this.addClausetoClauseList(ros.clause)
                     this.clearCurrentClause()
                     if (ros.nextSubject instanceof Noun) {
                         this.currentSubject = ros.nextSubject
@@ -142,12 +132,7 @@ export class Sentence {
                     this.currentPredicate instanceof Predicate &&
                     this.currentSubject instanceof Noun
                 ) {
-                    createCompleteClause(
-                        this.currentPredicate,
-                        this.currentSubject,
-                        this.nounStack,
-                        this.adjunctStack
-                    )
+                    createCompleteClause(this)
                     this.clearCurrentClause()
                     let relNoun: Noun = createRelativeNoun(this.wordList)
 
@@ -175,13 +160,25 @@ export class Sentence {
         if (
             this.currentPredicate &&
             this.currentSubject
-        )
-            createCompleteClause(
-                this.currentPredicate,
-                this.currentSubject,
-                this.nounStack,
-                this.adjunctStack
-            )
+        ) {
+            createCompleteClause(this)
+        }
+    }
+
+    public addClausetoClauseList(clause: Clause): void {
+        this.clauses.push(clause)
+    }
+
+    public getClauseList(): Clause[] {
+        return this.clauses
+    }
+
+    public incrementClauseCounter(): void {
+        this.numberOfClauses += 1
+    }
+
+    public getClauseCounter(): number {
+        return this.numberOfClauses
     }
 
     public getNounStack(): Noun[] {
@@ -190,6 +187,10 @@ export class Sentence {
 
     public setCurrentSubject(noun: Noun): void {
         this.currentSubject = noun
+    }
+
+    public getWordList(): Word[] {
+        return this.wordList
     }
 
     /**
@@ -218,5 +219,17 @@ export class Sentence {
         this.currentSubject = null
         this.currentPredicate = null
         this.nounStack = []
+    }
+
+    public getCurrentPredicate(): Predicate | null {
+        return this.currentPredicate
+    }
+
+    public getCurrentSubject(): Noun | null {
+        return this.currentSubject
+    }
+
+    public getAdjunctStack(): (Adverb | Preposition)[] {
+        return this.adjunctStack
     }
 }
