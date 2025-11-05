@@ -51,6 +51,11 @@ export class GrammarVisualizer {
 
 // I made the game (be) easier
 
+// make the clauses a private attribute and not static, and just create a helper
+// method and add it as an argument when you use it
+
+// create another class to hold your parses ('Sentence')
+
 // -----------------------------------------------------------------------------
 
 // experiencer verbs might be super limited
