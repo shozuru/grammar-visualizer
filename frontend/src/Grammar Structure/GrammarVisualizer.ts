@@ -1,11 +1,11 @@
 import { type SentenceInfo } from "./types/SentenceInfo"
-import { Sentence } from "./syntax/Sentence"
+import { ClauseBuilder } from "./syntax/ClauseBuilder"
 import type { Word } from "./types/Word"
 import { fixPartsOfSpeech } from "./syntax/SyntaxMethods"
 
 export class GrammarVisualizer {
 
-    public sentence: Sentence
+    public sentence: ClauseBuilder
     private sentenceWordList: Word[]
 
     constructor(inputSentence: SentenceInfo) {
@@ -15,7 +15,7 @@ export class GrammarVisualizer {
         )
         this.sentenceWordList = fixPartsOfSpeech(this.sentenceWordList)
 
-        this.sentence = new Sentence(
+        this.sentence = new ClauseBuilder(
             this.sentenceWordList
         )
         this.sentence.generateClauses()

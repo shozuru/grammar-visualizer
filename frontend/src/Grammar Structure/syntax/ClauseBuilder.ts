@@ -1,6 +1,7 @@
 import {
     addRelClauseToSubject, addStrandedPassive, createCompleteClause,
-    createRelativeNoun, createRosClause, handleAdverbPhrase, handleNounPhrase,
+    createRelativeNoun, createRosClause, handleAdverbPhrase,
+    handleNounPhrase,
     handlePredicatePhrase, handlePrepositionPhrase, isAdverbElement, isBeVerb,
     isFocusElement,
     isNominalElement, isPassive, isPreposition, isRelative, isRosCondition,
@@ -13,7 +14,7 @@ import type { Word } from "../types/Word"
 import { Clause } from "./partsOfSpeech/Clause"
 import { Predicate } from "./Predicate"
 
-export class Sentence {
+export class ClauseBuilder {
 
     // list of completed clauses
     private clauses: Clause[]
@@ -127,8 +128,8 @@ export class Sentence {
                     // when you deal with tense in general, you can deal with 
                     // inf, since you don't deal with tense in the main clause
                 }
-            } else if (isRelative(currentWord)) {
 
+            } else if (isRelative(currentWord)) {
                 if (
                     this.currentPredicate instanceof Predicate &&
                     this.currentSubject instanceof Noun
@@ -147,7 +148,8 @@ export class Sentence {
                     let relClauseWords: Word[] = removeRelClause(this.wordList)
                     let relNoun: Noun = createRelativeNoun(relClauseWords)
 
-                    let relSentence: Sentence = new Sentence(relClauseWords)
+                    let relSentence: ClauseBuilder =
+                        new ClauseBuilder(relClauseWords)
                     if (isNominalElement(relClauseWords)) {
                         relSentence.nounStack.push(relNoun)
                     } else {
@@ -156,10 +158,10 @@ export class Sentence {
                     relSentence.generateClauses()
                 }
 
-
             } else if (isFocusElement(currentWord)) {
-                let focusElement: Word = this.wordList.shift() as Word
-                console.log(`Here I am, once again, I'm falling to pieces: ${focusElement.name}`)
+                // handleFocusElement(this.wordList)
+                let focusWord = this.wordList.shift() as Word
+                console.log(focusWord.name)
             }
         }
         if (

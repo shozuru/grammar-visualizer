@@ -11,7 +11,7 @@ import {
 import { Mod } from "./Mod"
 import { Agr } from "./Agr"
 import { Predicate } from "./Predicate"
-import { Sentence } from "./Sentence"
+import { ClauseBuilder } from "./ClauseBuilder"
 
 
 export function addAdverbModsAndArgs(
@@ -155,7 +155,7 @@ export function addRelClauseToSubject(
     let relWord: Word = { name: "that", pos: PartsOfSpeech.WDT }
     let relNoun: Noun = new Noun(relWord.name)
 
-    let relSentence: Sentence = new Sentence(relClauseWords)
+    let relSentence: ClauseBuilder = new ClauseBuilder(relClauseWords)
     if (isNominalElement(relClauseWords)) {
         relSentence.getNounStack().push(relNoun)
     }
@@ -187,7 +187,7 @@ export function addStrandedPassive(wordList: Word[], nounStack: Noun[]): void {
     }
 }
 
-export function createCompleteClause(sentence: Sentence): void {
+export function createCompleteClause(sentence: ClauseBuilder): void {
     if (
         sentence.getCurrentPredicate() instanceof Predicate &&
         sentence.getCurrentSubject() instanceof Noun
@@ -226,7 +226,7 @@ export function createPrepositionalPhrase(
     return prepositionalPhrase
 }
 
-export function createRosClause(sentence: Sentence): {
+export function createRosClause(sentence: ClauseBuilder): {
     clause: Clause
     nextSubject: Noun | null
 } {
@@ -318,22 +318,25 @@ export function fixPartsOfSpeech(wordList: Word[]): Word[] {
             }
         }
 
-        if ((
-            i === 0 && (
-                wordList[i].pos === PartsOfSpeech.VBD ||
-                wordList[i].pos === PartsOfSpeech.VBZ ||
-                wordList[i].pos === PartsOfSpeech.VBP ||
-                wordList[i].pos === PartsOfSpeech.MD ||
-                wordList[i].pos === PartsOfSpeech.TENSE
-            )
+        if (
+            (i === 0 &&
+                (
+                    wordList[i].pos === PartsOfSpeech.VBD ||
+                    wordList[i].pos === PartsOfSpeech.VBZ ||
+                    wordList[i].pos === PartsOfSpeech.VBP ||
+                    wordList[i].pos === PartsOfSpeech.MD ||
+                    wordList[i].pos === PartsOfSpeech.TENSE
+                )
 
-        ) && (
+            ) &&
+            (
                 isNoun(
                     {
                         pos: wordList[i + 1].pos,
                         name: wordList[i + 1].name
                     }
-                ) || (
+                ) ||
+                (
                     isAdverb(
                         {
                             pos: wordList[i + 1].pos,
@@ -412,7 +415,7 @@ export function fixPartsOfSpeech(wordList: Word[]): Word[] {
 }
 
 export function handleAdverbPhrase(
-    sentence: Sentence
+    sentence: ClauseBuilder
 ): Adverb | Preposition | Noun {
     let modStack: Mod[] = []
     let agrStack: Agr[] = []
@@ -447,8 +450,17 @@ export function handleAdverbPhrase(
     return modPhrase
 }
 
+// export function handleFocusElement(wordList: Word[]): void {
+//     let focusWord: Word = wordList.shift() as Word
+//     let focusMod: Mod = new Mod(focusWord)
+//     if (focusElement.pos === PartsOfSpeech.QuestionTense)
+//         console.log(`Here I am, once again, I'm falling to pieces: 
+//                     ${focusElement.name}`
+//         )
+// }
+
 export function handleNounPhrase(
-    sentence: Sentence
+    sentence: ClauseBuilder
 ): Noun {
     let nounModStack: Mod[] = []
     let wordList: Word[] = sentence.getWordList()
@@ -499,7 +511,7 @@ export function handlePrepositionPhrase(wordList: Word[]) {
 }
 
 export function handlePredicatePhrase(
-    sentence: Sentence
+    sentence: ClauseBuilder
 ): {
     pred: Predicate
     experiencer: Noun | null
@@ -563,7 +575,7 @@ export function createRelativeNoun(wordList: Word[]): Noun {
 export function handleRosObjects(
     rosClause: Clause,
     wordList: Word[],
-    sentence: Sentence
+    sentence: ClauseBuilder
 ): Noun | null {
 
     if (isNominalElement(wordList)) {
