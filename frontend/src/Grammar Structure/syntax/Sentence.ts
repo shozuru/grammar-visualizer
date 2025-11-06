@@ -2,6 +2,7 @@ import {
     addRelClauseToSubject, addStrandedPassive, createCompleteClause,
     createRelativeNoun, createRosClause, handleAdverbPhrase, handleNounPhrase,
     handlePredicatePhrase, handlePrepositionPhrase, isAdverbElement, isBeVerb,
+    isFocusElement,
     isNominalElement, isPassive, isPreposition, isRelative, isRosCondition,
     isVerbalElement, modStackContainsCaus, removeRelClause,
 } from "./SyntaxMethods"
@@ -143,7 +144,6 @@ export class Sentence {
                     }
 
                 } else {
-
                     let relClauseWords: Word[] = removeRelClause(this.wordList)
                     let relNoun: Noun = createRelativeNoun(relClauseWords)
 
@@ -155,6 +155,11 @@ export class Sentence {
                     }
                     relSentence.generateClauses()
                 }
+
+
+            } else if (isFocusElement(currentWord)) {
+                let focusElement: Word = this.wordList.shift() as Word
+                console.log(`Here I am, once again, I'm falling to pieces: ${focusElement.name}`)
             }
         }
         if (

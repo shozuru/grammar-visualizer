@@ -647,6 +647,12 @@ export function isECMPred(pred: Predicate): boolean {
     )
 }
 
+export function isFocusElement(word: Word): boolean {
+    return (
+        word.pos === PartsOfSpeech.QuestionTense
+    )
+}
+
 export function isNominalElement(wordList: Word[]): boolean {
     return (
         wordList[0] &&
@@ -805,7 +811,6 @@ export function isVerbModifier(word: Word): boolean {
         word.pos === PartsOfSpeech.TENSE ||
         word.pos === PartsOfSpeech.PERFECTIVE ||
         word.pos === PartsOfSpeech.NEGATION ||
-        word.pos === PartsOfSpeech.QuestionTense ||
         word.pos === PartsOfSpeech.MD
     )
 }

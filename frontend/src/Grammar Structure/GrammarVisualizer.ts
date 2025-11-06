@@ -44,11 +44,15 @@ export class GrammarVisualizer {
     }
 }
 
-// TODO: questions, punctuation, conjunctions, relative clauses
+// TODO: questions, punctuation, conjunctions, relative clauses, 
+// ambiguous sentences, visualization
+
+// yes/no questions
+// wh questions with subject WH (no tense promotion)
+// wh questions with object WH (tense promotion)
 
 // the man that is a soccer player came back --> the soccer player man came back
 // who i knew was great was dead --> the person that I knew was great was dead
-
 // I made the game (be) easier
 
 // make the clauses a private attribute and not static, and just create a helper
