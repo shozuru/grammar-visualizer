@@ -17,226 +17,237 @@ import { Predicate } from "./Predicate"
 export class ClauseBuilder {
 
     // list of completed clauses
-    private clauses: Clause[]
-    private numberOfClauses: number
+    // private clauses: Clause[]
+    // private numberOfClauses: number
 
-    private wordList: Word[]
-    private currentPredicate: Predicate | null
-    private currentSubject: Noun | null
+    // private wordList: Word[]
+    private predicate: Predicate | null
+    private subject: Noun | null
     private nounStack: Noun[]
     private adjunctStack: (Preposition | Adverb)[]
 
-    constructor(wordList: Word[]) {
+    constructor(
+        // wordList: Word[]
+    ) {
 
-        this.clauses = []
-        this.numberOfClauses = 0
+        // this.clauses = []
+        // this.numberOfClauses = 0
 
-        this.wordList = wordList
-        this.currentPredicate = null
-        this.currentSubject = null
+        // // this.wordList = wordList
+        this.predicate = null
+        this.subject = null
         this.nounStack = []
         this.adjunctStack = []
     }
 
-    public generateClauses(): void {
-
-        while (this.wordList[0]) {
-
-            let currentWord: Word = this.wordList[0]
-            console.log(currentWord)
-
-            if (isNominalElement(this.wordList)) {
-                if (this.currentSubject instanceof Noun &&
-                    !(
-                        this.currentPredicate instanceof Predicate ||
-                        modStackContainsCaus(this.currentSubject.getModifiers())
-                    )
-                ) {
-                    addRelClauseToSubject(this.currentSubject, this.wordList)
-                } else if (
-                    isPassive(currentWord) &&
-                    this.nounStack.some(noun => noun.getName() === 'that')
-                ) {
-                    addStrandedPassive(this.wordList, this.nounStack)
-                } else {
-                    let nPhrase: Noun =
-                        handleNounPhrase(this)
-                    if (this.currentSubject === null) {
-                        this.currentSubject = nPhrase
-                    } else {
-                        this.attachElementCorrectly(nPhrase)
-                    }
-                }
-
-            } else if (isAdverbElement(currentWord)) {
-                let adjunctPhrase: Adverb | Preposition | Noun =
-                    handleAdverbPhrase(this)
-                this.attachElementCorrectly(adjunctPhrase)
-
-            } else if (isPreposition(currentWord)) {
-                let pPhrase: Preposition =
-                    handlePrepositionPhrase(this.wordList)
-                this.attachElementCorrectly(pPhrase)
-
-            } else if (isVerbalElement(currentWord)) {
-
-                let predInfo: {
-                    pred: Predicate
-                    experiencer: Noun | null
-                    adverbStack: Adverb[]
-                } =
-                    handlePredicatePhrase(this)
-
-                if (
-                    // is subject control:
-                    this.currentPredicate instanceof Predicate &&
-                    this.currentSubject instanceof Noun
-                ) {
-                    // handle subject control
-                    createCompleteClause(this)
-                    this.adjunctStack = []
-                    this.nounStack = []
-                }
-
-                this.currentPredicate = predInfo.pred
-                this.incrementClauseCounter()
-
-                if (predInfo.experiencer instanceof Noun) {
-                    this.nounStack.push(predInfo.experiencer)
-                }
-                if (predInfo.adverbStack.length > 0) {
-                    this.adjunctStack.push(...predInfo.adverbStack)
-                }
-
-                if (this.currentSubject instanceof Noun &&
-                    isRosCondition(this.currentPredicate, this.wordList)
-                ) {
-
-                    let ros: {
-                        clause: Clause
-                        nextSubject: Noun | null
-                    } =
-                        createRosClause(this)
-                    for (let noun of this.nounStack) {
-                        ros.clause.addNounToClause(noun)
-                    }
-                    this.addClausetoClauseList(ros.clause)
-                    this.clearCurrentClause()
-                    if (ros.nextSubject instanceof Noun) {
-                        this.currentSubject = ros.nextSubject
-                    }
-                    // when you deal with tense in general, you can deal with 
-                    // inf, since you don't deal with tense in the main clause
-                }
-
-            } else if (isRelative(currentWord)) {
-                if (
-                    this.currentPredicate instanceof Predicate &&
-                    this.currentSubject instanceof Noun
-                ) {
-                    createCompleteClause(this)
-                    this.clearCurrentClause()
-                    let relNoun: Noun = createRelativeNoun(this.wordList)
-
-                    if (isNominalElement(this.wordList)) {
-                        this.nounStack.push(relNoun)
-                    } else {
-                        this.currentSubject = relNoun
-                    }
-
-                } else {
-                    let relClauseWords: Word[] = removeRelClause(this.wordList)
-                    let relNoun: Noun = createRelativeNoun(relClauseWords)
-
-                    let relSentence: ClauseBuilder =
-                        new ClauseBuilder(relClauseWords)
-                    if (isNominalElement(relClauseWords)) {
-                        relSentence.nounStack.push(relNoun)
-                    } else {
-                        relSentence.currentSubject = relNoun
-                    }
-                    relSentence.generateClauses()
-                }
-
-            } else if (isFocusElement(currentWord)) {
-                // handleFocusElement(this.wordList)
-                let focusWord = this.wordList.shift() as Word
-                console.log(focusWord.name)
-            }
-        }
-        if (
-            this.currentPredicate &&
-            this.currentSubject
-        ) {
-            createCompleteClause(this)
-        }
-    }
-
-    public addClausetoClauseList(clause: Clause): void {
-        this.clauses.push(clause)
-    }
-
-    public getClauseList(): Clause[] {
-        return this.clauses
-    }
-
-    public incrementClauseCounter(): void {
-        this.numberOfClauses += 1
-    }
-
-    public getClauseCounter(): number {
-        return this.numberOfClauses
-    }
-
-    public getNounStack(): Noun[] {
-        return this.nounStack
-    }
-
-    public setCurrentSubject(noun: Noun): void {
-        this.currentSubject = noun
-    }
-
-    public getWordList(): Word[] {
-        return this.wordList
-    }
-
-    /**
-     * Adds phrase as the predicate if the predicate is a dummy verb. 
-     * Otherwise adds the phrase to the noun list if it is an NP, or to the
-     * adjunct list if it is an AP or a PP
-     * @param phrase A phrase to be added to the current clause
-     */
-    private attachElementCorrectly(phrase: Noun | Adverb | Preposition): void {
-        if (this.currentPredicate &&
-            isBeVerb(this.currentPredicate
-                .getVerb()
-                .getName()
-            )
-        ) {
-            this.currentPredicate.setSemanticElement(phrase)
-        } else if (phrase instanceof Noun) {
-            this.nounStack.push(phrase)
+    public addNoun(nounWord: Word): void {
+        let noun: Noun = new Noun(nounWord.name)
+        if (!(this.subject instanceof Noun)) {
+            this.subject = noun
         } else {
-            this.adjunctStack.push(phrase)
+            this.nounStack.push(noun)
         }
     }
 
-    private clearCurrentClause(): void {
-        this.adjunctStack = []
-        this.currentSubject = null
-        this.currentPredicate = null
-        this.nounStack = []
-    }
+    // public generateClauses(): void {
 
-    public getCurrentPredicate(): Predicate | null {
-        return this.currentPredicate
-    }
+    //     while (this.wordList[0]) {
 
-    public getCurrentSubject(): Noun | null {
-        return this.currentSubject
-    }
+    //         let currentWord: Word = this.wordList[0]
+    //         console.log(currentWord)
 
-    public getAdjunctStack(): (Adverb | Preposition)[] {
-        return this.adjunctStack
-    }
+    //         if (isNominalElement(this.wordList)) {
+    //             if (this.currentSubject instanceof Noun &&
+    //                 !(
+    //                     this.currentPredicate instanceof Predicate ||
+    //                     modStackContainsCaus(this.currentSubject.getModifiers())
+    //                 )
+    //             ) {
+    //                 addRelClauseToSubject(this.currentSubject, this.wordList)
+    //             } else if (
+    //                 isPassive(currentWord) &&
+    //                 this.nounStack.some(noun => noun.getName() === 'that')
+    //             ) {
+    //                 addStrandedPassive(this.wordList, this.nounStack)
+    //             } else {
+    //                 let nPhrase: Noun =
+    //                     handleNounPhrase(this)
+    //                 if (this.currentSubject === null) {
+    //                     this.currentSubject = nPhrase
+    //                 } else {
+    //                     this.attachElementCorrectly(nPhrase)
+    //                 }
+    //             }
+
+    //         } else if (isAdverbElement(currentWord)) {
+    //             let adjunctPhrase: Adverb | Preposition | Noun =
+    //                 handleAdverbPhrase(this)
+    //             this.attachElementCorrectly(adjunctPhrase)
+
+    //         } else if (isPreposition(currentWord)) {
+    //             let pPhrase: Preposition =
+    //                 handlePrepositionPhrase(this.wordList)
+    //             this.attachElementCorrectly(pPhrase)
+
+    //         } else if (isVerbalElement(currentWord)) {
+
+    //             let predInfo: {
+    //                 pred: Predicate
+    //                 experiencer: Noun | null
+    //                 adverbStack: Adverb[]
+    //             } =
+    //                 handlePredicatePhrase(this)
+
+    //             if (
+    //                 // is subject control:
+    //                 this.currentPredicate instanceof Predicate &&
+    //                 this.currentSubject instanceof Noun
+    //             ) {
+    //                 // handle subject control
+    //                 createCompleteClause(this)
+    //                 this.adjunctStack = []
+    //                 this.nounStack = []
+    //             }
+
+    //             this.currentPredicate = predInfo.pred
+    //             this.incrementClauseCounter()
+
+    //             if (predInfo.experiencer instanceof Noun) {
+    //                 this.nounStack.push(predInfo.experiencer)
+    //             }
+    //             if (predInfo.adverbStack.length > 0) {
+    //                 this.adjunctStack.push(...predInfo.adverbStack)
+    //             }
+
+    //             if (this.currentSubject instanceof Noun &&
+    //                 isRosCondition(this.currentPredicate, this.wordList)
+    //             ) {
+
+    //                 let ros: {
+    //                     clause: Clause
+    //                     nextSubject: Noun | null
+    //                 } =
+    //                     createRosClause(this)
+    //                 for (let noun of this.nounStack) {
+    //                     ros.clause.addNounToClause(noun)
+    //                 }
+    //                 this.addClausetoClauseList(ros.clause)
+    //                 this.clearCurrentClause()
+    //                 if (ros.nextSubject instanceof Noun) {
+    //                     this.currentSubject = ros.nextSubject
+    //                 }
+    //                 // when you deal with tense in general, you can deal with 
+    //                 // inf, since you don't deal with tense in the main clause
+    //             }
+
+    //         } else if (isRelative(currentWord)) {
+    //             if (
+    //                 this.currentPredicate instanceof Predicate &&
+    //                 this.currentSubject instanceof Noun
+    //             ) {
+    //                 createCompleteClause(this)
+    //                 this.clearCurrentClause()
+    //                 let relNoun: Noun = createRelativeNoun(this.wordList)
+
+    //                 if (isNominalElement(this.wordList)) {
+    //                     this.nounStack.push(relNoun)
+    //                 } else {
+    //                     this.currentSubject = relNoun
+    //                 }
+
+    //             } else {
+    //                 let relClauseWords: Word[] = removeRelClause(this.wordList)
+    //                 let relNoun: Noun = createRelativeNoun(relClauseWords)
+
+    //                 let relSentence: ClauseBuilder =
+    //                     new ClauseBuilder(relClauseWords)
+    //                 if (isNominalElement(relClauseWords)) {
+    //                     relSentence.nounStack.push(relNoun)
+    //                 } else {
+    //                     relSentence.currentSubject = relNoun
+    //                 }
+    //                 relSentence.generateClauses()
+    //             }
+
+    //         } else if (isFocusElement(currentWord)) {
+    //             // handleFocusElement(this.wordList)
+    //             let focusWord = this.wordList.shift() as Word
+    //             console.log(focusWord.name)
+    //         }
+    //     }
+    //     if (
+    //         this.currentPredicate &&
+    //         this.currentSubject
+    //     ) {
+    //         createCompleteClause(this)
+    //     }
+    // }
+
+    // public addClausetoClauseList(clause: Clause): void {
+    //     this.clauses.push(clause)
+    // }
+
+    // public getClauseList(): Clause[] {
+    //     return this.clauses
+    // }
+
+    // public incrementClauseCounter(): void {
+    //     this.numberOfClauses += 1
+    // }
+
+    // public getClauseCounter(): number {
+    //     return this.numberOfClauses
+    // }
+
+    // public getNounStack(): Noun[] {
+    //     return this.nounStack
+    // }
+
+    // public setCurrentSubject(noun: Noun): void {
+    //     this.currentSubject = noun
+    // }
+
+    // public getWordList(): Word[] {
+    //     return this.wordList
+    // }
+
+    // /**
+    //  * Adds phrase as the predicate if the predicate is a dummy verb. 
+    //  * Otherwise adds the phrase to the noun list if it is an NP, or to the
+    //  * adjunct list if it is an AP or a PP
+    //  * @param phrase A phrase to be added to the current clause
+    //  */
+    // private attachElementCorrectly(phrase: Noun | Adverb | Preposition): void {
+    //     if (this.currentPredicate &&
+    //         isBeVerb(this.currentPredicate
+    //             .getVerb()
+    //             .getName()
+    //         )
+    //     ) {
+    //         this.currentPredicate.setSemanticElement(phrase)
+    //     } else if (phrase instanceof Noun) {
+    //         this.nounStack.push(phrase)
+    //     } else {
+    //         this.adjunctStack.push(phrase)
+    //     }
+    // }
+
+    // private clearCurrentClause(): void {
+    //     this.adjunctStack = []
+    //     this.currentSubject = null
+    //     this.currentPredicate = null
+    //     this.nounStack = []
+    // }
+
+    // public getCurrentPredicate(): Predicate | null {
+    //     return this.currentPredicate
+    // }
+
+    // public getCurrentSubject(): Noun | null {
+    //     return this.currentSubject
+    // }
+
+    // public getAdjunctStack(): (Adverb | Preposition)[] {
+    //     return this.adjunctStack
+    // }
 }

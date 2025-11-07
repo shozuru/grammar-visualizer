@@ -1,4 +1,3 @@
-import { HandlerRegistry } from "./Handler";
 import { ClauseBuilder } from "./syntax/ClauseBuilder";
 import type { Clause } from "./syntax/partsOfSpeech/Clause";
 import { PartsOfSpeech } from "./syntax/SyntaxConstants";
@@ -7,30 +6,35 @@ import {
     passiveByPhraseIndex
 } from "./syntax/SyntaxMethods";
 import type { Word } from "./types/Word";
+import { HandlerRegistry } from "./Handlers/HandlerRegistry";
 
-class Parser {
+export class Parser {
     private clauses: Clause[]
-    private builder: ClauseBuilder
+    private currentBuilder: ClauseBuilder
     private registry: HandlerRegistry
+
+    private builderStack: ClauseBuilder[]
 
     constructor() {
         this.clauses = []
-        this.builder = new ClauseBuilder()
+        this.builderStack = []
+        this.currentBuilder = new ClauseBuilder()
         this.registry = new HandlerRegistry()
     }
 
     public parse(wordList: Word[]): Clause[] {
-        let fixedWords: Word[] = this.fixPartsOfSpeech(wordList)
-        for (let word of fixedWords) {
-            let handler = this.registry.get(word)
-            if (
-                handler.shouldStartNewClause(word) &&
-                this.builder.hasContent()
-            ) {
-                this.clauses.push(this.builder.finalizeClause())
-            }
 
-            this.handler.handle(word)
+        let fixedWords: Word[] = this.fixPartsOfSpeech(wordList)
+
+        for (let word of fixedWords) {
+            let handler = this.registry.getHandler(word)
+            // if (
+            //     handler.shouldStartNewClause(word) &&
+            //     this.builder.hasContent()
+            // ) {
+            //     this.clauses.push(this.builder.finalizeClause())
+            // }
+            handler.handle(word, this.currentBuilder)
         }
         return this.clauses
     }

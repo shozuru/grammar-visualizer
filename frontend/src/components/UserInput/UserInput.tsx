@@ -34,19 +34,19 @@ const UserInput: React.FC = () => {
             }
         )
             .then(res => {
-                let listOfPosNumbers: number[] = []
-                let listOfPosStrings: string[] = []
+                let posNumList: number[] = []
+                let posNameList: string[] = []
 
                 res.data.response.forEach((value: number) => {
-                    listOfPosNumbers.push(value)
-                    listOfPosStrings.push(PartsOfSpeech[value])
+                    posNumList.push(value)
+                    posNameList.push(PartsOfSpeech[value])
                 })
 
-                setSentencePos(listOfPosStrings)
+                setSentencePos(posNameList)
 
-                const sentInfo: SentenceInfo = {
+                let sentInfo: SentenceInfo = {
                     wordList: submitted.split(' '),
-                    posList: listOfPosNumbers
+                    posList: posNumList
                 }
 
                 const sentenceStructure = new GrammarVisualizer(sentInfo)
