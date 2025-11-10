@@ -22,19 +22,19 @@ export class Adverb {
         this.name = newName
     }
 
-    public getModifiers(): (Adverb | Mod)[] {
+    public getMods(): (Adverb | Mod)[] {
         return this.listOfMods
     }
 
-    public addModifier(modifier: Adverb | Mod): void {
+    public addMod(modifier: Adverb | Mod): void {
         this.listOfMods.push(modifier)
     }
 
-    public getAdverbAgrs(): Agr[] {
+    public getAgrs(): Agr[] {
         return this.listOfAgrs
     }
 
-    public addAdverbAgr(agr: Agr): void {
+    public addAgr(agr: Agr): void {
         this.listOfAgrs.push(agr)
     }
 }

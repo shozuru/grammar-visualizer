@@ -6,7 +6,7 @@ export class AdverbHandler implements WordHandler {
     shouldStartNewClause(word: Word, builder: ClauseBuilder): boolean {
         return false
     }
-    handle(word: Word, builder: ClauseBuilder): void {
-
+    handle(adverbWord: Word, builder: ClauseBuilder): void {
+        builder.buildAdverb(adverbWord)
     }
 }
