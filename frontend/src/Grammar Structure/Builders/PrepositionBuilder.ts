@@ -12,7 +12,7 @@ export class PrepBuilder extends WordBuilder {
         this.preposition = null
     }
 
-    public set(prepWord: Word): void {
+    public setPreposition(prepWord: Word): void {
         let prep: Preposition = new Preposition(prepWord.name)
         this.preposition = prep
     }

@@ -4,7 +4,7 @@ import {
     handleNounPhrase,
     handlePredicatePhrase, handlePrepositionPhrase, isAdverbElement, isBeVerb,
     isFocusElement,
-    isNominalElement, isNounModifier, isPassive, isPreposition, isRelative, isRosCondition,
+    isNominalElement, isNounModifier, isPassive, isPredicate, isPreposition, isRelative, isRosCondition,
     isVerbAgr,
     isVerbalElement, isVerbModifier, modStackContainsCaus, removeRelClause,
 } from "./SyntaxMethods"
@@ -19,7 +19,6 @@ import { Verb } from "./partsOfSpeech/Verb"
 import { Agr } from "./Agr"
 import { NounBuilder } from "../Builders/NounBuilder"
 import type { WordBuilder } from "../Builders/WordBuilder"
-import { VerbBuilder } from "../Builders/VerbBuilder"
 import { PredicateBuilder } from "../Builders/PredicateBuilder"
 import { PrepBuilder } from "../Builders/PrepositionBuilder"
 import { AdverbBuilder } from "../Builders/AdverbBuilder"
@@ -56,10 +55,17 @@ export class ClauseBuilder {
     public buildAdverb(adverbWord: Word): void {
         let adverbBuilder: AdverbBuilder =
             this.getOrCreateBuilder(AdverbBuilder)
+
         this.removeFromBuilderList(adverbBuilder)
         adverbBuilder.createAndSetAdverb(adverbWord)
         let aPhrase: Adverb = adverbBuilder.build()
-        this.pushAdverbToClause(aPhrase)
+
+        if (this.shouldBePredicate()) {
+            this.makePredicate(aPhrase)
+        } else {
+            this.pushAdverbToClause(aPhrase)
+        }
+
     }
 
     public buildNominal(nomWord: Word): void {
@@ -70,13 +76,22 @@ export class ClauseBuilder {
             this.removeFromBuilderList(nounBuilder)
             nounBuilder.createAndSetNoun(nomWord)
             let nPhrase: Noun = nounBuilder.build()
-            this.pushNounToClause(nPhrase)
+
+            if (this.shouldBePredicate()) {
+                this.makePredicate(nPhrase)
+            } else {
+                this.pushNounToClause(nPhrase)
+            }
         }
     }
 
     public buildPreposition(prepWord: Word): void {
         let prepBuilder: PrepBuilder = this.getOrCreateBuilder(PrepBuilder)
-        prepBuilder.set(prepWord)
+        prepBuilder.setPreposition(prepWord)
+
+        if (this.shouldBePredicate()) {
+            this.makePredicate()
+        }
     }
 
     public buildPredicate(predWord: Word): void {
@@ -87,11 +102,14 @@ export class ClauseBuilder {
         } else if (isVerbModifier(predWord)) {
             predBuilder.createAndAddMod(predWord)
         } else {
-            this.removeFromBuilderList(predBuilder)
             let verb: Verb = new Verb(predWord.name)
-            predBuilder.setPredicate(verb)
-            let predicate: Predicate = predBuilder.build()
-            this.pushPredToClause(predicate)
+            predBuilder.setVerb(verb)
+
+            if (predBuilder.hasSemanticContent()) {
+                this.removeFromBuilderList(predBuilder)
+                let predicate: Predicate = predBuilder.build()
+                this.pushPredToClause(predicate)
+            }
         }
     }
 
@@ -125,8 +143,20 @@ export class ClauseBuilder {
             prepBuilder.setObject(nPhrase)
             let pPhrase: Preposition = prepBuilder.build()
             this.adjunctStack.push(pPhrase)
-        }
-        else if (!(this.subject instanceof Noun)) {
+
+
+            // } else if (
+            //     this.unfinishedBuilderList.at(-1) instanceof PredicateBuilder
+            // ) {
+            //     console.log("I made it here")
+            //     let predBuilder: PredicateBuilder =
+            //         this.unfinishedBuilderList.splice(-1, 1)[0] as PredicateBuilder
+
+            //     predBuilder.setSemanticContent(nPhrase)
+            //     let predPhrase: Predicate = predBuilder.build()
+            //     this.predicate = predPhrase
+
+        } else if (!(this.subject instanceof Noun)) {
             this.subject = nPhrase
         } else {
             this.nounStack.push(nPhrase)
@@ -143,6 +173,17 @@ export class ClauseBuilder {
         )
     }
 
+    private shouldBePredicate(): boolean {
+        return this.unfinishedBuilderList.at(-1) instanceof PredicateBuilder
+    }
+
+    private makePredicate(phrase: Adverb | Noun | Preposition): void {
+        let predBuilder: PredicateBuilder =
+            this.unfinishedBuilderList.splice(-1, 1)[0] as PredicateBuilder
+        predBuilder.setSemanticContent(phrase)
+        let predPhrase: Predicate = predBuilder.build()
+        this.predicate = predPhrase
+    }
 
 
     // public generateClauses(): void {
@@ -179,11 +220,6 @@ export class ClauseBuilder {
     //             let adjunctPhrase: Adverb | Preposition | Noun =
     //                 handleAdverbPhrase(this)
     //             this.attachElementCorrectly(adjunctPhrase)
-
-    //         } else if (isPreposition(currentWord)) {
-    //             let pPhrase: Preposition =
-    //                 handlePrepositionPhrase(this.wordList)
-    //             this.attachElementCorrectly(pPhrase)
 
     //         } else if (isVerbalElement(currentWord)) {
 

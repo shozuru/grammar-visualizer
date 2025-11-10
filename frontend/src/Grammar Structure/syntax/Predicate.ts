@@ -8,29 +8,29 @@ import { uncontractVerbalModifiers } from "./SyntaxMethods";
 
 export class Predicate {
 
-    private verb: Verb
-    private semanticElement: Noun | Adverb | Preposition | null
+    private copula: Verb | null
+    private semanticElement: Noun | Adverb | Preposition | Verb | null
 
     private modList: Mod[]
     private agrList: Agr[]
 
     constructor(verb: Verb) {
-        this.verb = verb
-        this.semanticElement = null
-
+        if (this.isBeVerb(verb)) {
+            this.copula = verb
+            this.semanticElement = null
+        } else {
+            this.semanticElement = verb
+            this.copula = null
+        }
         this.modList = []
         this.agrList = []
     }
 
-    public getVerb(): Verb {
-        return this.verb
+    public getCopula(): Verb | null {
+        return this.copula
     }
 
-    public setVerb(verb: Verb): void {
-        this.verb = verb
-    }
-
-    public getSemanticElement(): Noun | Adverb | Preposition | null {
+    public getSemanticContent(): Verb | Noun | Preposition | Adverb | null {
         return this.semanticElement
     }
 
@@ -59,5 +59,19 @@ export class Predicate {
 
     public addAgr(agr: Agr): void {
         this.agrList.push(agr)
+    }
+
+    private isBeVerb(verb: Verb): boolean {
+        let verbName: string = verb.getName()
+        return (
+            verbName === "am" ||
+            verbName === "are" ||
+            verbName === "is" ||
+            verbName === "was" ||
+            verbName === "were" ||
+            verbName === "been" ||
+            verbName === "be" ||
+            verbName === "being"
+        )
     }
 }

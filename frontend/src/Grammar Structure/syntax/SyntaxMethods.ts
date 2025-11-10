@@ -436,6 +436,7 @@ export function handleAdverbPhrase(
     if (supletiveMod instanceof Mod) {
         modStack.push(supletiveMod)
     }
+    // handles adjective relative clauses like 'the clean room'
     if (wordList[1] && isNominalElement(wordList.slice(1))) {
         let nRelPhrase: Noun = handleNounPhrase(sentence)
         return nRelPhrase
