@@ -1,7 +1,6 @@
 import type { WordHandler } from "./WordHandler"
 import type { Word } from "../../types/Word"
 import type { ClauseBuilder } from "../../syntax/ClauseBuilder"
-import { isNoun, isNounModifier } from "../../syntax/SyntaxMethods"
 
 export class NounHandler implements WordHandler {
 

@@ -37,8 +37,10 @@ export class HandlerRegistry {
             [
                 PartsOfSpeech.RB, PartsOfSpeech.RBR, PartsOfSpeech.RBS
             ]
-        let prepTags: PartsOfSpeech[] = [PartsOfSpeech.IN]
-
+        let prepTags: PartsOfSpeech[] =
+            [
+                PartsOfSpeech.IN
+            ]
 
         for (let tag of nounTags) {
             this.register(tag, new NounHandler())

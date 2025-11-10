@@ -6,7 +6,7 @@ export class PrepositionHandler implements WordHandler {
     shouldStartNewClause(word: Word, builder: ClauseBuilder): boolean {
         return false
     }
-    handle(word: Word, builder: ClauseBuilder): void {
-
+    handle(prepWord: Word, builder: ClauseBuilder): void {
+        builder.buildPreposition(prepWord)
     }
 }
