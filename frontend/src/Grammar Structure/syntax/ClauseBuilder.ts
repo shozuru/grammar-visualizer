@@ -4,8 +4,9 @@ import {
     handleNounPhrase,
     handlePredicatePhrase, handlePrepositionPhrase, isAdverbElement, isBeVerb,
     isFocusElement,
-    isNominalElement, isPassive, isPreposition, isRelative, isRosCondition,
-    isVerbalElement, modStackContainsCaus, removeRelClause,
+    isNominalElement, isNounModifier, isPassive, isPreposition, isRelative, isRosCondition,
+    isVerbAgr,
+    isVerbalElement, isVerbModifier, modStackContainsCaus, removeRelClause,
 } from "./SyntaxMethods"
 import { Adverb } from "./partsOfSpeech/Adverb"
 import { Noun } from "./partsOfSpeech/Noun"
@@ -13,6 +14,13 @@ import { Preposition } from "./partsOfSpeech/Preposition"
 import type { Word } from "../types/Word"
 import { Clause } from "./partsOfSpeech/Clause"
 import { Predicate } from "./Predicate"
+import { Mod } from "./Mod"
+import { Verb } from "./partsOfSpeech/Verb"
+import { Agr } from "./Agr"
+import { NounBuilder } from "../Builders/NounBuilder"
+import type { WordBuilder } from "../Builders/WordBuilder"
+import { VerbBuilder } from "../Builders/VerbBuilder"
+import { PredicateBuilder } from "../Builders/PredicateBuilder"
 
 export class ClauseBuilder {
 
@@ -22,9 +30,11 @@ export class ClauseBuilder {
 
     // private wordList: Word[]
     private predicate: Predicate | null
+
     private subject: Noun | null
     private nounStack: Noun[]
     private adjunctStack: (Preposition | Adverb)[]
+    private unfinishedBuilderList: WordBuilder[]
 
     constructor(
         // wordList: Word[]
@@ -38,14 +48,72 @@ export class ClauseBuilder {
         this.subject = null
         this.nounStack = []
         this.adjunctStack = []
+        this.unfinishedBuilderList = []
     }
 
-    public addNoun(nounWord: Word): void {
-        let noun: Noun = new Noun(nounWord.name)
-        if (!(this.subject instanceof Noun)) {
-            this.subject = noun
+    public buildNominal(nomWord: Word) {
+        let nounBuilder: NounBuilder = this.getOrCreateBuilder(NounBuilder)
+        if (isNounModifier(nomWord)) {
+            nounBuilder.createAndAddMod(nomWord)
         } else {
-            this.nounStack.push(noun)
+            this.removeFromBuilderList(nounBuilder)
+            nounBuilder.createAndSetNoun(nomWord)
+            let nPhrase: Noun = nounBuilder.build()
+            this.addNounToClause(nPhrase)
+        }
+    }
+
+    private addNounToClause(nPhrase: Noun): void {
+        if (!(this.subject instanceof Noun)) {
+            this.subject = nPhrase
+        } else {
+            this.nounStack.push(nPhrase)
+        }
+    }
+
+    private getOrCreateBuilder<T extends WordBuilder>(
+        buildType: new () => T
+    ): T {
+
+        let builder: T | undefined =
+            this.unfinishedBuilderList.find(
+                build => build instanceof buildType
+            ) as T | undefined
+
+        if (!builder) {
+            builder = new buildType()
+            this.unfinishedBuilderList.push(builder)
+        }
+        return builder
+    }
+
+    private removeFromBuilderList(WordBuilder: WordBuilder) {
+        this.unfinishedBuilderList = this.unfinishedBuilderList.filter(
+            builder => builder !== WordBuilder
+        )
+    }
+
+    public buildPredicate(predWord: Word) {
+        let predBuilder: PredicateBuilder =
+            this.getOrCreateBuilder(PredicateBuilder)
+        if (isVerbAgr(predWord)) {
+            predBuilder.createAndAddAgr(predWord)
+        } else if (isVerbModifier(predWord)) {
+            predBuilder.createAndAddMod(predWord)
+        } else {
+            this.removeFromBuilderList(predBuilder)
+            let verb: Verb = new Verb(predWord.name)
+            predBuilder.setPredicate(verb)
+            let predicate: Predicate = predBuilder.build()
+            this.predicate = predicate
+        }
+    }
+
+    public addVerb(word: Word): void {
+        let verb: Verb = new Verb(word.name)
+        if (!(this.predicate instanceof Predicate)) {
+            let pred: Predicate = new Predicate(verb)
+            this.predicate = pred
         }
     }
 

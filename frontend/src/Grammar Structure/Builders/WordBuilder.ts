@@ -1,0 +1,32 @@
+import { Mod } from "../syntax/Mod";
+import type { Word } from "../types/Word";
+import { Agr } from "../syntax/Agr";
+
+export abstract class WordBuilder {
+
+    private modStack: Mod[]
+    private agrStack: Agr[]
+
+    constructor() {
+        this.modStack = []
+        this.agrStack = []
+    }
+
+    public createAndAddMod(word: Word): void {
+        let mod: Mod = new Mod(word)
+        this.modStack.push(mod)
+    }
+
+    public createAndAddAgr(word: Word): void {
+        let agr: Agr = new Agr(word)
+        this.agrStack.push(agr)
+    }
+
+    public getAgrStack(): Agr[] {
+        return this.agrStack
+    }
+
+    public getModStack(): Mod[] {
+        return this.modStack
+    }
+}

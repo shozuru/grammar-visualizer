@@ -686,16 +686,20 @@ export function isNoun(word: Word): boolean {
     )
 }
 
-export function isNounModifier(word: Word, restOfSent: Word[]): boolean {
+export function isNounModifier(
+    word: Word,
+    // restOfSent: Word[]
+): boolean {
     let currentPOS: number = word.pos
     return (
         currentPOS === PartsOfSpeech.DT ||
         currentPOS === PartsOfSpeech.PRPQ ||
-        currentPOS === PartsOfSpeech.PASSIVE ||
-        (
-            currentPOS === PartsOfSpeech.NNP &&
-            restOfSent[0].pos === PartsOfSpeech.NN
-        )
+        currentPOS === PartsOfSpeech.PASSIVE
+        //  ||
+        // (
+        //     currentPOS === PartsOfSpeech.NNP &&
+        //     restOfSent[0].pos === PartsOfSpeech.NN
+        // )
     )
 }
 

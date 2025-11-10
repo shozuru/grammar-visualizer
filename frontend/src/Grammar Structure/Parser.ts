@@ -27,6 +27,7 @@ export class Parser {
         let fixedWords: Word[] = this.fixPartsOfSpeech(wordList)
 
         for (let word of fixedWords) {
+            console.log(word)
             let handler = this.registry.getHandler(word)
             // if (
             //     handler.shouldStartNewClause(word) &&
@@ -36,6 +37,7 @@ export class Parser {
             // }
             handler.handle(word, this.currentBuilder)
         }
+        console.log(this.currentBuilder)
         return this.clauses
     }
 
