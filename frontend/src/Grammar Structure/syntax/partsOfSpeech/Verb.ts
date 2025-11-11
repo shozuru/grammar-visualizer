@@ -1,8 +1,4 @@
-import type { Agr } from "../Agr"
-import type { Mod } from "../Mod"
-import { uncontractVerbalModifiers } from "../SyntaxMethods"
-import { CanTakeObject } from "./CanTakeObject"
-export class Verb extends CanTakeObject {
+export class Verb {
 
     // need to replace this with actual theta roles.
     // private agent: Noun | null
@@ -13,7 +9,6 @@ export class Verb extends CanTakeObject {
     // private agrList: Agr[]
 
     constructor(name: string) {
-        super()
         this.name = name
         // this.agent = null
         // this.experiencer = null

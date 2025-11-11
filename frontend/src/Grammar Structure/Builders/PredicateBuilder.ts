@@ -1,9 +1,6 @@
 import { WordBuilder } from "./WordBuilder"
 import { Predicate } from "../syntax/Predicate"
 import type { Verb } from "../syntax/partsOfSpeech/Verb"
-import type { Preposition } from "../syntax/partsOfSpeech/Preposition"
-import { Adverb } from "../syntax/partsOfSpeech/Adverb"
-import { Noun } from "../syntax/partsOfSpeech/Noun"
 import type { Phrase } from "../syntax/partsOfSpeech/Phrase"
 
 export class PredicateBuilder extends WordBuilder {

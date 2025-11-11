@@ -26,11 +26,6 @@ import type { Phrase } from "./partsOfSpeech/Phrase"
 
 export class ClauseBuilder {
 
-    // list of completed clauses
-    // private clauses: Clause[]
-    // private numberOfClauses: number
-
-    // private wordList: Word[]
     private predicate: Predicate | null
 
     private subject: Noun | null
@@ -38,21 +33,13 @@ export class ClauseBuilder {
     private adjunctStack: (Preposition | Adverb)[]
     private unfinishedBuilderList: WordBuilder[]
 
-    constructor(
-        // wordList: Word[]
-    ) {
-
-        // this.clauses = []
-        // this.numberOfClauses = 0
-
-        // // this.wordList = wordList
+    constructor() {
         this.predicate = null
         this.subject = null
         this.nounStack = []
         this.adjunctStack = []
         this.unfinishedBuilderList = []
     }
-
 
     public addPhrase(builder: WordBuilder): void {
         let phrase: Phrase = builder.build()

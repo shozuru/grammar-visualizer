@@ -1,9 +1,6 @@
 import { Agr } from "./Agr";
 import { Mod } from "./Mod";
-import type { Adverb } from "./partsOfSpeech/Adverb";
-import type { Noun } from "./partsOfSpeech/Noun";
 import type { Phrase } from "./partsOfSpeech/Phrase";
-import type { Preposition } from "./partsOfSpeech/Preposition";
 import type { Verb } from "./partsOfSpeech/Verb";
 import { uncontractVerbalModifiers } from "./SyntaxMethods";
 
