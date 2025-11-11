@@ -1,6 +1,6 @@
-import { Adjective } from "../syntax/partsOfSpeech/Adjectives";
-import type { Word } from "../types/Word";
-import { WordBuilder } from "./WordBuilder";
+import { Adjective } from "../syntax/partsOfSpeech/Adjectives"
+import type { Word } from "../types/Word"
+import { WordBuilder } from "./WordBuilder"
 
 export class AdjectiveBuilder extends WordBuilder {
 
@@ -28,5 +28,4 @@ export class AdjectiveBuilder extends WordBuilder {
         }
         return this.adjective
     }
-
 }

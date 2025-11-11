@@ -6,6 +6,7 @@ import { VerbHandler } from "./WordHandlers/VerbHandler"
 import { AdverbHandler } from "./WordHandlers/AdverbHandler"
 import { PrepositionHandler } from "./WordHandlers/PrepositionHandler"
 import { DefaultHandler } from "./WordHandlers/DefaultHandler"
+import { AdjectiveHandler } from "./WordHandlers/AdjectiveHandler"
 
 export class HandlerRegistry {
 
@@ -41,6 +42,10 @@ export class HandlerRegistry {
                 PartsOfSpeech.AdvAgr, PartsOfSpeech.SUPERLATIVE,
                 PartsOfSpeech.COMPARATIVE
             ]
+        let adjTags: PartsOfSpeech[] =
+            [
+                PartsOfSpeech.JJ, PartsOfSpeech.JJR, PartsOfSpeech.JJS
+            ]
         let prepTags: PartsOfSpeech[] =
             [
                 PartsOfSpeech.IN
@@ -54,6 +59,9 @@ export class HandlerRegistry {
         }
         for (let tag of adverbTags) {
             this.register(tag, new AdverbHandler())
+        }
+        for (let tag of adjTags) {
+            this.register(tag, new AdjectiveHandler())
         }
         for (let tag of prepTags) {
             this.register(tag, new PrepositionHandler())

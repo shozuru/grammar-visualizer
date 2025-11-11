@@ -60,6 +60,10 @@ export class ClauseBuilder {
         }
     }
 
+    public buildAdjective(adjWord: Word): void {
+
+    }
+
     public buildAdverb(adverbWord: Word): void {
         let adverbBuilder: AdverbBuilder =
             this.getOrCreateBuilder(AdverbBuilder)
