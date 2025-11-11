@@ -1,7 +1,8 @@
 import type { Agr } from "../Agr"
 import type { Mod } from "../Mod"
+import type { Phrase } from "./Phrase"
 
-export class Adverb {
+export class Adverb implements Phrase {
 
     private name: string
     private listOfMods: (Adverb | Mod)[]
@@ -16,10 +17,6 @@ export class Adverb {
 
     public getName(): string {
         return this.name
-    }
-
-    public setName(newName: string): void {
-        this.name = newName
     }
 
     public getMods(): (Adverb | Mod)[] {

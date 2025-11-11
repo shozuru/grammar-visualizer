@@ -1,6 +1,7 @@
 import { Mod } from "../syntax/Mod";
 import type { Word } from "../types/Word";
 import { Agr } from "../syntax/Agr";
+import type { Phrase } from "../syntax/partsOfSpeech/Phrase";
 
 export abstract class WordBuilder {
 
@@ -11,6 +12,8 @@ export abstract class WordBuilder {
         this.modStack = []
         this.agrStack = []
     }
+
+    abstract build(): Phrase
 
     public createAndAddMod(word: Word): void {
         let mod: Mod = new Mod(word)

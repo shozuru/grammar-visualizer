@@ -4,6 +4,7 @@ import type { Verb } from "../syntax/partsOfSpeech/Verb"
 import type { Preposition } from "../syntax/partsOfSpeech/Preposition"
 import { Adverb } from "../syntax/partsOfSpeech/Adverb"
 import { Noun } from "../syntax/partsOfSpeech/Noun"
+import type { Phrase } from "../syntax/partsOfSpeech/Phrase"
 
 export class PredicateBuilder extends WordBuilder {
 
@@ -43,7 +44,7 @@ export class PredicateBuilder extends WordBuilder {
         return this.predicate.getSemanticContent() !== null
     }
 
-    public setSemanticContent(content: Adverb | Preposition | Noun): void {
+    public setSemanticContent(content: Phrase): void {
         if (!(this.predicate instanceof Predicate)) {
             throw Error("predicate Builder does not have a predicate")
         }

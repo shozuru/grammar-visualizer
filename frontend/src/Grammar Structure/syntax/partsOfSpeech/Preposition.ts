@@ -1,16 +1,21 @@
 import type { Adverb } from "./Adverb"
 import { Noun } from "./Noun"
+import type { Phrase } from "./Phrase"
 
-export class Preposition {
+export class Preposition implements Phrase {
 
-    private name: string
     private listOfMods: Adverb[]
     private object: Noun | null
+    private name: string
 
     constructor(name: string) {
         this.name = name
         this.listOfMods = []
         this.object = null
+    }
+
+    public getName(): string {
+        return this.name
     }
 
     public hasObject(): boolean {
@@ -31,13 +36,5 @@ export class Preposition {
 
     public addModifier(mod: Adverb): void {
         this.listOfMods.push(mod)
-    }
-
-    public getName(): string {
-        return this.name
-    }
-
-    public setName(newName: string): void {
-        this.name = newName
     }
 }

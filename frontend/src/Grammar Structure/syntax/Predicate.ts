@@ -2,14 +2,15 @@ import { Agr } from "./Agr";
 import { Mod } from "./Mod";
 import type { Adverb } from "./partsOfSpeech/Adverb";
 import type { Noun } from "./partsOfSpeech/Noun";
+import type { Phrase } from "./partsOfSpeech/Phrase";
 import type { Preposition } from "./partsOfSpeech/Preposition";
 import type { Verb } from "./partsOfSpeech/Verb";
 import { uncontractVerbalModifiers } from "./SyntaxMethods";
 
-export class Predicate {
+export class Predicate implements Phrase {
 
     private copula: Verb | null
-    private semanticElement: Noun | Adverb | Preposition | Verb | null
+    private semanticElement: Phrase | null
 
     private modList: Mod[]
     private agrList: Agr[]
@@ -30,11 +31,11 @@ export class Predicate {
         return this.copula
     }
 
-    public getSemanticContent(): Verb | Noun | Preposition | Adverb | null {
+    public getSemanticContent(): Phrase | null {
         return this.semanticElement
     }
 
-    public setSemanticElement(element: Noun | Adverb | Preposition): void {
+    public setSemanticElement(element: Phrase): void {
         this.semanticElement = element
     }
 
