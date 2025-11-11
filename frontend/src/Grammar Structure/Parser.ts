@@ -37,6 +37,9 @@ export class Parser {
             // }
             handler.handle(word, this.currentBuilder)
         }
+
+        // I ran [fast]
+        this.currentBuilder.addPendingAdverbsToMainClause()
         console.log(this.currentBuilder)
         return this.clauses
     }

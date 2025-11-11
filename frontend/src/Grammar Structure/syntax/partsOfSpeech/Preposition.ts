@@ -4,13 +4,13 @@ import type { Phrase } from "./Phrase"
 
 export class Preposition implements Phrase {
 
-    private listOfMods: Adverb[]
+    private adjunctList: Adverb[]
     private object: Noun | null
     private name: string
 
     constructor(name: string) {
         this.name = name
-        this.listOfMods = []
+        this.adjunctList = []
         this.object = null
     }
 
@@ -30,11 +30,11 @@ export class Preposition implements Phrase {
         this.object = noun
     }
 
-    public getModifiers(): Adverb[] {
-        return this.listOfMods
+    public getAdjuncts(): Adverb[] {
+        return this.adjunctList
     }
 
-    public addModifier(mod: Adverb): void {
-        this.listOfMods.push(mod)
+    public addAdjunct(mod: Adverb): void {
+        this.adjunctList.push(mod)
     }
 }

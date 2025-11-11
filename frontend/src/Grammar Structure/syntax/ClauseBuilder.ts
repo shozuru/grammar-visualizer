@@ -29,6 +29,7 @@ export class ClauseBuilder {
     private nounStack: Noun[]
     private adjunctStack: (Preposition | Adverb)[]
     private unfinishedBuilderList: WordBuilder[]
+    private pendingAdverbs: Adverb[]
 
     constructor() {
         this.predicate = null
@@ -36,6 +37,7 @@ export class ClauseBuilder {
         this.nounStack = []
         this.adjunctStack = []
         this.unfinishedBuilderList = []
+        this.pendingAdverbs = []
     }
 
     public addPhrase(builder: WordBuilder): void {
@@ -69,7 +71,19 @@ export class ClauseBuilder {
         } else {
             this.removeFromBuilderList(adverbBuilder)
             adverbBuilder.createAndSetAdverb(adverbWord)
-            this.addPhrase(adverbBuilder)
+
+            // very fast
+            while (this.pendingAdverbs.length > 0) {
+                let adjunct: Adverb = this.pendingAdverbs.pop() as Adverb
+                adverbBuilder.addAdjunct(adjunct)
+            }
+            if (this.shouldBePredicate()) {
+                // she is very [fast]
+                this.makePredicate(adverbBuilder.build())
+            } else {
+                this.pendingAdverbs.push(adverbBuilder.build())
+            }
+            // this.addPhrase(adverbBuilder)
         }
     }
 
@@ -87,6 +101,10 @@ export class ClauseBuilder {
     public buildPreposition(prepWord: Word): void {
         let prepBuilder: PrepBuilder = this.getOrCreateBuilder(PrepBuilder)
         prepBuilder.setPreposition(prepWord)
+        while (this.pendingAdverbs.length > 0) {
+            let adjunct: Adverb = this.pendingAdverbs.pop() as Adverb
+            prepBuilder.addAdjunct(adjunct)
+        }
     }
 
     public buildPredicate(predWord: Word): void {
@@ -101,6 +119,11 @@ export class ClauseBuilder {
             predBuilder.setVerb(verb)
 
             if (predBuilder.hasSemanticContent()) {
+                while (this.pendingAdverbs.length > 0) {
+
+                    // she [quickly] ate
+                    this.adjunctStack.push(this.pendingAdverbs.pop() as Adverb)
+                }
                 this.removeFromBuilderList(predBuilder)
                 let predicate: Predicate = predBuilder.build()
                 this.pushPredToClause(predicate)
@@ -186,6 +209,13 @@ export class ClauseBuilder {
             unfinishedBuilder instanceof PredicateBuilder &&
             unfinishedBuilder.hasCopula()
         )
+    }
+
+    public addPendingAdverbsToMainClause(): void {
+        while (this.pendingAdverbs.length > 0) {
+            let adjunct: Adverb = this.pendingAdverbs.pop() as Adverb
+            this.adjunctStack.push(adjunct)
+        }
     }
 
 

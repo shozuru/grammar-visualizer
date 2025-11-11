@@ -356,18 +356,6 @@ export function fixPartsOfSpeech(wordList: Word[]): Word[] {
         ) {
             wordList[i].pos = PartsOfSpeech.InfAgr
         } else if (
-            wordList[i].pos === PartsOfSpeech.JJ
-        ) {
-            wordList[i].pos = PartsOfSpeech.RB
-        } else if (
-            wordList[i].pos === PartsOfSpeech.JJR
-        ) {
-            wordList[i].pos = PartsOfSpeech.RBR
-        } else if (
-            wordList[i].pos === PartsOfSpeech.JJS
-        ) {
-            wordList[i].pos = PartsOfSpeech.RBS
-        } else if (
             wordList[i].pos === PartsOfSpeech.RB &&
             wordList[i].name === "not"
         ) {
@@ -389,17 +377,11 @@ export function handleAdverbPhrase(
     let agrStack: Agr[] = []
     let wordList: Word[] = sentence.getWordList()
 
-    let supletiveMod: Mod | null = getLexicalizedMod(wordList[0])
-    if (supletiveMod instanceof Mod) {
-        modStack.push(supletiveMod)
-    }
     // handles adjective relative clauses like 'the clean room'
     if (wordList[1] && isNominalElement(wordList.slice(1))) {
         let nRelPhrase: Noun = handleNounPhrase(sentence)
         return nRelPhrase
     }
-    let headWord: Word = wordList.shift() as Word
-    let headPhrase: Adverb = new Adverb(headWord.name)
 
     addAdverbModsAndArgs(headPhrase, modStack, agrStack)
 
@@ -794,6 +776,7 @@ export function resolveAdverbAttachment(
 
     let nextWord: Word = wordList[0]
 
+    // I went [right] under the bridge
     if (nextWord && isPreposition(nextWord)) {
 
         // shift off the preposition
@@ -807,12 +790,15 @@ export function resolveAdverbAttachment(
         currentPreposition.tagIfObject(wordList)
         return currentPreposition
 
+        // I ran [very] quickly
     } else if (nextWord && isAdverb(nextWord)) {
 
         let nextAdverb: Word = wordList.shift() as Word
         let aPhrase: Adverb = new Adverb(nextAdverb.name)
         aPhrase.addModifier(thisAdverb)
         return aPhrase
+
+        // I [quickly] went under the bridge
     } else {
         return thisAdverb
     }

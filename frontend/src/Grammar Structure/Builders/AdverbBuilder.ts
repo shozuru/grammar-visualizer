@@ -36,4 +36,14 @@ export class AdverbBuilder extends WordBuilder {
         }
         return this.adverb
     }
+
+    public addAdjunct(adverb: Adverb): void {
+        if (!(this.adverb instanceof Adverb)) {
+            throw Error(
+                "Tried to add adjunct to Adverb head " +
+                "that has not been set yet"
+            )
+        }
+        this.adverb.addAdjunct(adverb)
+    }
 }
