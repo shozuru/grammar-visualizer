@@ -51,8 +51,11 @@ export class ClauseBuilder {
     }
 
     public attachToClause(phrase: Phrase): void {
-        if (phrase instanceof Adverb) {
-            this.pushAdverbToClause(phrase)
+        if (
+            phrase instanceof Adverb ||
+            phrase instanceof Preposition
+        ) {
+            this.pushAdjunctToClause(phrase)
         } else if (phrase instanceof Noun) {
             this.pushNounToClause(phrase)
         }
@@ -81,7 +84,6 @@ export class ClauseBuilder {
     public buildPreposition(prepWord: Word): void {
         let prepBuilder: PrepBuilder = this.getOrCreateBuilder(PrepBuilder)
         prepBuilder.setPreposition(prepWord)
-        this.addPhrase(prepBuilder)
     }
 
     public buildPredicate(predWord: Word): void {
@@ -143,8 +145,8 @@ export class ClauseBuilder {
         this.predicate = predPhrase
     }
 
-    private pushAdverbToClause(aPhrase: Adverb): void {
-        this.adjunctStack.push(aPhrase)
+    private pushAdjunctToClause(adjunctPhrase: Adverb | Preposition): void {
+        this.adjunctStack.push(adjunctPhrase)
     }
 
     private pushNounToClause(nPhrase: Noun): void {

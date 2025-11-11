@@ -1,7 +1,5 @@
 import { type SentenceInfo } from "./types/SentenceInfo"
-import { ClauseBuilder } from "./syntax/ClauseBuilder"
 import type { Word } from "./types/Word"
-import { fixPartsOfSpeech } from "./syntax/SyntaxMethods"
 import { Parser } from "./Parser"
 import type { Clause } from "./syntax/partsOfSpeech/Clause"
 
@@ -19,17 +17,6 @@ export class GrammarVisualizer {
         let parser = new Parser()
         this.clauses = parser.parse(sentence)
         console.log(this.clauses)
-        // this.sentenceWordList = fixPartsOfSpeech(this.sentenceWordList)
-
-        // this.sentence = new ClauseBuilder(
-        //     this.sentenceWordList
-        // )
-        // this.sentence.generateClauses()
-
-        // console.log(
-        //     `Number of clauses in sentence: ${this.sentence.getClauseCounter()}`
-        // )
-        // console.log(this.sentence.getClauseList())
     }
 
     private createZippedWords(
