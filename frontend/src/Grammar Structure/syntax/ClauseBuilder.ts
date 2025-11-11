@@ -53,6 +53,16 @@ export class ClauseBuilder {
         this.unfinishedBuilderList = []
     }
 
+
+    public addPhrase(builder: WordBuilder): void {
+        let phrase: Phrase = builder.build()
+        if (this.shouldBePredicate()) {
+            this.makePredicate(phrase)
+        } else {
+            this.attachToClause(phrase)
+        }
+    }
+
     public attachToClause(phrase: Phrase): void {
         if (phrase instanceof Adverb) {
             this.pushAdverbToClause(phrase)
@@ -87,15 +97,6 @@ export class ClauseBuilder {
         this.addPhrase(prepBuilder)
     }
 
-    public addPhrase(builder: WordBuilder): void {
-        let phrase: Phrase = builder.build()
-        if (this.shouldBePredicate()) {
-            this.makePredicate(phrase)
-        } else {
-            this.attachToClause(phrase)
-        }
-    }
-
     public buildPredicate(predWord: Word): void {
         let predBuilder: PredicateBuilder =
             this.getOrCreateBuilder(PredicateBuilder)
@@ -115,6 +116,18 @@ export class ClauseBuilder {
         }
     }
 
+    public getAdjunctStack(): (Preposition | Adverb)[] {
+        return this.adjunctStack
+    }
+
+    public getPredicate(): Predicate | null {
+        return this.predicate
+    }
+
+    public getNounStack(): Noun[] {
+        return this.nounStack
+    }
+
     private getOrCreateBuilder<T extends WordBuilder>(
         buildType: new () => T
     ): T {
@@ -129,6 +142,18 @@ export class ClauseBuilder {
             this.unfinishedBuilderList.push(builder)
         }
         return builder
+    }
+
+    public getSubject(): Noun | null {
+        return this.subject
+    }
+
+    private makePredicate(phrase: Phrase): void {
+        let predBuilder =
+            this.unfinishedBuilderList.splice(-1, 1)[0] as PredicateBuilder
+        predBuilder.setSemanticContent(phrase)
+        let predPhrase: Predicate = predBuilder.build()
+        this.predicate = predPhrase
     }
 
     private pushAdverbToClause(aPhrase: Adverb): void {
@@ -164,14 +189,6 @@ export class ClauseBuilder {
 
     private shouldBePredicate(): boolean {
         return this.unfinishedBuilderList.at(-1) instanceof PredicateBuilder
-    }
-
-    private makePredicate(phrase: Phrase): void {
-        let predBuilder =
-            this.unfinishedBuilderList.splice(-1, 1)[0] as PredicateBuilder
-        predBuilder.setSemanticContent(phrase)
-        let predPhrase: Predicate = predBuilder.build()
-        this.predicate = predPhrase
     }
 
 
@@ -310,65 +327,5 @@ export class ClauseBuilder {
 
     // public getClauseList(): Clause[] {
     //     return this.clauses
-    // }
-
-    // public incrementClauseCounter(): void {
-    //     this.numberOfClauses += 1
-    // }
-
-    // public getClauseCounter(): number {
-    //     return this.numberOfClauses
-    // }
-
-    // public getNounStack(): Noun[] {
-    //     return this.nounStack
-    // }
-
-    // public setCurrentSubject(noun: Noun): void {
-    //     this.currentSubject = noun
-    // }
-
-    // public getWordList(): Word[] {
-    //     return this.wordList
-    // }
-
-    // /**
-    //  * Adds phrase as the predicate if the predicate is a dummy verb. 
-    //  * Otherwise adds the phrase to the noun list if it is an NP, or to the
-    //  * adjunct list if it is an AP or a PP
-    //  * @param phrase A phrase to be added to the current clause
-    //  */
-    // private attachElementCorrectly(phrase: Noun | Adverb | Preposition): void {
-    //     if (this.currentPredicate &&
-    //         isBeVerb(this.currentPredicate
-    //             .getVerb()
-    //             .getName()
-    //         )
-    //     ) {
-    //         this.currentPredicate.setSemanticElement(phrase)
-    //     } else if (phrase instanceof Noun) {
-    //         this.nounStack.push(phrase)
-    //     } else {
-    //         this.adjunctStack.push(phrase)
-    //     }
-    // }
-
-    // private clearCurrentClause(): void {
-    //     this.adjunctStack = []
-    //     this.currentSubject = null
-    //     this.currentPredicate = null
-    //     this.nounStack = []
-    // }
-
-    // public getCurrentPredicate(): Predicate | null {
-    //     return this.currentPredicate
-    // }
-
-    // public getCurrentSubject(): Noun | null {
-    //     return this.currentSubject
-    // }
-
-    // public getAdjunctStack(): (Adverb | Preposition)[] {
-    //     return this.adjunctStack
     // }
 }
