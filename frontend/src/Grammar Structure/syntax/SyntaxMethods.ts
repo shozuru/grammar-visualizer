@@ -51,7 +51,7 @@ export function addMatrixClauseMods(
     }
 }
 
-export function addModsIfPresent(adverbWord: Word): Mod | null {
+export function getLexicalizedMod(adverbWord: Word): Mod | null {
     if (adverbWord.pos === PartsOfSpeech.RBS) {
 
         let superlative: Mod = new Mod(
@@ -91,27 +91,6 @@ export function addPhraseToClause(
         clause.addNounToClause(phrase)
     } else {
         clause.addAdjunct(phrase)
-    }
-}
-
-export function addPredModsAndAgrs(
-    pred: Predicate,
-    modStack: Mod[],
-    agrStack: Agr[]
-): void {
-    if (
-        modStack.length > 0
-    ) {
-        for (let mod of modStack) {
-            pred.addMod(mod)
-        }
-    }
-    if (
-        agrStack.length > 0
-    ) {
-        for (let agr of agrStack) {
-            pred.addAgr(agr)
-        }
     }
 }
 
@@ -213,17 +192,6 @@ export function createNounPhrase(nounWord: Word, modifiers: Mod[]): Noun {
         nounPhrase.addModifier(mod)
     }
     return nounPhrase
-}
-
-export function createPrepositionalPhrase(
-    prepositionWord: Word,
-    restOfSent: Word[]
-): Preposition {
-    let prepositionalPhrase: Preposition =
-        new Preposition(prepositionWord.name)
-    prepositionalPhrase.tagIfObject(restOfSent)
-
-    return prepositionalPhrase
 }
 
 export function createRosClause(sentence: ClauseBuilder): {
@@ -421,18 +389,7 @@ export function handleAdverbPhrase(
     let agrStack: Agr[] = []
     let wordList: Word[] = sentence.getWordList()
 
-    while (!isAdverb(wordList[0])) {
-        if (isAdverbMod(wordList[0])) {
-            let modWord: Word = wordList.shift() as Word
-            let mod: Mod = new Mod(modWord)
-            modStack.push(mod)
-        } else {
-            let agrWord: Word = wordList.shift() as Word
-            let agr: Agr = new Agr(agrWord)
-            agrStack.push(agr)
-        }
-    }
-    let supletiveMod: Mod | null = addModsIfPresent(wordList[0])
+    let supletiveMod: Mod | null = getLexicalizedMod(wordList[0])
     if (supletiveMod instanceof Mod) {
         modStack.push(supletiveMod)
     }
@@ -506,57 +463,24 @@ export function handleNounPhrase(
     return createNounPhrase(headWord, nounModStack)
 }
 
-export function handlePrepositionPhrase(wordList: Word[]) {
-    let headWord: Word = wordList.shift() as Word
-    return createPrepositionalPhrase(headWord, wordList)
-}
-
-export function handlePredicatePhrase(
-    sentence: ClauseBuilder
-): {
-    pred: Predicate
-    experiencer: Noun | null
-    adverbStack: Adverb[]
-} {
-    let modStack: Mod[] = []
-    let agrStack: Agr[] = []
+export function handlePredicatePhrase(sentence: ClauseBuilder): Noun | null {
     let experiencer: Noun | null = null
-    let adverbStack: Adverb[] = []
-
     let wordList: Word[] = sentence.getWordList()
-
     while (!isVerb(wordList[0])) {
-        if (isVerbModifier(wordList[0])) {
-            let modWord: Word = wordList.shift() as Word
-            let mod: Mod = new Mod(modWord)
-            modStack.push(mod)
-        } else if (isVerbAgr(wordList[0])) {
-            let agrWord: Word = wordList.shift() as Word
-            let agr: Agr = new Agr(agrWord)
-            agrStack.push(agr)
-        } else if (
+        if (
             sentence.getCurrentSubject() instanceof Noun &&
             isCausative(wordList[0])
         ) {
+            // I [made] her go to the park
             let causMod: Mod = new Mod(wordList.shift() as Word)
             let subject: Noun = sentence.getCurrentSubject() as Noun
             subject.addModifier(causMod)
         } else if (isNominalElement(wordList)) {
+            // I made [her] go to the park
             experiencer = handleNounPhrase(sentence)
-        } else if (isAdverb(wordList[0])) {
-            let adverbWord: Word = wordList.shift() as Word
-            let aPhrase: Adverb = new Adverb(adverbWord.name)
-            adverbStack.push(aPhrase)
         }
     }
-
-    // add predicate to clause
-    let headWord: Word = wordList.shift() as Word
-    let verb: Verb = new Verb(headWord.name)
-    let pred: Predicate = new Predicate(verb)
-
-    addPredModsAndAgrs(pred, modStack, agrStack)
-    return { pred, experiencer, adverbStack }
+    return experiencer
 }
 
 export function createRelativeNoun(wordList: Word[]): Noun {
@@ -687,7 +611,7 @@ export function isNoun(word: Word): boolean {
     )
 }
 
-export function isNounModifier(
+export function isNounMod(
     word: Word,
     // restOfSent: Word[]
 ): boolean {
@@ -815,15 +739,7 @@ export function isVerbAgr(word: Word): boolean {
     )
 }
 
-export function isVerbalElement(word: Word): boolean {
-    return (
-        isVerb(word) ||
-        isVerbAgr(word) ||
-        isVerbModifier(word)
-    )
-}
-
-export function isVerbModifier(word: Word): boolean {
+export function isVerbMod(word: Word): boolean {
     return (
         word.pos === PartsOfSpeech.TENSE ||
         word.pos === PartsOfSpeech.PERFECTIVE ||

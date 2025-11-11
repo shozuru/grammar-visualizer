@@ -47,4 +47,11 @@ export class PredicateBuilder extends WordBuilder {
         }
         this.predicate.setSemanticElement(content)
     }
+
+    public hasCopula(): boolean {
+        if (!(this.predicate instanceof Predicate)) {
+            return false
+        }
+        return (this.predicate.getCopula() !== null)
+    }
 }

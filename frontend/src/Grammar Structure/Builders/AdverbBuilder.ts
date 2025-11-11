@@ -1,6 +1,8 @@
 import { Adverb } from "../syntax/partsOfSpeech/Adverb";
 import { WordBuilder } from "./WordBuilder";
 import type { Word } from "../types/Word";
+import { getLexicalizedMod } from "../syntax/SyntaxMethods";
+import type { Mod } from "../syntax/Mod";
 
 export class AdverbBuilder extends WordBuilder {
 
@@ -14,6 +16,12 @@ export class AdverbBuilder extends WordBuilder {
     public createAndSetAdverb(adverbWord: Word): void {
         let adverb: Adverb = new Adverb(adverbWord.name)
         this.adverb = adverb
+
+        let lexicalMod: Mod | null = getLexicalizedMod(adverbWord)
+
+        if (lexicalMod) {
+            super.addMod(lexicalMod)
+        }
     }
 
     public build(): Adverb {

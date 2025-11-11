@@ -20,8 +20,16 @@ export abstract class WordBuilder {
         this.modStack.push(mod)
     }
 
+    public addMod(mod: Mod): void {
+        this.modStack.push(mod)
+    }
+
     public createAndAddAgr(word: Word): void {
         let agr: Agr = new Agr(word)
+        this.agrStack.push(agr)
+    }
+
+    public addAgr(agr: Agr): void {
         this.agrStack.push(agr)
     }
 

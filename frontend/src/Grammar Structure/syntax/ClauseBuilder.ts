@@ -1,22 +1,19 @@
 import {
     addRelClauseToSubject, addStrandedPassive, createCompleteClause,
-    createRelativeNoun, createRosClause, handleAdverbPhrase,
+    createRelativeNoun, createRosClause, getLexicalizedMod, handleAdverbPhrase,
     handleNounPhrase,
-    handlePredicatePhrase, handlePrepositionPhrase, isAdverbElement, isBeVerb,
+    handlePredicatePhrase, isAdverbAgr, isAdverbElement, isAdverbMod, isBeVerb,
     isFocusElement,
-    isNominalElement, isNounModifier, isPassive, isPredicate, isPreposition, isRelative, isRosCondition,
+    isNominalElement, isNounMod, isPassive, isPredicate, isPreposition, isRelative, isRosCondition,
     isVerbAgr,
-    isVerbalElement, isVerbModifier, modStackContainsCaus, removeRelClause,
+    isVerbMod, modStackContainsCaus, removeRelClause,
 } from "./SyntaxMethods"
 import { Adverb } from "./partsOfSpeech/Adverb"
 import { Noun } from "./partsOfSpeech/Noun"
 import { Preposition } from "./partsOfSpeech/Preposition"
 import type { Word } from "../types/Word"
-import { Clause } from "./partsOfSpeech/Clause"
 import { Predicate } from "./Predicate"
-import { Mod } from "./Mod"
 import { Verb } from "./partsOfSpeech/Verb"
-import { Agr } from "./Agr"
 import { NounBuilder } from "../Builders/NounBuilder"
 import type { WordBuilder } from "../Builders/WordBuilder"
 import { PredicateBuilder } from "../Builders/PredicateBuilder"
@@ -65,14 +62,20 @@ export class ClauseBuilder {
         let adverbBuilder: AdverbBuilder =
             this.getOrCreateBuilder(AdverbBuilder)
 
-        this.removeFromBuilderList(adverbBuilder)
-        adverbBuilder.createAndSetAdverb(adverbWord)
-        this.addPhrase(adverbBuilder)
+        if (isAdverbMod(adverbWord)) {
+            adverbBuilder.createAndAddMod(adverbWord)
+        } else if (isAdverbAgr(adverbWord)) {
+            adverbBuilder.createAndAddAgr(adverbWord)
+        } else {
+            this.removeFromBuilderList(adverbBuilder)
+            adverbBuilder.createAndSetAdverb(adverbWord)
+            this.addPhrase(adverbBuilder)
+        }
     }
 
     public buildNominal(nomWord: Word): void {
         let nounBuilder: NounBuilder = this.getOrCreateBuilder(NounBuilder)
-        if (isNounModifier(nomWord)) {
+        if (isNounMod(nomWord)) {
             nounBuilder.createAndAddMod(nomWord)
         } else {
             this.removeFromBuilderList(nounBuilder)
@@ -91,7 +94,7 @@ export class ClauseBuilder {
             this.getOrCreateBuilder(PredicateBuilder)
         if (isVerbAgr(predWord)) {
             predBuilder.createAndAddAgr(predWord)
-        } else if (isVerbModifier(predWord)) {
+        } else if (isVerbMod(predWord)) {
             predBuilder.createAndAddMod(predWord)
         } else {
             let verb: Verb = new Verb(predWord.name)
@@ -177,7 +180,12 @@ export class ClauseBuilder {
     }
 
     private shouldBePredicate(): boolean {
-        return this.unfinishedBuilderList.at(-1) instanceof PredicateBuilder
+        // there is an unfinished builder at -1 that has be as its copula
+        let unfinishedBuilder = this.unfinishedBuilderList.at(-1)
+        return (
+            unfinishedBuilder instanceof PredicateBuilder &&
+            unfinishedBuilder.hasCopula()
+        )
     }
 
 

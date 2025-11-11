@@ -30,12 +30,16 @@ export class HandlerRegistry {
         let verbTags: PartsOfSpeech[] =
             [
                 PartsOfSpeech.VB, PartsOfSpeech.VBD, PartsOfSpeech.VBZ,
-                PartsOfSpeech.VBP, PartsOfSpeech.VBN
-
+                PartsOfSpeech.VBP, PartsOfSpeech.VBN, PartsOfSpeech.PsvAgr,
+                PartsOfSpeech.InfAgr, PartsOfSpeech.TO, PartsOfSpeech.TENSE,
+                PartsOfSpeech.PERFECTIVE, PartsOfSpeech.NEGATION,
+                PartsOfSpeech.MD
             ]
         let adverbTags: PartsOfSpeech[] =
             [
-                PartsOfSpeech.RB, PartsOfSpeech.RBR, PartsOfSpeech.RBS
+                PartsOfSpeech.RB, PartsOfSpeech.RBR, PartsOfSpeech.RBS,
+                PartsOfSpeech.AdvAgr, PartsOfSpeech.SUPERLATIVE,
+                PartsOfSpeech.COMPARATIVE
             ]
         let prepTags: PartsOfSpeech[] =
             [
