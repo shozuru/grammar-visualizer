@@ -2,6 +2,7 @@ import { Agr } from "./Agr";
 import { Mod } from "./Mod";
 import type { Adverb } from "./partsOfSpeech/Adverb";
 import type { Phrase } from "./partsOfSpeech/Phrase";
+import type { Preposition } from "./partsOfSpeech/Preposition";
 import type { Verb } from "./partsOfSpeech/Verb";
 import { uncontractVerbalModifiers } from "./SyntaxMethods";
 
@@ -12,7 +13,7 @@ export class Predicate implements Phrase {
 
     private modStack: Mod[]
     private agrStack: Agr[]
-    private adjunctStack: Adverb[]
+    private adjunctStack: (Preposition | Adverb)[]
 
     constructor(verb: Verb) {
         if (this.isBeVerb(verb)) {
@@ -76,7 +77,7 @@ export class Predicate implements Phrase {
         )
     }
 
-    public addAdjunct(adverb: Adverb): void {
+    public addAdjunct(adverb: Adverb | Preposition): void {
         this.adjunctStack.push(adverb)
     }
 }

@@ -21,7 +21,7 @@ export class NounBuilder extends WordBuilder {
     }
 
     public build(): Noun {
-        if (!(this.noun instanceof Noun)) {
+        if (!this.noun) {
             throw Error("Tried to build noun that doesn't have a head")
         }
         for (let mod of super.getModStack()) {

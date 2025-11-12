@@ -19,7 +19,7 @@ export class PrepBuilder extends WordBuilder {
     }
 
     public setObject(noun: Noun): void {
-        if (!(this.preposition instanceof Preposition)) {
+        if (!this.preposition) {
             throw Error(
                 "Tried to add object to preposition head " +
                 "that has not been set yet"
@@ -29,7 +29,7 @@ export class PrepBuilder extends WordBuilder {
     }
 
     public addAdjunct(adverb: Adverb): void {
-        if (!(this.preposition instanceof Preposition)) {
+        if (!this.preposition) {
             throw Error(
                 "Tried to add adjunct to preposition head " +
                 "that has not been set yet"
@@ -39,7 +39,7 @@ export class PrepBuilder extends WordBuilder {
     }
 
     public build(): Preposition {
-        if (!(this.preposition instanceof Preposition)) {
+        if (!this.preposition) {
             throw Error(
                 "tried to build preposition phrase without preposition"
             )

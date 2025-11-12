@@ -1,5 +1,5 @@
 import {
-    addRelClauseToSubject, addStrandedPassive, createCompleteClause,
+    addRelClauseToSubject, addStrandedPassive,
     createRelativeNoun, createRosClause, getLexicalizedMod, handleAdverbPhrase,
     handleNounPhrase,
     handlePredicatePhrase, isAdjectiveAgr, isAdjectiveMod, isBeVerb,
@@ -53,6 +53,16 @@ export class ClauseBuilder {
 
     public attachToClause(phrase: Phrase): void {
         if (
+            (
+                phrase instanceof Adverb ||
+                phrase instanceof Preposition
+            ) && (
+                this.predicate instanceof Predicate
+            )
+        ) {
+            this.predicate.addAdjunct(phrase)
+        }
+        else if (
             phrase instanceof Adverb ||
             phrase instanceof Preposition
         ) {
@@ -133,9 +143,18 @@ export class ClauseBuilder {
         }
     }
 
+    public buildCausative(causeWord: Word): void {
+        if (!this.subject) {
+            this.subject
+            throw Error("Causative sentence does not have Effector.")
+        }
+        this.subject.addCausative(causeWord)
+        // add causative as mod to next verb
+    }
+
     private placeAdverbIn(builder: WordBuilder): void {
-        if (!(this.pendingAdverb instanceof Adverb)) {
-            throw Error("Tried to place adverb that does not exist.")
+        if (!this.pendingAdverb) {
+            throw Error("Tried to set adverb that does not exist.")
         }
         builder.addAdjunct(this.pendingAdverb)
         this.pendingAdverb = null
@@ -187,11 +206,10 @@ export class ClauseBuilder {
         ) {
             let prepBuilder: PrepBuilder =
                 this.unfinishedBuilderList.splice(-1, 1)[0] as PrepBuilder
-
             prepBuilder.setObject(nPhrase)
             this.addPhrase(prepBuilder)
 
-        } else if (!(this.subject instanceof Noun)) {
+        } else if (!this.subject) {
             this.subject = nPhrase
         } else {
             this.nounStack.push(nPhrase)

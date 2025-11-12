@@ -9,46 +9,14 @@ import {
     raisingVerbs
 } from "./SyntaxConstants"
 import { Mod } from "./Mod"
-import { Agr } from "./Agr"
 import { Predicate } from "./Predicate"
 import { ClauseBuilder } from "./ClauseBuilder"
-
-
-export function addAdverbModsAndArgs(
-    adverb: Adverb,
-    modStack: Mod[],
-    agrStack: Agr[]
-): void {
-    if (
-        modStack.length > 0
-    ) {
-        for (const modifier of modStack) {
-            adverb.addModifier(modifier)
-        }
-    }
-    if (
-        agrStack.length > 0
-    ) {
-        for (const agr of agrStack) {
-            adverb.addAdverbAgr(agr)
-        }
-    }
-}
 
 export function addCaustiveModifier(
     agentNoun: Noun,
     causeWord: Word
 ): void {
     agentNoun.addModifier(new Mod(causeWord))
-}
-
-export function addMatrixClauseMods(
-    matrixPred: Predicate, listOfMods: Mod[]
-): void {
-    while (listOfMods.length > 0) {
-        let mod: Mod = listOfMods.shift() as Mod
-        matrixPred.addMod(mod)
-    }
 }
 
 export function getLexicalizedMod(adjWord: Word): Mod | null {
@@ -73,25 +41,6 @@ export function getLexicalizedMod(adjWord: Word): Mod | null {
         return comparative
     }
     return null
-}
-
-export function addPhraseToClause(
-    phrase: Noun | Preposition | Adverb,
-    clause: Clause
-): void {
-    if (isBeVerb(clause
-        .getPredicate()
-        .getVerb()
-        .getName()
-    )) {
-        clause
-            .getPredicate()
-            .setSemanticElement(phrase)
-    } else if (phrase instanceof Noun) {
-        clause.addNounToClause(phrase)
-    } else {
-        clause.addAdjunct(phrase)
-    }
 }
 
 export function addRelClauseToNounPhrase(
@@ -166,25 +115,6 @@ export function addStrandedPassive(wordList: Word[], nounStack: Noun[]): void {
     }
 }
 
-export function createCompleteClause(sentence: ClauseBuilder): void {
-    if (
-        sentence.getCurrentPredicate() instanceof Predicate &&
-        sentence.getCurrentSubject() instanceof Noun
-    ) {
-        let completeClause: Clause =
-            new Clause(sentence.getCurrentPredicate() as Predicate)
-        completeClause.addNounToClause(sentence.getCurrentSubject() as Noun)
-
-        for (let noun of sentence.getNounStack()) {
-            completeClause.addNounToClause(noun)
-        }
-        for (let adjunct of sentence.getAdjunctStack()) {
-            completeClause.addAdjunct(adjunct)
-        }
-        sentence.addClausetoClauseList(completeClause)
-    }
-}
-
 export function createNounPhrase(nounWord: Word, modifiers: Mod[]): Noun {
     let nounPhrase: Noun = new Noun(nounWord.name)
     while (modifiers.length > 0) {
@@ -218,9 +148,6 @@ export function handleAdverbPhrase(
         let nRelPhrase: Noun = handleNounPhrase(sentence)
         return nRelPhrase
     }
-
-    let modPhrase: Adverb | Preposition | Noun =
-        resolveAdverbAttachment(headPhrase, wordList)
     return modPhrase
 }
 
@@ -240,12 +167,7 @@ export function handleNounPhrase(
     let wordList: Word[] = sentence.getWordList()
 
     while (!isNoun(wordList[0])) {
-        if (isNounModifier(wordList[0], wordList.slice(1))) {
-            let modWord: Word = wordList.shift() as Word
-            let mod: Mod = new Mod(modWord)
-            nounModStack.push(mod)
-
-        } else if (isAdverb(wordList[0])) {
+        if (isAdverb(wordList[0])) {
             let relClause: Clause =
                 addRelClauseToNounPhrase(wordList, nounModStack)
             sentence.addClausetoClauseList(relClause)
@@ -335,6 +257,14 @@ export function isAdverb(word: Word): boolean {
         word.pos === PartsOfSpeech.RB ||
         word.pos === PartsOfSpeech.RBR ||
         word.pos === PartsOfSpeech.RBS
+    )
+}
+
+export function isAdjectigve(word: Word): boolean {
+    return (
+        word.pos === PartsOfSpeech.JJ ||
+        word.pos === PartsOfSpeech.JJR ||
+        word.pos === PartsOfSpeech.JJS
     )
 }
 
@@ -593,28 +523,6 @@ export function removeRelClause(wordList: Word[]): Word[] {
         index += 1
     }
     return wordList.splice(0, index - 1)
-}
-
-export function resolveAdverbAttachment(
-    thisAdverb: Adverb,
-    wordList: Word[]
-): Preposition | Adverb {
-
-    let nextWord: Word = wordList[0]
-
-
-    // I ran [very] quickly
-} else if (nextWord && isAdverb(nextWord)) {
-
-    let nextAdverb: Word = wordList.shift() as Word
-    let aPhrase: Adverb = new Adverb(nextAdverb.name)
-    aPhrase.addModifier(thisAdverb)
-    return aPhrase
-
-    // I [quickly] went under the bridge
-} else {
-    return thisAdverb
-}
 }
 
 export function uncontractVerbalModifiers(modifier: Mod): Mod[] {

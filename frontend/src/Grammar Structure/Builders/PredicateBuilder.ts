@@ -22,7 +22,7 @@ export class PredicateBuilder extends WordBuilder {
     }
 
     public build(): Predicate {
-        if (!(this.predicate instanceof Predicate)) {
+        if (!this.predicate) {
             throw Error("Tried to build predicate with no head")
         }
         for (let mod of super.getModStack()) {
@@ -38,21 +38,21 @@ export class PredicateBuilder extends WordBuilder {
     }
 
     public hasSemanticContent(): boolean {
-        if (!(this.predicate instanceof Predicate)) {
+        if (!this.predicate) {
             throw Error("predicate Builder does not have a predicate")
         }
         return this.predicate.getSemanticContent() !== null
     }
 
     public setSemanticContent(content: Phrase): void {
-        if (!(this.predicate instanceof Predicate)) {
+        if (!this.predicate) {
             throw Error("predicate Builder does not have a predicate")
         }
         this.predicate.setSemanticElement(content)
     }
 
     public hasCopula(): boolean {
-        if (!(this.predicate instanceof Predicate)) {
+        if (!this.predicate) {
             return false
         }
         return (this.predicate.getCopula() !== null)

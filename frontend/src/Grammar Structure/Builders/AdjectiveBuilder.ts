@@ -25,7 +25,7 @@ export class AdjectiveBuilder extends WordBuilder {
     }
 
     public addAdjunct(adverb: Adverb): void {
-        if (!(this.adjective instanceof Adjective)) {
+        if (!this.adjective) {
             throw Error(
                 "tried to add adjunct to adjective phrase without head"
             )
@@ -34,7 +34,7 @@ export class AdjectiveBuilder extends WordBuilder {
     }
 
     public build(): Adjective {
-        if (!(this.adjective instanceof Adjective)) {
+        if (!this.adjective) {
             throw Error("Tried to build adjective phrase without head")
         }
         for (let agr of super.getAgrStack()) {

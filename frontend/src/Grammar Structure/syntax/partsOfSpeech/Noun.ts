@@ -1,5 +1,6 @@
-import type { Mod } from "../Mod"
+import { Mod } from "../Mod"
 import type { Phrase } from "./Phrase"
+import type { Word } from "../../types/Word"
 // import type { Relativize } from "../Relativize"
 // import type { Case } from "../SyntaxConstants"
 
@@ -39,6 +40,11 @@ export class Noun implements Phrase {
 
     public addModifier(mod: Mod): void {
         this.modifiers.push(mod)
+    }
+
+    public addCausative(causeWord: Word): void {
+        let causeMod: Mod = new Mod(causeWord)
+        this.modifiers.push(causeMod)
     }
 
     // public getRelativizer(): Relativize | null {

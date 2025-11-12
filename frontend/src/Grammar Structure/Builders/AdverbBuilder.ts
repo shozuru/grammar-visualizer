@@ -17,7 +17,7 @@ export class AdverbBuilder extends WordBuilder {
     }
 
     public build(): Adverb {
-        if (!(this.adverb instanceof Adverb)) {
+        if (!this.adverb) {
             throw Error("Tried to build adverb phrase without head")
         }
         for (let agr of super.getAgrStack()) {
@@ -33,7 +33,7 @@ export class AdverbBuilder extends WordBuilder {
     }
 
     public addAdjunct(adverb: Adverb): void {
-        if (!(this.adverb instanceof Adverb)) {
+        if (!this.adverb) {
             throw Error(
                 "Tried to add adjunct to Adverb head " +
                 "that has not been set yet"
