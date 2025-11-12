@@ -1,12 +1,10 @@
 import {
     addRelClauseToSubject, addStrandedPassive,
     createRelativeNoun, createRosClause, getLexicalizedMod, handleAdverbPhrase,
-    handleNounPhrase,
-    handlePredicatePhrase, isAdjectiveAgr, isAdjectiveMod, isBeVerb,
-    isFocusElement,
-    isNominalElement, isNounMod, isPassive, isPredicate, isPreposition, isRelative, isRosCondition,
-    isVerbAgr,
-    isVerbMod, modStackContainsCaus, removeRelClause,
+    handleNounPhrase, isAdjectiveAgr, isAdjectiveMod, isBeVerb, isFocusElement,
+    isNominalElement, isNounMod, isPassive, isPredicate, isPreposition,
+    isRelative, isRosCondition, isVerbAgr, isVerbMod, modStackContainsCaus,
+    removeRelClause,
 } from "./SyntaxMethods"
 import { Adverb } from "./partsOfSpeech/Adverb"
 import { Noun } from "./partsOfSpeech/Noun"
@@ -21,6 +19,7 @@ import { PrepBuilder } from "../Builders/PrepositionBuilder"
 import { AdverbBuilder } from "../Builders/AdverbBuilder"
 import type { Phrase } from "./partsOfSpeech/Phrase"
 import { AdjectiveBuilder } from "../Builders/AdjectiveBuilder"
+import type { Clause } from "./partsOfSpeech/Clause"
 
 export class ClauseBuilder {
 
@@ -40,6 +39,10 @@ export class ClauseBuilder {
         this.adjunctStack = []
         this.unfinishedBuilderList = []
         this.pendingAdverb = null
+    }
+
+    public build(): Clause {
+        return new Clause()
     }
 
     public addPhrase(builder: WordBuilder): void {
@@ -276,9 +279,7 @@ export class ClauseBuilder {
     //                 pred: Predicate
     //                 experiencer: Noun | null
     //                 adverbStack: Adverb[]
-    //             } =
-    //                 handlePredicatePhrase(this)
-
+    //             }
     //             if (
     //                 // is subject control:
     //                 this.currentPredicate instanceof Predicate &&
@@ -291,7 +292,6 @@ export class ClauseBuilder {
     //             }
 
     //             this.currentPredicate = predInfo.pred
-    //             this.incrementClauseCounter()
 
     //             if (predInfo.experiencer instanceof Noun) {
     //                 this.nounStack.push(predInfo.experiencer)

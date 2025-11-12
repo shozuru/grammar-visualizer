@@ -11,6 +11,7 @@ import {
 import { Mod } from "./Mod"
 import { Predicate } from "./Predicate"
 import { ClauseBuilder } from "./ClauseBuilder"
+import type { Phrase } from "./partsOfSpeech/Phrase"
 
 
 export function getLexicalizedMod(adjWord: Word): Mod | null {
@@ -179,26 +180,6 @@ export function handleNounPhrase(
     return createNounPhrase(headWord, nounModStack)
 }
 
-export function handlePredicatePhrase(sentence: ClauseBuilder): Noun | null {
-    let experiencer: Noun | null = null
-    let wordList: Word[] = sentence.getWordList()
-    while (!isVerb(wordList[0])) {
-        if (
-            sentence.getCurrentSubject() instanceof Noun &&
-            isCausative(wordList[0])
-        ) {
-            // I [made] her go to the park
-            let causMod: Mod = new Mod(wordList.shift() as Word)
-            let subject: Noun = sentence.getCurrentSubject() as Noun
-            subject.addModifier(causMod)
-        } else if (isNominalElement(wordList)) {
-            // I made [her] go to the park
-            experiencer = handleNounPhrase(sentence)
-        }
-    }
-    return experiencer
-}
-
 export function createRelativeNoun(wordList: Word[]): Noun {
     let relWord: Word = wordList.shift() as Word
     let relNoun: Noun = new Noun(relWord.name)
@@ -292,11 +273,13 @@ export function isConjunction(word: Word): boolean {
 }
 
 export function isECMPred(pred: Predicate): boolean {
+    let sCont: Phrase | null = pred.getSemanticContent()
+    if (!(sCont instanceof Verb)) return false
     return (
-        ecmVerbs.some(ecmVerb => pred
-            .getVerb()
-            .getName()
-            .includes(ecmVerb)
+        ecmVerbs.some(
+            raisingVerb => sCont
+                .getName()
+                .includes(raisingVerb)
         )
     )
 }
@@ -390,10 +373,11 @@ export function isPreposition(word: Word): boolean {
 }
 
 export function isRaisingPred(pred: Predicate): boolean {
+    let sCont: Phrase | null = pred.getSemanticContent()
+    if (!(sCont instanceof Verb)) return false
     return (
         raisingVerbs.some(
-            raisingVerb => pred
-                .getVerb()
+            raisingVerb => sCont
                 .getName()
                 .includes(raisingVerb)
         )
