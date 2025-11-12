@@ -482,7 +482,8 @@ export function isVerbMod(word: Word): boolean {
         word.pos === PartsOfSpeech.TENSE ||
         word.pos === PartsOfSpeech.PERFECTIVE ||
         word.pos === PartsOfSpeech.NEGATION ||
-        word.pos === PartsOfSpeech.MD
+        word.pos === PartsOfSpeech.MD ||
+        word.pos === PartsOfSpeech.CAUSATIVE
     )
 }
 

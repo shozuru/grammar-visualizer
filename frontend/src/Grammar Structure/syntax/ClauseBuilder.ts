@@ -145,11 +145,10 @@ export class ClauseBuilder {
 
     public buildCausative(causeWord: Word): void {
         if (!this.subject) {
-            this.subject
             throw Error("Causative sentence does not have Effector.")
         }
         this.subject.addCausative(causeWord)
-        // add causative as mod to next verb
+        this.buildPredicate(causeWord)
     }
 
     private placeAdverbIn(builder: WordBuilder): void {
