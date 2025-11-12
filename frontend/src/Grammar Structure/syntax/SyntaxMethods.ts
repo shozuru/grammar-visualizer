@@ -12,12 +12,6 @@ import { Mod } from "./Mod"
 import { Predicate } from "./Predicate"
 import { ClauseBuilder } from "./ClauseBuilder"
 
-export function addCaustiveModifier(
-    agentNoun: Noun,
-    causeWord: Word
-): void {
-    agentNoun.addModifier(new Mod(causeWord))
-}
 
 export function getLexicalizedMod(adjWord: Word): Mod | null {
     if (adjWord.pos === PartsOfSpeech.JJS) {
@@ -115,15 +109,6 @@ export function addStrandedPassive(wordList: Word[], nounStack: Noun[]): void {
     }
 }
 
-export function createNounPhrase(nounWord: Word, modifiers: Mod[]): Noun {
-    let nounPhrase: Noun = new Noun(nounWord.name)
-    while (modifiers.length > 0) {
-        let mod: Mod = modifiers.pop() as Mod
-        nounPhrase.addModifier(mod)
-    }
-    return nounPhrase
-}
-
 export function createRosClause(sentence: ClauseBuilder): {
     clause: Clause
     nextSubject: Noun | null
@@ -176,13 +161,6 @@ export function handleNounPhrase(
     }
 
     let headWord: Word = wordList.shift() as Word
-    if (
-        wordList[0] &&
-        isCausative(wordList[0])
-    ) {
-        let causeWord: Word = wordList.shift() as Word
-        nounModStack.push(new Mod(causeWord))
-    }
     if (
         wordList[0] &&
         isRelative(wordList[0])
@@ -298,19 +276,20 @@ export function isCausative(word: Word): boolean {
     )
 }
 
-// export function isConjunction(word: Word): boolean {
-//     let currentPOS: number = word.pos
-//     let currentWord: string = word.name
+export function isConjunction(word: Word): boolean {
+    let currentPOS: number = word.pos
+    // let currentWord: string = word.name
 
-//     return (
-//         (currentPOS === PartsOfSpeech.IN ||
-//             currentPOS === PartsOfSpeech.CC ||
-//             currentPOS === PartsOfSpeech.WR
-//         ) && (
-//             conjunctions.has(currentWord)
-//         )
-//     )
-// }
+    return (
+        (currentPOS === PartsOfSpeech.IN ||
+            currentPOS === PartsOfSpeech.CC ||
+            currentPOS === PartsOfSpeech.WR
+        )
+        // && (
+        //     conjunctions.has(currentWord)
+        // )
+    )
+}
 
 export function isECMPred(pred: Predicate): boolean {
     return (

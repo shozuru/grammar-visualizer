@@ -270,11 +270,6 @@ export class ClauseBuilder {
     //                 }
     //             }
 
-    //         } else if (isAdverbElement(currentWord)) {
-    //             let adjunctPhrase: Adverb | Preposition | Noun =
-    //                 handleAdverbPhrase(this)
-    //             this.attachElementCorrectly(adjunctPhrase)
-
     //         } else if (isVerbalElement(currentWord)) {
 
     //             let predInfo: {
@@ -367,13 +362,5 @@ export class ClauseBuilder {
     //     ) {
     //         createCompleteClause(this)
     //     }
-    // }
-
-    // public addClausetoClauseList(clause: Clause): void {
-    //     this.clauses.push(clause)
-    // }
-
-    // public getClauseList(): Clause[] {
-    //     return this.clauses
     // }
 }
