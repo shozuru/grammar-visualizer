@@ -1,5 +1,6 @@
 import { Agr } from "./Agr";
 import { Mod } from "./Mod";
+import type { Adverb } from "./partsOfSpeech/Adverb";
 import type { Phrase } from "./partsOfSpeech/Phrase";
 import type { Verb } from "./partsOfSpeech/Verb";
 import { uncontractVerbalModifiers } from "./SyntaxMethods";
@@ -9,8 +10,9 @@ export class Predicate implements Phrase {
     private copula: Verb | null
     private semanticElement: Phrase | null
 
-    private modList: Mod[]
-    private agrList: Agr[]
+    private modStack: Mod[]
+    private agrStack: Agr[]
+    private adjunctStack: Adverb[]
 
     constructor(verb: Verb) {
         if (this.isBeVerb(verb)) {
@@ -20,8 +22,9 @@ export class Predicate implements Phrase {
             this.semanticElement = verb
             this.copula = null
         }
-        this.modList = []
-        this.agrList = []
+        this.modStack = []
+        this.agrStack = []
+        this.adjunctStack = []
     }
 
     public getCopula(): Verb | null {
@@ -40,23 +43,23 @@ export class Predicate implements Phrase {
         if (tamm.getName().includes("'")) {
             let mods: Mod[] = uncontractVerbalModifiers(tamm)
             for (const mod of mods) {
-                this.modList.push(mod)
+                this.modStack.push(mod)
             }
         } else {
-            this.modList.push(tamm)
+            this.modStack.push(tamm)
         }
     }
 
-    public getMods(): Mod[] {
-        return this.modList
+    public getModStack(): Mod[] {
+        return this.modStack
     }
 
-    public getAgrList(): Agr[] {
-        return this.agrList
+    public getAgrStack(): Agr[] {
+        return this.agrStack
     }
 
     public addAgr(agr: Agr): void {
-        this.agrList.push(agr)
+        this.agrStack.push(agr)
     }
 
     private isBeVerb(verb: Verb): boolean {
@@ -71,5 +74,9 @@ export class Predicate implements Phrase {
             verbName === "be" ||
             verbName === "being"
         )
+    }
+
+    public addAdjunct(adverb: Adverb): void {
+        this.adjunctStack.push(adverb)
     }
 }

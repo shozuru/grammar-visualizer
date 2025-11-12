@@ -1,8 +1,6 @@
 import { Adverb } from "../syntax/partsOfSpeech/Adverb";
 import { WordBuilder } from "./WordBuilder";
 import type { Word } from "../types/Word";
-import { getLexicalizedMod } from "../syntax/SyntaxMethods";
-import type { Mod } from "../syntax/Mod";
 
 export class AdverbBuilder extends WordBuilder {
 
@@ -28,16 +26,19 @@ export class AdverbBuilder extends WordBuilder {
         for (let mod of super.getModStack()) {
             this.adverb.addMod(mod)
         }
+        for (let adjunct of super.getAdjunctStack()) {
+            this.adverb.addAdjunct(adjunct)
+        }
         return this.adverb
     }
 
-    // public addAdjunct(adverb: Adverb): void {
-    //     if (!(this.adverb instanceof Adverb)) {
-    //         throw Error(
-    //             "Tried to add adjunct to Adverb head " +
-    //             "that has not been set yet"
-    //         )
-    //     }
-    //     this.adverb.addAdjunct(adverb)
-    // }
+    public addAdjunct(adverb: Adverb): void {
+        if (!(this.adverb instanceof Adverb)) {
+            throw Error(
+                "Tried to add adjunct to Adverb head " +
+                "that has not been set yet"
+            )
+        }
+        this.adverb.addAdjunct(adverb)
+    }
 }

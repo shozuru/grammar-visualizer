@@ -211,8 +211,6 @@ export function createRosClause(sentence: ClauseBuilder): {
 export function handleAdverbPhrase(
     sentence: ClauseBuilder
 ): Adverb | Preposition | Noun {
-    let modStack: Mod[] = []
-    let agrStack: Agr[] = []
     let wordList: Word[] = sentence.getWordList()
 
     // handles adjective relative clauses like 'the clean room'
@@ -220,8 +218,6 @@ export function handleAdverbPhrase(
         let nRelPhrase: Noun = handleNounPhrase(sentence)
         return nRelPhrase
     }
-
-    addAdverbModsAndArgs(headPhrase, modStack, agrStack)
 
     let modPhrase: Adverb | Preposition | Noun =
         resolveAdverbAttachment(headPhrase, wordList)
@@ -606,32 +602,19 @@ export function resolveAdverbAttachment(
 
     let nextWord: Word = wordList[0]
 
-    // I went [right] under the bridge
-    if (nextWord && isPreposition(nextWord)) {
 
-        // shift off the preposition
-        let prepositionWord: Word = wordList.shift() as Word
-        // create new preposition using shifted Word
-        let currentPreposition: Preposition =
-            new Preposition(prepositionWord.name)
-        // add adverb to preposition's modifier list
-        currentPreposition.addModifier(thisAdverb)
-        // add potential following object to preposition
-        currentPreposition.tagIfObject(wordList)
-        return currentPreposition
+    // I ran [very] quickly
+} else if (nextWord && isAdverb(nextWord)) {
 
-        // I ran [very] quickly
-    } else if (nextWord && isAdverb(nextWord)) {
+    let nextAdverb: Word = wordList.shift() as Word
+    let aPhrase: Adverb = new Adverb(nextAdverb.name)
+    aPhrase.addModifier(thisAdverb)
+    return aPhrase
 
-        let nextAdverb: Word = wordList.shift() as Word
-        let aPhrase: Adverb = new Adverb(nextAdverb.name)
-        aPhrase.addModifier(thisAdverb)
-        return aPhrase
-
-        // I [quickly] went under the bridge
-    } else {
-        return thisAdverb
-    }
+    // I [quickly] went under the bridge
+} else {
+    return thisAdverb
+}
 }
 
 export function uncontractVerbalModifiers(modifier: Mod): Mod[] {

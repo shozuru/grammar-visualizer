@@ -31,6 +31,9 @@ export class PredicateBuilder extends WordBuilder {
         for (let agr of super.getAgrStack()) {
             this.predicate.addAgr(agr)
         }
+        for (let adjunct of super.getAdjunctStack()) {
+            this.predicate.addAdjunct(adjunct)
+        }
         return this.predicate
     }
 

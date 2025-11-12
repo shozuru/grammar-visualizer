@@ -44,9 +44,9 @@ export class PrepBuilder extends WordBuilder {
                 "tried to build preposition phrase without preposition"
             )
         }
-        // for (let mod of super.getModStack()) {
-        //     this.preposition.addModifier(mod)
-        // }
+        for (let adjunct of super.getAdjunctStack()) {
+            this.preposition.addAdjunct(adjunct)
+        }
         return this.preposition
     }
 }

@@ -39,7 +39,7 @@ export class Parser {
         }
 
         // I ran [fast]
-        this.currentBuilder.addPendingAdverbsToMainClause()
+        this.currentBuilder.addPendingAdverbToBuiltPredicate()
         console.log(this.currentBuilder)
         return this.clauses
     }

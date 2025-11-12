@@ -30,7 +30,8 @@ export class ClauseBuilder {
     private nounStack: Noun[]
     private adjunctStack: (Preposition | Adverb)[]
     private unfinishedBuilderList: WordBuilder[]
-    private pendingAdverbs: Adverb[]
+
+    private pendingAdverb: Adverb | null
 
     constructor() {
         this.predicate = null
@@ -38,7 +39,7 @@ export class ClauseBuilder {
         this.nounStack = []
         this.adjunctStack = []
         this.unfinishedBuilderList = []
-        this.pendingAdverbs = []
+        this.pendingAdverb = null
     }
 
     public addPhrase(builder: WordBuilder): void {
@@ -71,9 +72,8 @@ export class ClauseBuilder {
         } else {
             this.removeFromBuilderList(adjBuilder)
             adjBuilder.createAndSetAdjective(adjWord)
-            while (this.pendingAdverbs.length > 0) {
-                let adjunct: Adverb = this.pendingAdverbs.pop() as Adverb
-                adjBuilder.addAdjunct(adjunct)
+            if (this.pendingAdverb) {
+                adjBuilder.addAdjunct(this.pendingAdverb)
             }
             this.addPhrase(adjBuilder)
         }
@@ -85,8 +85,11 @@ export class ClauseBuilder {
 
         this.removeFromBuilderList(adverbBuilder)
         adverbBuilder.createAndSetAdverb(adverbWord)
+        if (this.pendingAdverb) {
+            this.placeAdverbIn(adverbBuilder)
+        }
         let adverb: Adverb = adverbBuilder.build()
-        this.pendingAdverbs.push(adverb)
+        this.pendingAdverb = adverb
     }
 
     public buildNominal(nomWord: Word): void {
@@ -103,9 +106,8 @@ export class ClauseBuilder {
     public buildPreposition(prepWord: Word): void {
         let prepBuilder: PrepBuilder = this.getOrCreateBuilder(PrepBuilder)
         prepBuilder.setPreposition(prepWord)
-        while (this.pendingAdverbs.length > 0) {
-            let adjunct: Adverb = this.pendingAdverbs.pop() as Adverb
-            prepBuilder.addAdjunct(adjunct)
+        if (this.pendingAdverb) {
+            this.placeAdverbIn(prepBuilder)
         }
     }
 
@@ -121,10 +123,8 @@ export class ClauseBuilder {
             predBuilder.setVerb(verb)
 
             if (predBuilder.hasSemanticContent()) {
-                while (this.pendingAdverbs.length > 0) {
-
-                    // she [quickly] ate
-                    this.adjunctStack.push(this.pendingAdverbs.pop() as Adverb)
+                if (this.pendingAdverb) {
+                    this.placeAdverbIn(predBuilder)
                 }
                 this.removeFromBuilderList(predBuilder)
                 let predicate: Predicate = predBuilder.build()
@@ -133,8 +133,12 @@ export class ClauseBuilder {
         }
     }
 
-    public getAdjunctStack(): (Preposition | Adverb)[] {
-        return this.adjunctStack
+    private placeAdverbIn(builder: WordBuilder): void {
+        if (!(this.pendingAdverb instanceof Adverb)) {
+            throw Error("Tried to place adverb that does not exist.")
+        }
+        builder.addAdjunct(this.pendingAdverb)
+        this.pendingAdverb = null
     }
 
     public getPredicate(): Predicate | null {
@@ -205,7 +209,6 @@ export class ClauseBuilder {
     }
 
     private shouldBePredicate(): boolean {
-        // there is an unfinished builder at -1 that has be as its copula
         let unfinishedBuilder = this.unfinishedBuilderList.at(-1)
         return (
             unfinishedBuilder instanceof PredicateBuilder &&
@@ -213,11 +216,10 @@ export class ClauseBuilder {
         )
     }
 
-    public addPendingAdverbsToMainClause(): void {
-        while (this.pendingAdverbs.length > 0) {
-            let adjunct: Adverb = this.pendingAdverbs.pop() as Adverb
-            this.adjunctStack.push(adjunct)
-        }
+    public addPendingAdverbToBuiltPredicate(): void {
+        if (!this.pendingAdverb || !this.predicate) return
+        this.predicate.addAdjunct(this.pendingAdverb)
+        this.pendingAdverb = null
     }
 
 

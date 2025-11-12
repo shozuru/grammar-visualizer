@@ -8,7 +8,6 @@ export class Adverb implements Phrase {
     private listOfMods: Mod[]
     private listOfAgrs: Agr[]
     private adjunctList: Adverb[]
-    // private isPredicate: boolean
 
     constructor(name: string) {
         this.name = name
