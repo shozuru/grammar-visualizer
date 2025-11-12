@@ -38,13 +38,13 @@ export class HandlerRegistry {
             ]
         let adverbTags: PartsOfSpeech[] =
             [
-                PartsOfSpeech.RB, PartsOfSpeech.RBR, PartsOfSpeech.RBS,
-                PartsOfSpeech.AdvAgr, PartsOfSpeech.SUPERLATIVE,
-                PartsOfSpeech.COMPARATIVE
+                PartsOfSpeech.RB, PartsOfSpeech.RBR, PartsOfSpeech.RBS
             ]
         let adjTags: PartsOfSpeech[] =
             [
-                PartsOfSpeech.JJ, PartsOfSpeech.JJR, PartsOfSpeech.JJS
+                PartsOfSpeech.JJ, PartsOfSpeech.JJR, PartsOfSpeech.JJS,
+                PartsOfSpeech.AdvAgr, PartsOfSpeech.SUPERLATIVE,
+                PartsOfSpeech.COMPARATIVE
             ]
         let prepTags: PartsOfSpeech[] =
             [

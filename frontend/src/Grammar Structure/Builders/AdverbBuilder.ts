@@ -16,12 +16,6 @@ export class AdverbBuilder extends WordBuilder {
     public createAndSetAdverb(adverbWord: Word): void {
         let adverb: Adverb = new Adverb(adverbWord.name)
         this.adverb = adverb
-
-        let lexicalMod: Mod | null = getLexicalizedMod(adverbWord)
-
-        if (lexicalMod) {
-            super.addMod(lexicalMod)
-        }
     }
 
     public build(): Adverb {
@@ -37,13 +31,13 @@ export class AdverbBuilder extends WordBuilder {
         return this.adverb
     }
 
-    public addAdjunct(adverb: Adverb): void {
-        if (!(this.adverb instanceof Adverb)) {
-            throw Error(
-                "Tried to add adjunct to Adverb head " +
-                "that has not been set yet"
-            )
-        }
-        this.adverb.addAdjunct(adverb)
-    }
+    // public addAdjunct(adverb: Adverb): void {
+    //     if (!(this.adverb instanceof Adverb)) {
+    //         throw Error(
+    //             "Tried to add adjunct to Adverb head " +
+    //             "that has not been set yet"
+    //         )
+    //     }
+    //     this.adverb.addAdjunct(adverb)
+    // }
 }

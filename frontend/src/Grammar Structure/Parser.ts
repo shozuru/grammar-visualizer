@@ -189,18 +189,6 @@ export class Parser {
             ) {
                 wordList[i].pos = PartsOfSpeech.InfAgr
             } else if (
-                wordList[i].pos === PartsOfSpeech.JJ
-            ) {
-                wordList[i].pos = PartsOfSpeech.RB
-            } else if (
-                wordList[i].pos === PartsOfSpeech.JJR
-            ) {
-                wordList[i].pos = PartsOfSpeech.RBR
-            } else if (
-                wordList[i].pos === PartsOfSpeech.JJS
-            ) {
-                wordList[i].pos = PartsOfSpeech.RBS
-            } else if (
                 wordList[i].pos === PartsOfSpeech.RB &&
                 wordList[i].name === "not"
             ) {

@@ -2,7 +2,7 @@ import {
     addRelClauseToSubject, addStrandedPassive, createCompleteClause,
     createRelativeNoun, createRosClause, getLexicalizedMod, handleAdverbPhrase,
     handleNounPhrase,
-    handlePredicatePhrase, isAdverbAgr, isAdverbElement, isAdverbMod, isBeVerb,
+    handlePredicatePhrase, isAdjectiveAgr, isAdjectiveMod, isBeVerb,
     isFocusElement,
     isNominalElement, isNounMod, isPassive, isPredicate, isPreposition, isRelative, isRosCondition,
     isVerbAgr,
@@ -20,6 +20,7 @@ import { PredicateBuilder } from "../Builders/PredicateBuilder"
 import { PrepBuilder } from "../Builders/PrepositionBuilder"
 import { AdverbBuilder } from "../Builders/AdverbBuilder"
 import type { Phrase } from "./partsOfSpeech/Phrase"
+import { AdjectiveBuilder } from "../Builders/AdjectiveBuilder"
 
 export class ClauseBuilder {
 
@@ -61,34 +62,46 @@ export class ClauseBuilder {
     }
 
     public buildAdjective(adjWord: Word): void {
+        let adjBuilder: AdjectiveBuilder =
+            this.getOrCreateBuilder(AdjectiveBuilder)
+        if (isAdjectiveMod(adjWord)) {
+            adjBuilder.createAndAddMod(adjWord)
+        } else if (isAdjectiveAgr(adjWord)) {
+            adjBuilder.createAndAddAgr(adjWord)
+        } else {
+            this.removeFromBuilderList(adjBuilder)
+            adjBuilder.createAndSetAdjective(adjWord)
 
+            // while (this.pendingAdverbs.length > 0) {
+            //     let adjunct: Adverb = this.pendingAdverbs.pop() as Adverb
+            //     adjBuilder.addAdjunct(adjunct)
+            // }
+
+            this.addPhrase(adjBuilder)
+
+        }
     }
 
     public buildAdverb(adverbWord: Word): void {
         let adverbBuilder: AdverbBuilder =
             this.getOrCreateBuilder(AdverbBuilder)
 
-        if (isAdverbMod(adverbWord)) {
-            adverbBuilder.createAndAddMod(adverbWord)
-        } else if (isAdverbAgr(adverbWord)) {
-            adverbBuilder.createAndAddAgr(adverbWord)
-        } else {
-            this.removeFromBuilderList(adverbBuilder)
-            adverbBuilder.createAndSetAdverb(adverbWord)
+        this.removeFromBuilderList(adverbBuilder)
+        adverbBuilder.createAndSetAdverb(adverbWord)
 
-            // very fast
-            while (this.pendingAdverbs.length > 0) {
-                let adjunct: Adverb = this.pendingAdverbs.pop() as Adverb
-                adverbBuilder.addAdjunct(adjunct)
-            }
-            if (this.shouldBePredicate()) {
-                // she is very [fast]
-                this.makePredicate(adverbBuilder.build())
-            } else {
-                this.pendingAdverbs.push(adverbBuilder.build())
-            }
-            // this.addPhrase(adverbBuilder)
-        }
+        // [very] fast
+        // while (this.pendingAdverbs.length > 0) {
+        //     let adjunct: Adverb = this.pendingAdverbs.pop() as Adverb
+        //     adverbBuilder.addAdjunct(adjunct)
+        // }
+        // if (this.shouldBePredicate()) {
+        // she is very [fast]
+        // this.makePredicate(adverbBuilder.build())
+        // } else {
+        this.pendingAdverbs.push(adverbBuilder.build())
+        // }
+        // this.addPhrase(adverbBuilder)
+        // }
     }
 
     public buildNominal(nomWord: Word): void {

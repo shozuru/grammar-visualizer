@@ -1,4 +1,7 @@
+import type { Mod } from "../syntax/Mod"
 import { Adjective } from "../syntax/partsOfSpeech/Adjectives"
+import { Adverb } from "../syntax/partsOfSpeech/Adverb"
+import { getLexicalizedMod } from "../syntax/SyntaxMethods"
 import type { Word } from "../types/Word"
 import { WordBuilder } from "./WordBuilder"
 
@@ -14,6 +17,20 @@ export class AdjectiveBuilder extends WordBuilder {
     public createAndSetAdjective(adjWord: Word): void {
         let adj: Adjective = new Adjective(adjWord.name)
         this.adjective = adj
+
+        let lexMod: Mod | null = getLexicalizedMod(adjWord)
+        if (lexMod) {
+            super.addMod(lexMod)
+        }
+    }
+
+    public addAdjunct(adverb: Adverb): void {
+        if (!(this.adjective instanceof Adjective)) {
+            throw Error(
+                "tried to add adjunct to adjective phrase without head"
+            )
+        }
+        this.adjective.addAjunct(adverb)
     }
 
     public build(): Adjective {
