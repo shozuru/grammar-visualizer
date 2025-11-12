@@ -71,14 +71,11 @@ export class ClauseBuilder {
         } else {
             this.removeFromBuilderList(adjBuilder)
             adjBuilder.createAndSetAdjective(adjWord)
-
-            // while (this.pendingAdverbs.length > 0) {
-            //     let adjunct: Adverb = this.pendingAdverbs.pop() as Adverb
-            //     adjBuilder.addAdjunct(adjunct)
-            // }
-
+            while (this.pendingAdverbs.length > 0) {
+                let adjunct: Adverb = this.pendingAdverbs.pop() as Adverb
+                adjBuilder.addAdjunct(adjunct)
+            }
             this.addPhrase(adjBuilder)
-
         }
     }
 
@@ -88,20 +85,8 @@ export class ClauseBuilder {
 
         this.removeFromBuilderList(adverbBuilder)
         adverbBuilder.createAndSetAdverb(adverbWord)
-
-        // [very] fast
-        // while (this.pendingAdverbs.length > 0) {
-        //     let adjunct: Adverb = this.pendingAdverbs.pop() as Adverb
-        //     adverbBuilder.addAdjunct(adjunct)
-        // }
-        // if (this.shouldBePredicate()) {
-        // she is very [fast]
-        // this.makePredicate(adverbBuilder.build())
-        // } else {
-        this.pendingAdverbs.push(adverbBuilder.build())
-        // }
-        // this.addPhrase(adverbBuilder)
-        // }
+        let adverb: Adverb = adverbBuilder.build()
+        this.pendingAdverbs.push(adverb)
     }
 
     public buildNominal(nomWord: Word): void {
