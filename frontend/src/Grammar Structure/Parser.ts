@@ -35,7 +35,11 @@ export class Parser {
             // ) {
             //     this.clauses.push(this.builder.finalizeClause())
             // }
-            handler.handle(word, this.currentBuilder)
+            let newCB: ClauseBuilder | void =
+                handler.handle(word, this.currentBuilder)
+            if (newCB) {
+                this.currentBuilder = newCB
+            }
         }
 
         // I ran [fast]

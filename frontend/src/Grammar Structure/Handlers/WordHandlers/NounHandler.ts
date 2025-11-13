@@ -8,7 +8,10 @@ export class NounHandler implements WordHandler {
         return false
     }
 
-    public handle(nominalWord: Word, builder: ClauseBuilder): void {
+    public handle(
+        nominalWord: Word,
+        builder: ClauseBuilder
+    ): ClauseBuilder | void {
         builder.buildNominal(nominalWord)
     }
 }

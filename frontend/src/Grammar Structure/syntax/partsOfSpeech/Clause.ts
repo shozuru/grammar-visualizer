@@ -21,7 +21,15 @@ export class Clause {
         // this.causativeNoun = null
     }
 
-    public addSubject(subject: Noun): void {
-        this.nounList.push(subject)
+    public addNoun(noun: Noun): void {
+        this.nounList.push(noun)
+    }
+
+    public setPredicate(pred: Predicate): void {
+        this.predicate = pred
+    }
+
+    public addAdjunct(adjunct: Preposition | Adverb) {
+        this.adjunctList.push(adjunct)
     }
 }

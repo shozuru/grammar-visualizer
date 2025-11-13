@@ -46,8 +46,20 @@ export class ClauseBuilder {
         if (!this.subject) {
             throw Error("Tried to build clause without a subject.")
         }
-        clause.addSubject(this.subject)
-
+        clause.addNoun(this.subject)
+        for (let noun of this.nounStack) {
+            clause.addNoun(noun)
+        }
+        for (let adjunct of this.adjunctStack) {
+            clause.addAdjunct(adjunct)
+        }
+        if (!this.predicate) {
+            throw Error("Tried to build clasue without a predicate.")
+        }
+        clause.setPredicate(this.predicate)
+        if (this.pendingAdverb) {
+            clause.addAdjunct(this.pendingAdverb)
+        }
         return clause
     }
 
@@ -226,6 +238,10 @@ export class ClauseBuilder {
 
     private pushPredToClause(pred: Predicate): void {
         this.predicate = pred
+    }
+
+    public receiveECM(subject: Noun): void {
+        this.subject = subject
     }
 
     private removeFromBuilderList(WordBuilder: WordBuilder) {

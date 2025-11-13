@@ -3,5 +3,5 @@ import type { Word } from "../../types/Word";
 
 export interface WordHandler {
     shouldStartNewClause(word: Word, builder: ClauseBuilder): boolean
-    handle(word: Word, builder: ClauseBuilder): void
+    handle(word: Word, builder: ClauseBuilder): ClauseBuilder | void
 }
