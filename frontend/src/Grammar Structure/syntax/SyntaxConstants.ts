@@ -130,7 +130,15 @@ export const ecmVerbs: string[] =
         "observe",
         "feel",
         "felt",
-        "notice"
+        "notice",
+        "believe",
+        "predict",
+        "suppose",
+        "imagine",
+        "deem",
+        "find",
+        "found",
+        "estimate",
     ]
 
 
@@ -160,20 +168,26 @@ export const raisingVerbs: string[] =
     [
         "want",
         "expect",
-        "believe",
         "know",
         "knew",
-        "predict",
-        "suppose",
-        "imagine",
         "consider",
-        "deem",
-        "find",
-        "found",
         "think",
         "thought",
-        "estimate",
         "presume",
         "judge",
         "report"
+    ]
+
+export const impersonalVerbs: string[] =
+    [
+        "happen",
+        "seem",
+        "appear",
+        "turn out",
+        "transpire",
+        "emerge",
+        "follow",
+        "occur",
+        "mean",
+        "result"
     ]

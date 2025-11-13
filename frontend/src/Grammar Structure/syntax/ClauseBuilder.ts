@@ -240,8 +240,39 @@ export class ClauseBuilder {
         this.predicate = pred
     }
 
-    public receiveECM(subject: Noun): void {
+    public receiveSubject(subject: Noun): void {
         this.subject = subject
+    }
+
+    public yieldEcmNoun(): Noun {
+        let ecmSubject: Noun | undefined = this.nounStack.shift()
+        if (!ecmSubject) {
+            throw Error(
+                "Tried to extract subordinate Subject that does not exist."
+            )
+        }
+        return ecmSubject
+    }
+
+    public yeildOControlNoun(): Noun {
+        if (this.nounStack.length > 0) {
+            return this.nounStack[0]
+        }
+        if (!this.subject) {
+            throw Error("Sentence does not seem to have a subject.")
+        }
+        return this.subject
+    }
+
+    public yieldRaisingNoun(): Noun {
+        let subSubject: Noun | undefined = this.nounStack.shift()
+        if (subSubject) {
+            return subSubject
+        }
+        if (!this.subject) {
+            throw Error("Sentence does not seem to have a subject.")
+        }
+        return this.subject
     }
 
     private removeFromBuilderList(WordBuilder: WordBuilder) {

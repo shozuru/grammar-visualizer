@@ -329,12 +329,13 @@ export function isNounMod(
 }
 
 export function isObjectControlPred(pred: Predicate): boolean {
+    let sCont: Phrase | null = pred.getSemanticContent()
+    if (!(sCont instanceof Verb)) return false
     return (
         objectControlVerbs.some(
-            objectVerb => pred
-                .getVerb()
+            raisingVerb => sCont
                 .getName()
-                .includes(objectVerb)
+                .includes(raisingVerb)
         )
     )
 }
