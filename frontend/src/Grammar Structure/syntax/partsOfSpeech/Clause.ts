@@ -26,6 +26,9 @@ export class Clause {
     }
 
     public setPredicate(pred: Predicate): void {
+        if (this.predicate) {
+            throw Error("predicate has already been set")
+        }
         this.predicate = pred
     }
 

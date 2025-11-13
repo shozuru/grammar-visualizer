@@ -5,7 +5,6 @@ import { NounHandler } from "./WordHandlers/NounHandler"
 import { VerbHandler } from "./WordHandlers/VerbHandler"
 import { AdverbHandler } from "./WordHandlers/AdverbHandler"
 import { PrepositionHandler } from "./WordHandlers/PrepositionHandler"
-import { DefaultHandler } from "./WordHandlers/DefaultHandler"
 import { AdjectiveHandler } from "./WordHandlers/AdjectiveHandler"
 import { CausativeHandler } from "./WordHandlers/CausativeHandler"
 
@@ -78,7 +77,9 @@ export class HandlerRegistry {
 
     public getHandler(word: Word): WordHandler {
         let handler = this.registry.get(word.pos)
-        if (!handler) return new DefaultHandler()
+        if (!handler) {
+            throw Error(`This word, '${word}' does not have a handler`)
+        }
         return handler
     }
 }

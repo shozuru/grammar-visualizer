@@ -29,12 +29,6 @@ export class Parser {
         for (let word of fixedWords) {
             console.log(word)
             let handler = this.registry.getHandler(word)
-            // if (
-            //     handler.shouldStartNewClause(word) &&
-            //     this.builder.hasContent()
-            // ) {
-            //     this.clauses.push(this.builder.finalizeClause())
-            // }
             let newCB: ClauseBuilder | void =
                 handler.handle(word, this.currentBuilder)
             if (newCB) {

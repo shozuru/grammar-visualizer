@@ -4,10 +4,6 @@ import type { ClauseBuilder } from "../../syntax/ClauseBuilder"
 
 export class AdjectiveHandler implements WordHandler {
 
-    public shouldStartNewClause(word: Word, builder: ClauseBuilder): boolean {
-        return false
-    }
-
     public handle(adjWord: Word, builder: ClauseBuilder): void {
         builder.buildAdjective(adjWord)
     }
