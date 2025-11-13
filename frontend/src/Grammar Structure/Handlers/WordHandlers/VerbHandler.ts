@@ -47,7 +47,12 @@ export class VerbHandler implements WordHandler {
                 subClause.receiveSubject(subSubject)
                 return subClause
             } else {
-                // it is likely something where the subject gets COPIED over
+                let subSubject: Noun = clauseBuilder.yieldSControlNoun()
+                let mtxClause: Clause = clauseBuilder.build()
+                console.log(mtxClause)
+                let subClause: ClauseBuilder = new ClauseBuilder()
+                subClause.receiveSubject(subSubject)
+                return subClause
             }
         } else {
             clauseBuilder.buildPredicate(verbalWord)

@@ -275,6 +275,13 @@ export class ClauseBuilder {
         return this.subject
     }
 
+    public yieldSControlNoun(): Noun {
+        if (!this.subject) {
+            throw Error("Sentence does not seem to have a subject.")
+        }
+        return this.subject
+    }
+
     private removeFromBuilderList(WordBuilder: WordBuilder) {
         this.unfinishedBuilderList = this.unfinishedBuilderList.filter(
             builder => builder !== WordBuilder
