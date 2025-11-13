@@ -19,7 +19,7 @@ import { PrepBuilder } from "../Builders/PrepositionBuilder"
 import { AdverbBuilder } from "../Builders/AdverbBuilder"
 import type { Phrase } from "./partsOfSpeech/Phrase"
 import { AdjectiveBuilder } from "../Builders/AdjectiveBuilder"
-import type { Clause } from "./partsOfSpeech/Clause"
+import { Clause } from "./partsOfSpeech/Clause"
 
 export class ClauseBuilder {
 
@@ -42,7 +42,13 @@ export class ClauseBuilder {
     }
 
     public build(): Clause {
-        return new Clause()
+        let clause: Clause = new Clause()
+        if (!this.subject) {
+            throw Error("Tried to build clause without a subject.")
+        }
+        clause.addSubject(this.subject)
+
+        return clause
     }
 
     public addPhrase(builder: WordBuilder): void {

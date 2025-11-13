@@ -8,15 +8,16 @@ import type { Clause } from "../../syntax/partsOfSpeech/Clause"
 
 export class VerbHandler implements WordHandler {
 
-    shouldStartNewClause(word: Word, clauseBuilder: ClauseBuilder): boolean {
+    public shouldStartNewClause(word: Word, clauseBuilder: ClauseBuilder): boolean {
         return false
     }
-    handle(verbalWord: Word, clauseBuilder: ClauseBuilder): void {
+    public handle(verbalWord: Word, clauseBuilder: ClauseBuilder): void {
         let pred: Predicate | null = clauseBuilder.getPredicate()
         if (pred instanceof Predicate) {
             if (isECMPred(pred)) {
                 let subSubject: Noun = clauseBuilder.getNounStack()[0]
-                let mClause: Clause = clauseBuilder.build()
+                console.log(`The victor of the 49th Hunger Games: ${subSubject.getName()}`)
+                let mtxClause: Clause = clauseBuilder.build()
                 throw Error(
                     "Good job, officer. Report to commander for further instructions."
                 )
