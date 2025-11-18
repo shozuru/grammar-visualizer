@@ -15,54 +15,38 @@ enum PredType {
 }
 
 export class VerbHandler implements WordHandler {
-
     public handle(
         verbalWord: Word,
-        clauseBuilder: ClauseBuilder
+        cBuilder: ClauseBuilder,
+        addClause: (c: Clause) => void
     ): ClauseBuilder | void {
-        let pred: Predicate | null = clauseBuilder.getPredicate()
-        if (pred) {
-            let action = this.getPredAction(pred)
-            return action(verbalWord, clauseBuilder)
+        let matrixPred: Predicate | null = cBuilder.getPredicate()
+        if (matrixPred) {
+            return this.handleMClause(verbalWord, matrixPred,
+                cBuilder, addClause)
         } else {
-            clauseBuilder.buildPredicate(verbalWord)
+            cBuilder.buildPredicate(verbalWord)
         }
     }
 
-    private handleECM(vWord: Word, cBuilder: ClauseBuilder): ClauseBuilder {
-        let subSubject: Noun = cBuilder.yieldEcmNoun()
-        let mtxClause: Clause = cBuilder.build()
-        console.log(mtxClause)
-        let subClause: ClauseBuilder = new ClauseBuilder()
-        subClause.receiveSubject(subSubject)
-        subClause.buildPredicate(vWord)
-        return subClause
-    }
+    private handleMClause(
+        vWord: Word,
+        pred: Predicate,
+        cBuilder: ClauseBuilder,
+        addClause: (c: Clause) => void
+    ): ClauseBuilder {
+        let predType: PredType = this.getPredType(pred)
+        let subSubject: Noun = this.getYieldMethod(predType, cBuilder)()
 
-    private handleOControl(cBuilder: ClauseBuilder): ClauseBuilder {
-        let subSubject: Noun = cBuilder.yeildOControlNoun()
         let mtxClause: Clause = cBuilder.build()
-        console.log(mtxClause)
-        let subClause: ClauseBuilder = new ClauseBuilder()
-        subClause.receiveSubject(subSubject)
-        return subClause
-    }
+        addClause(mtxClause)
 
-    private handleRaising(cBuilder: ClauseBuilder): ClauseBuilder {
-        let subSubject: Noun = cBuilder.yieldRaisingNoun()
-        let mtxClause: Clause = cBuilder.build()
-        console.log(mtxClause)
         let subClause: ClauseBuilder = new ClauseBuilder()
         subClause.receiveSubject(subSubject)
-        return subClause
-    }
 
-    private handleSControl(cBuilder: ClauseBuilder): ClauseBuilder {
-        let subSubject: Noun = cBuilder.yieldSControlNoun()
-        let mtxClause: Clause = cBuilder.build()
-        console.log(mtxClause)
-        let subClause: ClauseBuilder = new ClauseBuilder()
-        subClause.receiveSubject(subSubject)
+        if (predType === PredType.ECM) {
+            subClause.buildPredicate(vWord)
+        }
         return subClause
     }
 
@@ -73,22 +57,22 @@ export class VerbHandler implements WordHandler {
         else return PredType.SCONTROL
     }
 
-    private getPredAction(pred: Predicate) {
-        let controlMap = new Map([
-            [PredType.ECM, (verb: Word, clause: ClauseBuilder) =>
-                this.handleECM(verb, clause)],
-            [PredType.OCONTROL, (_verb: Word, clause: ClauseBuilder) =>
-                this.handleOControl(clause)],
-            [PredType.RAISING, (_verb: Word, clause: ClauseBuilder) =>
-                this.handleRaising(clause)],
-            [PredType.SCONTROL, (_verb: Word, clause: ClauseBuilder) =>
-                this.handleSControl(clause)],
+    private getYieldMethod(
+        pType: PredType,
+        cBuilder: ClauseBuilder
+    ): () => Noun {
+
+        let yieldMap: Map<PredType, () => Noun> = new Map([
+            [PredType.ECM, () => cBuilder.yieldEcmNoun()],
+            [PredType.OCONTROL, () => cBuilder.yieldOControlNoun()],
+            [PredType.RAISING, () => cBuilder.yieldRaisingNoun()],
+            [PredType.SCONTROL, () => cBuilder.yieldSControlNoun()]
         ])
-        let pType: PredType = this.getPredType(pred)
-        let vHandler = controlMap.get(pType)
-        if (!vHandler) {
-            throw Error("Unable to get proper handler for main verb.")
+
+        let yieldMethod = yieldMap.get(pType)
+        if (!yieldMethod) {
+            throw Error("Unable to get proper yield method for main verb.")
         }
-        return vHandler
+        return yieldMethod
     }
 }

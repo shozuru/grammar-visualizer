@@ -30,16 +30,16 @@ export class Parser {
             console.log(word)
             let handler = this.registry.getHandler(word)
             let newCB: ClauseBuilder | void =
-                handler.handle(word, this.currentBuilder)
+                handler.handle(word, this.currentBuilder,
+                    this.addClause.bind(this))
             if (newCB) {
                 this.currentBuilder = newCB
             }
         }
 
-        // I ran [fast]
-        // this should be this.currentBuilder.build()
-        this.currentBuilder.addPendingAdverbToBuiltPredicate()
-        console.log(this.currentBuilder)
+        let clause: Clause = this.currentBuilder.build()
+        this.addClause(clause)
+
         return this.clauses
     }
 
@@ -200,5 +200,9 @@ export class Parser {
             }
         }
         return wordList
+    }
+
+    private addClause(clause: Clause): void {
+        this.clauses.push(clause)
     }
 }

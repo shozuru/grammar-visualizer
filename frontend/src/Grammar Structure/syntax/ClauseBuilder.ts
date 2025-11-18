@@ -254,7 +254,7 @@ export class ClauseBuilder {
         return ecmSubject
     }
 
-    public yeildOControlNoun(): Noun {
+    public yieldOControlNoun(): Noun {
         if (this.nounStack.length > 0) {
             return this.nounStack[0]
         }
@@ -296,11 +296,11 @@ export class ClauseBuilder {
         )
     }
 
-    public addPendingAdverbToBuiltPredicate(): void {
-        if (!this.pendingAdverb || !this.predicate) return
-        this.predicate.addAdjunct(this.pendingAdverb)
-        this.pendingAdverb = null
-    }
+    // public addPendingAdverbToBuiltPredicate(): void {
+    //     if (!this.pendingAdverb || !this.predicate) return
+    //     this.predicate.addAdjunct(this.pendingAdverb)
+    //     this.pendingAdverb = null
+    // }
 
 
     // public generateClauses(): void {
