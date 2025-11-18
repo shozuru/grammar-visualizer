@@ -138,6 +138,8 @@ export class ClauseBuilder {
     }
 
     public buildPredicate(predWord: Word): void {
+        // when you deal with tense in general, you can deal with 
+        // inf, since you don't deal with tense in the main clause
         let predBuilder: PredicateBuilder =
             this.getOrCreateBuilder(PredicateBuilder)
         if (isVerbAgr(predWord)) {
@@ -321,54 +323,6 @@ export class ClauseBuilder {
     //                 } else {
     //                     this.attachElementCorrectly(nPhrase)
     //                 }
-    //             }
-
-    //         } else if (isVerbalElement(currentWord)) {
-
-    //             let predInfo: {
-    //                 pred: Predicate
-    //                 experiencer: Noun | null
-    //                 adverbStack: Adverb[]
-    //             }
-    //             if (
-    //                 // is subject control:
-    //                 this.currentPredicate instanceof Predicate &&
-    //                 this.currentSubject instanceof Noun
-    //             ) {
-    //                 // handle subject control
-    //                 createCompleteClause(this)
-    //                 this.adjunctStack = []
-    //                 this.nounStack = []
-    //             }
-
-    //             this.currentPredicate = predInfo.pred
-
-    //             if (predInfo.experiencer instanceof Noun) {
-    //                 this.nounStack.push(predInfo.experiencer)
-    //             }
-    //             if (predInfo.adverbStack.length > 0) {
-    //                 this.adjunctStack.push(...predInfo.adverbStack)
-    //             }
-
-    //             if (this.currentSubject instanceof Noun &&
-    //                 isRosCondition(this.currentPredicate, this.wordList)
-    //             ) {
-
-    //                 let ros: {
-    //                     clause: Clause
-    //                     nextSubject: Noun | null
-    //                 } =
-    //                     createRosClause(this)
-    //                 for (let noun of this.nounStack) {
-    //                     ros.clause.addNounToClause(noun)
-    //                 }
-    //                 this.addClausetoClauseList(ros.clause)
-    //                 this.clearCurrentClause()
-    //                 if (ros.nextSubject instanceof Noun) {
-    //                     this.currentSubject = ros.nextSubject
-    //                 }
-    //                 // when you deal with tense in general, you can deal with 
-    //                 // inf, since you don't deal with tense in the main clause
     //             }
 
     //         } else if (isRelative(currentWord)) {
