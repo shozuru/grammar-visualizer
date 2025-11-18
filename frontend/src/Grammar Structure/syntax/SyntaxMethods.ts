@@ -110,33 +110,6 @@ export function addStrandedPassive(wordList: Word[], nounStack: Noun[]): void {
     }
 }
 
-export function createRosClause(sentence: ClauseBuilder): {
-    clause: Clause
-    nextSubject: Noun | null
-} {
-    let clause = new Clause(sentence.getCurrentPredicate() as Predicate)
-    clause.addNounToClause(sentence.getCurrentSubject() as Noun)
-    for (let adjunct of sentence.getAdjunctStack()) {
-        clause.addAdjunct(adjunct)
-    }
-    let nextSubject: Noun | null =
-        handleRosObjects(clause, sentence.getWordList(), sentence)
-    return { clause, nextSubject }
-}
-
-export function handleAdverbPhrase(
-    sentence: ClauseBuilder
-): Adverb | Preposition | Noun {
-    let wordList: Word[] = sentence.getWordList()
-
-    // handles adjective relative clauses like 'the clean room'
-    if (wordList[1] && isNominalElement(wordList.slice(1))) {
-        let nRelPhrase: Noun = handleNounPhrase(sentence)
-        return nRelPhrase
-    }
-    return modPhrase
-}
-
 // export function handleFocusElement(wordList: Word[]): void {
 //     let focusWord: Word = wordList.shift() as Word
 //     let focusMod: Mod = new Mod(focusWord)
@@ -194,23 +167,6 @@ export function createRelativeNoun(wordList: Word[]): Noun {
     return relNoun
 }
 
-export function handleRosObjects(
-    rosClause: Clause,
-    wordList: Word[],
-    sentence: ClauseBuilder
-): Noun | null {
-
-    if (isNominalElement(wordList)) {
-        let nPhrase: Noun = handleNounPhrase(sentence)
-
-        if (isObjectControlPred(rosClause.getPredicate())) {
-            rosClause.addNounToClause(nPhrase)
-        }
-        return nPhrase
-    }
-    return null
-}
-
 export function isAdverb(word: Word): boolean {
     return (
         word.pos === PartsOfSpeech.RB ||
@@ -219,7 +175,7 @@ export function isAdverb(word: Word): boolean {
     )
 }
 
-export function isAdjectigve(word: Word): boolean {
+export function isAdjective(word: Word): boolean {
     return (
         word.pos === PartsOfSpeech.JJ ||
         word.pos === PartsOfSpeech.JJR ||
@@ -390,36 +346,6 @@ export function isRelative(word: Word): boolean {
         word.pos === PartsOfSpeech.WDT ||
         word.pos === PartsOfSpeech.WP ||
         word.pos === PartsOfSpeech.WPQ
-    )
-}
-
-export function isRosCondition(
-    predicate: Predicate,
-    wordList: Word[]
-): boolean {
-    let i: number = 0
-    while (
-        wordList[i] &&
-        !isVerb(wordList[i]) &&
-        wordList[i].pos !== PartsOfSpeech.TO
-    ) {
-        i += 1
-    }
-    if (
-        wordList[i] &&
-        wordList[i].pos === PartsOfSpeech.TO &&
-        isRosVerb(predicate)
-    ) {
-        return true
-    }
-    return false
-}
-
-export function isRosVerb(pred: Predicate): boolean {
-    return (
-        isRaisingPred(pred) ||
-        isObjectControlPred(pred) ||
-        isECMPred(pred)
     )
 }
 

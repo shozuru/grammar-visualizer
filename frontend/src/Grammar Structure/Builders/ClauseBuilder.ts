@@ -293,14 +293,7 @@ export class ClauseBuilder {
         )
     }
 
-
-
     // public generateClauses(): void {
-
-    //     while (this.wordList[0]) {
-
-    //         let currentWord: Word = this.wordList[0]
-    //         console.log(currentWord)
 
     //         if (isNominalElement(this.wordList)) {
     //             if (this.currentSubject instanceof Noun &&
@@ -315,14 +308,6 @@ export class ClauseBuilder {
     //                 this.nounStack.some(noun => noun.getName() === 'that')
     //             ) {
     //                 addStrandedPassive(this.wordList, this.nounStack)
-    //             } else {
-    //                 let nPhrase: Noun =
-    //                     handleNounPhrase(this)
-    //                 if (this.currentSubject === null) {
-    //                     this.currentSubject = nPhrase
-    //                 } else {
-    //                     this.attachElementCorrectly(nPhrase)
-    //                 }
     //             }
 
     //         } else if (isRelative(currentWord)) {
