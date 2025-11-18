@@ -10,7 +10,7 @@ import {
 } from "./SyntaxConstants"
 import { Mod } from "./Mod"
 import { Predicate } from "./Predicate"
-import { ClauseBuilder } from "./ClauseBuilder"
+import { ClauseBuilder } from "../Builders/ClauseBuilder"
 import type { Phrase } from "./partsOfSpeech/Phrase"
 
 

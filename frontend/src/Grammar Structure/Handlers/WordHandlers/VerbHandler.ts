@@ -1,6 +1,6 @@
 import type { WordHandler } from "./WordHandler"
 import type { Word } from "../../types/Word"
-import { ClauseBuilder } from "../../syntax/ClauseBuilder"
+import { ClauseBuilder } from "../../Builders/ClauseBuilder"
 import { isECMPred, isObjectControlPred, isRaisingPred }
     from "../../syntax/SyntaxMethods"
 import { Predicate } from "../../syntax/Predicate"

@@ -1,4 +1,4 @@
-import { ClauseBuilder } from "./syntax/ClauseBuilder";
+import { ClauseBuilder } from "./Builders/ClauseBuilder";
 import type { Clause } from "./syntax/partsOfSpeech/Clause";
 import { PartsOfSpeech } from "./syntax/SyntaxConstants";
 import {

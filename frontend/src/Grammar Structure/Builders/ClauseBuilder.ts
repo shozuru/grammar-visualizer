@@ -1,25 +1,20 @@
 import {
-    addRelClauseToSubject, addStrandedPassive,
-    createRelativeNoun, createRosClause, getLexicalizedMod, handleAdverbPhrase,
-    handleNounPhrase, isAdjectiveAgr, isAdjectiveMod, isBeVerb, isFocusElement,
-    isNominalElement, isNounMod, isPassive, isPredicate, isPreposition,
-    isRelative, isRosCondition, isVerbAgr, isVerbMod, modStackContainsCaus,
-    removeRelClause,
-} from "./SyntaxMethods"
-import { Adverb } from "./partsOfSpeech/Adverb"
-import { Noun } from "./partsOfSpeech/Noun"
-import { Preposition } from "./partsOfSpeech/Preposition"
+    isAdjectiveAgr, isAdjectiveMod, isNounMod, isVerbAgr, isVerbMod
+} from "../syntax/SyntaxMethods"
+import { Adverb } from "../syntax/partsOfSpeech/Adverb"
+import { Noun } from "../syntax/partsOfSpeech/Noun"
+import { Preposition } from "../syntax/partsOfSpeech/Preposition"
 import type { Word } from "../types/Word"
-import { Predicate } from "./Predicate"
-import { Verb } from "./partsOfSpeech/Verb"
-import { NounBuilder } from "../Builders/NounBuilder"
-import type { WordBuilder } from "../Builders/WordBuilder"
-import { PredicateBuilder } from "../Builders/PredicateBuilder"
-import { PrepBuilder } from "../Builders/PrepositionBuilder"
-import { AdverbBuilder } from "../Builders/AdverbBuilder"
-import type { Phrase } from "./partsOfSpeech/Phrase"
-import { AdjectiveBuilder } from "../Builders/AdjectiveBuilder"
-import { Clause } from "./partsOfSpeech/Clause"
+import { Predicate } from "../syntax/Predicate"
+import { Verb } from "../syntax/partsOfSpeech/Verb"
+import { NounBuilder } from "./NounBuilder"
+import type { WordBuilder } from "./WordBuilder"
+import { PredicateBuilder } from "./PredicateBuilder"
+import { PrepBuilder } from "./PrepositionBuilder"
+import { AdverbBuilder } from "./AdverbBuilder"
+import type { Phrase } from "../syntax/partsOfSpeech/Phrase"
+import { AdjectiveBuilder } from "./AdjectiveBuilder"
+import { Clause } from "../syntax/partsOfSpeech/Clause"
 
 export class ClauseBuilder {
 
@@ -296,11 +291,6 @@ export class ClauseBuilder {
         )
     }
 
-    // public addPendingAdverbToBuiltPredicate(): void {
-    //     if (!this.pendingAdverb || !this.predicate) return
-    //     this.predicate.addAdjunct(this.pendingAdverb)
-    //     this.pendingAdverb = null
-    // }
 
 
     // public generateClauses(): void {
@@ -415,12 +405,5 @@ export class ClauseBuilder {
     //             let focusWord = this.wordList.shift() as Word
     //             console.log(focusWord.name)
     //         }
-    //     }
-    //     if (
-    //         this.currentPredicate &&
-    //         this.currentSubject
-    //     ) {
-    //         createCompleteClause(this)
-    //     }
     // }
 }
