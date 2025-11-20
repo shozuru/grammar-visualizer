@@ -80,4 +80,8 @@ export class Predicate implements Phrase {
     public addAdjunct(adverb: Adverb | Preposition): void {
         this.adjunctStack.push(adverb)
     }
+
+    public getAdjunctStack(): (Adverb | Preposition)[] {
+        return this.adjunctStack
+    }
 }

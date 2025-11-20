@@ -304,7 +304,26 @@ export class ClauseBuilder {
         let content: Phrase | null = pred && pred.getSemanticContent()
 
         if (content instanceof Noun) return content
-        throw Error("No object available to yield to rel clause")
+        if (content instanceof Preposition) {
+            let object = content.getObject()
+            if (object) {
+                return object
+            }
+        }
+        if (!pred) throw Error("No object available to yield to rel clause")
+
+        let predAdjuncts = pred.getAdjunctStack()
+        let lastAdjunct = predAdjuncts.at(-1)
+
+        if (!(lastAdjunct instanceof Preposition)) {
+            throw Error("No object available to yield to rel clause")
+        }
+
+        let adjunctOb = lastAdjunct.getObject()
+        if (!adjunctOb) {
+            throw Error("No object available to yield to rel clause")
+        }
+        return adjunctOb
     }
 
     public yieldSubjectRel(): Noun {
@@ -371,35 +390,6 @@ export class ClauseBuilder {
     //                 this.nounStack.some(noun => noun.getName() === 'that')
     //             ) {
     //                 addStrandedPassive(this.wordList, this.nounStack)
-    //             }
-
-    //         } else if (isRelative(currentWord)) {
-    //             if (
-    //                 this.currentPredicate instanceof Predicate &&
-    //                 this.currentSubject instanceof Noun
-    //             ) {
-    //                 createCompleteClause(this)
-    //                 this.clearCurrentClause()
-    //                 let relNoun: Noun = createRelativeNoun(this.wordList)
-
-    //                 if (isNominalElement(this.wordList)) {
-    //                     this.nounStack.push(relNoun)
-    //                 } else {
-    //                     this.currentSubject = relNoun
-    //                 }
-
-    //             } else {
-    //                 let relClauseWords: Word[] = removeRelClause(this.wordList)
-    //                 let relNoun: Noun = createRelativeNoun(relClauseWords)
-
-    //                 let relSentence: ClauseBuilder =
-    //                     new ClauseBuilder(relClauseWords)
-    //                 if (isNominalElement(relClauseWords)) {
-    //                     relSentence.nounStack.push(relNoun)
-    //                 } else {
-    //                     relSentence.currentSubject = relNoun
-    //                 }
-    //                 relSentence.generateClauses()
     //             }
 
     //         } else if (isFocusElement(currentWord)) {

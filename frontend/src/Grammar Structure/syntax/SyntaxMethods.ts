@@ -153,20 +153,6 @@ export function handleNounPhrase(
     return createNounPhrase(headWord, nounModStack)
 }
 
-export function createRelativeNoun(wordList: Word[]): Noun {
-    let relWord: Word = wordList.shift() as Word
-    let relNoun: Noun = new Noun(relWord.name)
-    if (
-        wordList[0] &&
-        isCausative(wordList[0])
-    ) {
-        let causeWord: Word = wordList.shift() as Word
-        let cuaseMod: Mod = new Mod(causeWord)
-        relNoun.addModifier(cuaseMod)
-    }
-    return relNoun
-}
-
 export function isAdverb(word: Word): boolean {
     return (
         word.pos === PartsOfSpeech.RB ||
@@ -399,21 +385,6 @@ export function passiveByPhraseIndex(wordList: Word[]): number {
         index -= 1
     }
     return index
-}
-
-export function removeRelClause(wordList: Word[]): Word[] {
-    let index: number = 0
-    let verbCounter: number = 0
-    while (
-        wordList[index] &&
-        verbCounter < 2
-    ) {
-        if (isVerbalElement(wordList[index])) {
-            verbCounter += 1
-        }
-        index += 1
-    }
-    return wordList.splice(0, index - 1)
 }
 
 export function uncontractVerbalModifiers(modifier: Mod): Mod[] {
