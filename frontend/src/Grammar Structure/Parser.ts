@@ -11,7 +11,7 @@ import { HandlerRegistry } from "./Handlers/HandlerRegistry"
 export interface HandlerMethods {
     add: (c: Clause) => void
     push: (cB: ClauseBuilder) => void
-    pop: () => ClauseBuilder | undefined
+    pop: () => ClauseBuilder
     peak: () => ClauseBuilder | undefined
 
     // need to add for adverbs:
@@ -236,7 +236,11 @@ export class Parser {
         this.clausesInProgress.push(cB)
     }
 
-    private popClauseBuilder(): ClauseBuilder | undefined {
-        return this.clausesInProgress.pop()
+    private popClauseBuilder(): ClauseBuilder {
+        let cBuilder: ClauseBuilder | undefined = this.clausesInProgress.pop()
+        if (!cBuilder) {
+            throw ("Tried to pop clause builder that does not exist.")
+        }
+        return cBuilder
     }
 }

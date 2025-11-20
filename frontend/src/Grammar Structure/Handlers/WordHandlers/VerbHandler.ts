@@ -21,30 +21,21 @@ export class VerbHandler implements WordHandler {
         cBuilder: ClauseBuilder,
         ctx: HandlerMethods
     ): ClauseBuilder | void {
-        debugger
+        // debugger
         let matrixClause: ClauseBuilder | undefined = ctx.peak()
-        // needs to be refactored
+        let pred: Predicate | null = cBuilder.getPredicate()
         // the person that knew me is here
-        if (matrixClause && cBuilder.getPredicate()) {
-            let relPred: Predicate | null = cBuilder.getPredicate()
-            if (relPred) {
-                // the boy went to the school that is blue
-                let rClause: Clause = cBuilder.build()
-                ctx.add(rClause)
-                let matrix: ClauseBuilder | undefined = ctx.pop()
-                if (matrix) {
-                    matrix.buildPredicate(verbalWord)
-                    return matrix
-                }
-            }
+        if (matrixClause && pred) {
+            // the boy went to the school that is blue
+            this.shipRelClause(cBuilder, ctx)
+
+            let matrix: ClauseBuilder = ctx.pop()
+            matrix.buildPredicate(verbalWord)
+            return matrix
+        } else if (pred) {
+            return this.handleMClause(verbalWord, pred, cBuilder, ctx.add)
         } else {
-            let matrixPred: Predicate | null = cBuilder.getPredicate()
-            if (matrixPred) {
-                return this.handleMClause(verbalWord, matrixPred,
-                    cBuilder, ctx.add)
-            } else {
-                cBuilder.buildPredicate(verbalWord)
-            }
+            cBuilder.buildPredicate(verbalWord)
         }
     }
 
@@ -93,5 +84,10 @@ export class VerbHandler implements WordHandler {
             throw Error("Unable to get proper yield method for main verb.")
         }
         return yieldMethod
+    }
+
+    private shipRelClause(cBuilder: ClauseBuilder, ctx: HandlerMethods): void {
+        let rClause: Clause = cBuilder.build()
+        ctx.add(rClause)
     }
 }
