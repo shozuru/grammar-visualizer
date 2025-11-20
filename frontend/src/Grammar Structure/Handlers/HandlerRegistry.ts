@@ -7,6 +7,7 @@ import { AdverbHandler } from "./WordHandlers/AdverbHandler"
 import { PrepositionHandler } from "./WordHandlers/PrepositionHandler"
 import { AdjectiveHandler } from "./WordHandlers/AdjectiveHandler"
 import { CausativeHandler } from "./WordHandlers/CausativeHandler"
+import { RelativeHandler } from "./WordHandlers/RelativeHandler"
 
 export class HandlerRegistry {
 
@@ -54,6 +55,12 @@ export class HandlerRegistry {
             [
                 PartsOfSpeech.CAUSATIVE
             ]
+        let relTags: PartsOfSpeech[] =
+            [
+                PartsOfSpeech.WDT,
+                PartsOfSpeech.WP,
+                PartsOfSpeech.WPQ
+            ]
 
         for (let tag of nounTags) {
             this.register(tag, new NounHandler())
@@ -72,6 +79,9 @@ export class HandlerRegistry {
         }
         for (let tag of causTags) {
             this.register(tag, new CausativeHandler())
+        }
+        for (let tag of relTags) {
+            this.register(tag, new RelativeHandler())
         }
     }
 

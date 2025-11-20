@@ -6,11 +6,25 @@ import {
     passiveByPhraseIndex
 } from "./syntax/SyntaxMethods";
 import type { Word } from "./types/Word";
-import { HandlerRegistry } from "./Handlers/HandlerRegistry";
+import { HandlerRegistry } from "./Handlers/HandlerRegistry"
+
+export interface HandlerMethods {
+    add: (c: Clause) => void
+    push: (cB: ClauseBuilder) => void
+    pop: () => ClauseBuilder | undefined
+    peak: () => ClauseBuilder | undefined
+
+    // need to add for adverbs:
+    // The boy that slowly walked went to school quickly
+    // ambiguous:
+    // the boy that walked [slowly] went to school
+
+}
 
 export class Parser {
     private clauses: Clause[]
     private currentBuilder: ClauseBuilder
+    private clausesInProgress: ClauseBuilder[]
     private registry: HandlerRegistry
 
     private builderStack: ClauseBuilder[]
@@ -19,6 +33,7 @@ export class Parser {
         this.clauses = []
         this.builderStack = []
         this.currentBuilder = new ClauseBuilder()
+        this.clausesInProgress = []
         this.registry = new HandlerRegistry()
     }
 
@@ -29,16 +44,23 @@ export class Parser {
         for (let word of fixedWords) {
             console.log(word)
             let handler = this.registry.getHandler(word)
+
+            let ctx: HandlerMethods = {
+                add: this.addCompleteClause.bind(this),
+                push: this.pushClauseBuilder.bind(this),
+                pop: this.popClauseBuilder.bind(this),
+                peak: this.peakClauseBuilders.bind(this)
+            }
+
             let newCB: ClauseBuilder | void =
-                handler.handle(word, this.currentBuilder,
-                    this.addClause.bind(this))
+                handler.handle(word, this.currentBuilder, ctx)
             if (newCB) {
                 this.currentBuilder = newCB
             }
         }
 
         let clause: Clause = this.currentBuilder.build()
-        this.addClause(clause)
+        this.addCompleteClause(clause)
 
         return this.clauses
     }
@@ -202,7 +224,19 @@ export class Parser {
         return wordList
     }
 
-    private addClause(clause: Clause): void {
+    private addCompleteClause(clause: Clause): void {
         this.clauses.push(clause)
+    }
+
+    private peakClauseBuilders(): ClauseBuilder | undefined {
+        return this.clausesInProgress.at(-1)
+    }
+
+    private pushClauseBuilder(cB: ClauseBuilder): void {
+        this.clausesInProgress.push(cB)
+    }
+
+    private popClauseBuilder(): ClauseBuilder | undefined {
+        return this.clausesInProgress.pop()
     }
 }

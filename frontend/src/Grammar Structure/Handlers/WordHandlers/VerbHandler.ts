@@ -6,6 +6,7 @@ import { isECMPred, isObjectControlPred, isRaisingPred }
 import { Predicate } from "../../syntax/Predicate"
 import type { Noun } from "../../syntax/partsOfSpeech/Noun"
 import type { Clause } from "../../syntax/partsOfSpeech/Clause"
+import type { HandlerMethods } from "../../Parser"
 
 enum PredType {
     ECM,
@@ -18,14 +19,32 @@ export class VerbHandler implements WordHandler {
     public handle(
         verbalWord: Word,
         cBuilder: ClauseBuilder,
-        addClause: (c: Clause) => void
+        ctx: HandlerMethods
     ): ClauseBuilder | void {
-        let matrixPred: Predicate | null = cBuilder.getPredicate()
-        if (matrixPred) {
-            return this.handleMClause(verbalWord, matrixPred,
-                cBuilder, addClause)
+        debugger
+        let matrixClause: ClauseBuilder | undefined = ctx.peak()
+        // needs to be refactored
+        // the person that knew me is here
+        if (matrixClause && cBuilder.getPredicate()) {
+            let relPred: Predicate | null = cBuilder.getPredicate()
+            if (relPred) {
+                // the boy went to the school that is blue
+                let rClause: Clause = cBuilder.build()
+                ctx.add(rClause)
+                let matrix: ClauseBuilder | undefined = ctx.pop()
+                if (matrix) {
+                    matrix.buildPredicate(verbalWord)
+                    return matrix
+                }
+            }
         } else {
-            cBuilder.buildPredicate(verbalWord)
+            let matrixPred: Predicate | null = cBuilder.getPredicate()
+            if (matrixPred) {
+                return this.handleMClause(verbalWord, matrixPred,
+                    cBuilder, ctx.add)
+            } else {
+                cBuilder.buildPredicate(verbalWord)
+            }
         }
     }
 

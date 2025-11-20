@@ -41,15 +41,25 @@ export class ClauseBuilder {
         if (!this.subject) {
             throw Error("Tried to build clause without a subject.")
         }
+        if (!this.predicate) {
+            let unfinishedPred: PredicateBuilder | undefined =
+                this.unfinishedBuilderList.find(builder =>
+                    builder instanceof PredicateBuilder)
+            let pending = this.pendingAdverb
+            if (unfinishedPred && pending) {
+                this.pendingAdverb = null
+                unfinishedPred.setSemanticContent(pending)
+                this.predicate = unfinishedPred.build()
+            } else {
+                throw Error("Tried to build clause without a predicate.")
+            }
+        }
         clause.addNoun(this.subject)
         for (let noun of this.nounStack) {
             clause.addNoun(noun)
         }
         for (let adjunct of this.adjunctStack) {
             clause.addAdjunct(adjunct)
-        }
-        if (!this.predicate) {
-            throw Error("Tried to build clasue without a predicate.")
         }
         clause.setPredicate(this.predicate)
         if (this.pendingAdverb) {
@@ -149,7 +159,6 @@ export class ClauseBuilder {
         } else {
             let verb: Verb = new Verb(predWord.name)
             predBuilder.setVerb(verb)
-
             if (predBuilder.hasSemanticContent()) {
                 if (this.pendingAdverb) {
                     this.placeAdverbIn(predBuilder)
@@ -159,6 +168,10 @@ export class ClauseBuilder {
                 this.pushPredToClause(predicate)
             }
         }
+    }
+
+    public buildRelative(relWord: Word): void {
+        throw Error("I made it here good job so far.")
     }
 
     public buildCausative(causeWord: Word): void {
@@ -238,7 +251,18 @@ export class ClauseBuilder {
     }
 
     public receiveSubject(subject: Noun): void {
+        if (this.subject) {
+            throw Error("clause already has subject")
+        }
         this.subject = subject
+    }
+
+    public receiveRel(relNoun: Noun): void {
+        if (!this.subject) {
+            this.subject = relNoun
+        } else {
+            this.nounStack.push(relNoun)
+        }
     }
 
     public yieldEcmNoun(): Noun {
@@ -249,6 +273,25 @@ export class ClauseBuilder {
             )
         }
         return ecmSubject
+    }
+
+    public yieldObjectRel(): Noun {
+        if (this.nounStack.length > 0) {
+            return this.nounStack[0]
+        }
+
+        let pred: Predicate | null = this.predicate
+        let content: Phrase | null = pred && pred.getSemanticContent()
+
+        if (content instanceof Noun) return content
+        throw Error("No object available to yield to rel clause")
+    }
+
+    public yieldSubjectRel(): Noun {
+        if (!this.subject) {
+            throw Error("no subject available to yield to rel clause")
+        }
+        return this.subject
     }
 
     public yieldOControlNoun(): Noun {

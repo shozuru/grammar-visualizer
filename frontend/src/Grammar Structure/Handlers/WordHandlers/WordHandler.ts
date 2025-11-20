@@ -1,11 +1,11 @@
 import type { ClauseBuilder } from "../../Builders/ClauseBuilder";
 import type { Word } from "../../types/Word";
-import type { Clause } from "../../syntax/partsOfSpeech/Clause";
+import type { HandlerMethods } from "../../Parser";
 
 export interface WordHandler {
     handle(
         word: Word,
         builder: ClauseBuilder,
-        addClause: (c: Clause) => void
+        ctx: HandlerMethods
     ): ClauseBuilder | void
 }
