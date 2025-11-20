@@ -35,15 +35,7 @@ export class RelativeHandler implements WordHandler {
         let relClause: ClauseBuilder = new ClauseBuilder()
         relClause.receiveRel(relNoun)
         return relClause
-
-        // while there isn't a verb coming, add to this clause builder
-        // then build
-        // then switch back to the original clause builder
-        throw Error("YOU'RE JUST MEAN TO ME")
         // the person [that] knew my name is here
         // the person [that] i knew is here
-        cbuilder.buildRelative(relWord)
-        // don't finish the current clause
-        // put it in some sort of buffer
     }
 }

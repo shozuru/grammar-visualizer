@@ -22,24 +22,22 @@ export class VerbHandler implements WordHandler {
         ctx: HandlerMethods
     ): ClauseBuilder | void {
         // debugger
-        let matrixClause: ClauseBuilder | undefined = ctx.peak()
-        let pred: Predicate | null = cBuilder.getPredicate()
+        let unfinishedClause: ClauseBuilder | undefined = ctx.peak()
+        let currentPred: Predicate | null = cBuilder.getPredicate()
         // the person that knew me is here
-        if (matrixClause && pred) {
+        if (unfinishedClause && currentPred) {
             // the boy went to the school that is blue
             this.shipRelClause(cBuilder, ctx)
-
-            let matrix: ClauseBuilder = ctx.pop()
-            matrix.buildPredicate(verbalWord)
-            return matrix
-        } else if (pred) {
-            return this.handleMClause(verbalWord, pred, cBuilder, ctx.add)
+            return this.returnToMatrix(verbalWord, ctx)
+        } else if (currentPred) {
+            return this.handleNonfinite(
+                verbalWord, currentPred, cBuilder, ctx.add)
         } else {
             cBuilder.buildPredicate(verbalWord)
         }
     }
 
-    private handleMClause(
+    private handleNonfinite(
         vWord: Word,
         pred: Predicate,
         cBuilder: ClauseBuilder,
@@ -89,5 +87,11 @@ export class VerbHandler implements WordHandler {
     private shipRelClause(cBuilder: ClauseBuilder, ctx: HandlerMethods): void {
         let rClause: Clause = cBuilder.build()
         ctx.add(rClause)
+    }
+
+    private returnToMatrix(vWord: Word, ctx: HandlerMethods): ClauseBuilder {
+        let matrix: ClauseBuilder = ctx.pop()
+        matrix.buildPredicate(vWord)
+        return matrix
     }
 }

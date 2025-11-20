@@ -38,34 +38,54 @@ export class ClauseBuilder {
 
     public build(): Clause {
         let clause: Clause = new Clause()
-        if (!this.subject) {
-            throw Error("Tried to build clause without a subject.")
-        }
+        this.addSubjectTo(clause)
+        this.addNounTo(clause)
+        this.addAdjunctTo(clause)
+        this.addPredicateTo(clause)
+        this.addPendingAdverbTo(clause)
+        return clause
+    }
+
+    private addPredicateTo(clause: Clause): void {
         if (!this.predicate) {
             let unfinishedPred: PredicateBuilder | undefined =
                 this.unfinishedBuilderList.find(builder =>
                     builder instanceof PredicateBuilder)
             let pending = this.pendingAdverb
-            if (unfinishedPred && pending) {
-                this.pendingAdverb = null
-                unfinishedPred.setSemanticContent(pending)
-                this.predicate = unfinishedPred.build()
-            } else {
+            if (!(unfinishedPred && pending)) {
                 throw Error("Tried to build clause without a predicate.")
             }
-        }
-        clause.addNoun(this.subject)
-        for (let noun of this.nounStack) {
-            clause.addNoun(noun)
-        }
-        for (let adjunct of this.adjunctStack) {
-            clause.addAdjunct(adjunct)
+            this.pendingAdverb = null
+            unfinishedPred.setSemanticContent(pending)
+            this.predicate = unfinishedPred.build()
         }
         clause.setPredicate(this.predicate)
+    }
+
+    private addPendingAdverbTo(clause: Clause): void {
         if (this.pendingAdverb) {
             clause.addAdjunct(this.pendingAdverb)
         }
-        return clause
+    }
+
+    private addSubjectTo(clause: Clause): void {
+        let subject: Noun | null = this.subject
+        if (!subject) {
+            throw Error("Tried to build clause without a subject.")
+        }
+        clause.addNoun(subject)
+    }
+
+    private addAdjunctTo(clause: Clause): void {
+        for (let adjunct of this.adjunctStack) {
+            clause.addAdjunct(adjunct)
+        }
+    }
+
+    private addNounTo(clause: Clause): void {
+        for (let noun of this.nounStack) {
+            clause.addNoun(noun)
+        }
     }
 
     public addPhrase(builder: WordBuilder): void {
