@@ -13,12 +13,6 @@ export interface HandlerMethods {
     push: (cB: ClauseBuilder) => void
     pop: () => ClauseBuilder
     peak: () => ClauseBuilder | undefined
-
-    // need to add for adverbs:
-    // The boy that slowly walked went to school quickly
-    // ambiguous:
-    // the boy that walked [slowly] went to school
-
 }
 
 export class Parser {

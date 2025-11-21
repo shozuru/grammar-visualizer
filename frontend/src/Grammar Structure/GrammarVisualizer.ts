@@ -5,8 +5,6 @@ import type { Clause } from "./syntax/partsOfSpeech/Clause"
 
 export class GrammarVisualizer {
 
-    // public sentence: ClauseBuilder
-    // private sentenceWordList: Word[]
     private clauses: Clause[]
 
     constructor(inputSentence: SentenceInfo) {
@@ -52,6 +50,13 @@ export class GrammarVisualizer {
 // method and add it as an argument when you use it
 
 // create another class to hold your parses ('Sentence')
+
+// need to add for adverbs:
+// The boy that slowly walked went to school quickly
+// ambiguous:
+// the boy that walked [slowly] went to school
+
+// They are at the school that I went to.
 
 // -----------------------------------------------------------------------------
 

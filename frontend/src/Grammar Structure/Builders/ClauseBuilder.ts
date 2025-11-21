@@ -36,6 +36,12 @@ export class ClauseBuilder {
         this.pendingAdverb = null
     }
 
+    public VerbInProgress(): boolean {
+        return this.unfinishedBuilderList.some(
+            builder => builder instanceof PredicateBuilder
+        )
+    }
+
     public build(): Clause {
         let clause: Clause = new Clause()
         this.addSubjectTo(clause)

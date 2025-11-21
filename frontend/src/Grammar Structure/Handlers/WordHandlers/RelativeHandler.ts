@@ -10,32 +10,43 @@ export class RelativeHandler implements WordHandler {
 
     public handle(
         relWord: Word,
-        cbuilder: ClauseBuilder,
+        cBuilder: ClauseBuilder,
         ctx: HandlerMethods
     ): ClauseBuilder | void {
-        let mPred: Predicate | null = cbuilder.getPredicate()
+        let mPred: Predicate | null = cBuilder.getPredicate()
 
-        if (mPred) {
-            // this is the person [that] knew my name
-            // this is the person [that] I knew
-            // technically ambiguous with adjuncts that follow
-            let relNoun: Noun = cbuilder.yieldObjectRel()
+        if (mPred) return this.handleObjectRel(cBuilder, ctx)
+        return this.handleSubjectRel(cBuilder, ctx)
+    }
 
-            let mtxClause: Clause = cbuilder.build()
-            ctx.add(mtxClause)
+    private handleObjectRel(
+        cBuilder: ClauseBuilder,
+        ctx: HandlerMethods
+    ): ClauseBuilder {
+        // this is the person [that] knew my name
+        // this is the person [that] I knew
+        // technically ambiguous with adjuncts that follow
+        let relNoun: Noun = cBuilder.yieldObjectRel()
 
-            let relClause: ClauseBuilder = new ClauseBuilder()
-            relClause.receiveRel(relNoun)
-            return relClause
-        }
-        let relNoun: Noun = cbuilder.yieldSubjectRel()
-
-        ctx.push(cbuilder)
+        let mtxClause: Clause = cBuilder.build()
+        ctx.add(mtxClause)
 
         let relClause: ClauseBuilder = new ClauseBuilder()
         relClause.receiveRel(relNoun)
         return relClause
+    }
+
+    private handleSubjectRel(
+        cBuilder: ClauseBuilder,
+        ctx: HandlerMethods
+    ): ClauseBuilder {
         // the person [that] knew my name is here
         // the person [that] i knew is here
+        let relNoun: Noun = cBuilder.yieldSubjectRel()
+        ctx.push(cBuilder)
+
+        let relClause: ClauseBuilder = new ClauseBuilder()
+        relClause.receiveRel(relNoun)
+        return relClause
     }
 }
