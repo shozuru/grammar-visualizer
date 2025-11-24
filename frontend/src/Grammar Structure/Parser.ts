@@ -2,8 +2,7 @@ import { ClauseBuilder } from "./Builders/ClauseBuilder";
 import type { Clause } from "./syntax/partsOfSpeech/Clause";
 import { PartsOfSpeech } from "./syntax/SyntaxConstants";
 import {
-    isAdverb, isBeVerb, isNoun, isVerb,
-    passiveByPhraseIndex
+    isAdverb, isBeVerb, isNoun, isVerb, passiveByPhraseIndex
 } from "./syntax/SyntaxMethods";
 import type { Word } from "./types/Word";
 import { HandlerRegistry } from "./Handlers/HandlerRegistry"

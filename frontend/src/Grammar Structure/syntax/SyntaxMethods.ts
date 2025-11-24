@@ -1,16 +1,12 @@
 import type { Word } from "../types/Word"
 import { Noun } from "./partsOfSpeech/Noun"
 import { Verb } from "./partsOfSpeech/Verb"
-import { Preposition } from "./partsOfSpeech/Preposition"
-import { Adverb } from "./partsOfSpeech/Adverb"
-import { Clause } from "./partsOfSpeech/Clause"
 import {
     ecmVerbs, objectControlVerbs, PartsOfSpeech,
     raisingVerbs
 } from "./SyntaxConstants"
 import { Mod } from "./Mod"
 import { Predicate } from "./Predicate"
-import { ClauseBuilder } from "../Builders/ClauseBuilder"
 import type { Phrase } from "./partsOfSpeech/Phrase"
 
 
@@ -38,65 +34,6 @@ export function getLexicalizedMod(adjWord: Word): Mod | null {
     return null
 }
 
-export function addRelClauseToNounPhrase(
-    wordList: Word[],
-    nounModStack: Mod[]
-): Clause {
-    const relBeVerb: Verb = new Verb('BE')
-    const relPred: Predicate = new Predicate(relBeVerb)
-
-    const relPredWord = wordList[0]
-    if (isAdverbElement(relPredWord)) {
-        const AdverbWord: Word = wordList.shift() as Word
-        const advPred: Adverb = new Adverb(AdverbWord.name)
-        relPred.setSemanticElement(advPred)
-    } else if (isPreposition(relPredWord)) {
-        const pPred: Preposition = handlePrepositionPhrase(wordList)
-        relPred.setSemanticElement(pPred)
-    }
-
-    const relClause: Clause = new Clause(relPred)
-
-    const relWord: Word = { name: 'that', pos: PartsOfSpeech.WDT }
-    const relNoun: Noun = new Noun(relWord.name)
-
-    relClause.addNounToClause(relNoun)
-
-    if (!nounModStack.some(mod => mod.getPos() === PartsOfSpeech.WDT)) {
-        const relMod: Mod = new Mod(relWord)
-        nounModStack.push(relMod)
-    }
-    return relClause
-}
-
-export function addRelClauseToSubject(
-    subject: Noun,
-    wordList: Word[]
-): void {
-    const relClauseWords: Word[] = removeRelClause(wordList)
-
-    const relWord: Word = { name: "that", pos: PartsOfSpeech.WDT }
-    const relNoun: Noun = new Noun(relWord.name)
-
-    const relSentence: ClauseBuilder = new ClauseBuilder(relClauseWords)
-    if (isNominalElement(relClauseWords)) {
-        relSentence.getNounStack().push(relNoun)
-    }
-    else {
-        relSentence.setCurrentSubject(relNoun)
-    }
-    relSentence.generateClauses()
-
-    if (!subject
-        .getModifiers()
-        .some(mod =>
-            mod.getPos() === PartsOfSpeech.WDT
-        )) {
-        const relMod: Mod = new Mod(relWord)
-        subject.addModifier(relMod)
-    }
-}
-
 export function addStrandedPassive(wordList: Word[], nounStack: Noun[]): void {
     const passiveWord: Word = wordList.shift() as Word
     const passiveMod: Mod = new Mod(passiveWord)
@@ -119,39 +56,6 @@ export function addStrandedPassive(wordList: Word[], nounStack: Noun[]): void {
 //         )
 // }
 
-export function handleNounPhrase(
-    sentence: ClauseBuilder
-): Noun {
-    const nounModStack: Mod[] = []
-    const wordList: Word[] = sentence.getWordList()
-
-    while (!isNoun(wordList[0])) {
-        if (isAdverb(wordList[0])) {
-            const relClause: Clause =
-                addRelClauseToNounPhrase(wordList, nounModStack)
-            sentence.addClausetoClauseList(relClause)
-            sentence.incrementClauseCounter()
-        }
-    }
-
-    const headWord: Word = wordList.shift() as Word
-    if (
-        wordList[0] &&
-        isRelative(wordList[0])
-    ) {
-        nounModStack.push(new Mod(wordList[0]))
-    }
-    if (
-        wordList[0] &&
-        isPreposition(wordList[0])
-    ) {
-        const relClause: Clause =
-            addRelClauseToNounPhrase(wordList, nounModStack)
-        sentence.addClausetoClauseList(relClause)
-        sentence.incrementClauseCounter()
-    }
-    return createNounPhrase(headWord, nounModStack)
-}
 
 export function isAdverb(word: Word): boolean {
     return (
@@ -229,16 +133,6 @@ export function isECMPred(pred: Predicate): boolean {
 export function isFocusElement(word: Word): boolean {
     return (
         word.pos === PartsOfSpeech.QuestionTense
-    )
-}
-
-export function isNominalElement(wordList: Word[]): boolean {
-    return (
-        wordList[0] &&
-        (
-            isNoun(wordList[0]) ||
-            isNounModifier(wordList[0], wordList.slice(1))
-        )
     )
 }
 
@@ -372,12 +266,7 @@ export function modStackContainsCaus(modStack: Mod[]): boolean {
 }
 
 export function passiveByPhraseIndex(wordList: Word[]): number {
-    const index: number = wordList.length - 1
-
-    // if (!isNoun(wordList[index])) {
-    //     return null
-    // }
-    // index -= 1
+    let index: number = wordList.length - 1
     while (index >= 0) {
         if (wordList[index].name === "by") {
             return index
