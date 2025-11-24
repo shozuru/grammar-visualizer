@@ -22,8 +22,8 @@ export class VerbHandler implements WordHandler {
         ctx: HandlerMethods
     ): ClauseBuilder | void {
         // debugger
-        let unfinishedClause: ClauseBuilder | undefined = ctx.peak()
-        let currentPred: Predicate | null = cBuilder.getPredicate()
+        const unfinishedClause: ClauseBuilder | undefined = ctx.peak()
+        const currentPred: Predicate | null = cBuilder.getPredicate()
         // the person that knew me is here
         if (unfinishedClause && currentPred) {
             // the boy went to the school that is blue
@@ -43,13 +43,13 @@ export class VerbHandler implements WordHandler {
         cBuilder: ClauseBuilder,
         addClause: (c: Clause) => void
     ): ClauseBuilder {
-        let predType: PredType = this.getPredType(pred)
-        let subSubject: Noun = this.getYieldMethod(predType, cBuilder)()
+        const predType: PredType = this.getPredType(pred)
+        const subSubject: Noun = this.getYieldMethod(predType, cBuilder)()
 
-        let mtxClause: Clause = cBuilder.build()
+        const mtxClause: Clause = cBuilder.build()
         addClause(mtxClause)
 
-        let subClause: ClauseBuilder = new ClauseBuilder()
+        const subClause: ClauseBuilder = new ClauseBuilder()
         subClause.receiveSubject(subSubject)
 
         if (predType === PredType.ECM) {
@@ -70,14 +70,14 @@ export class VerbHandler implements WordHandler {
         cBuilder: ClauseBuilder
     ): () => Noun {
 
-        let yieldMap: Map<PredType, () => Noun> = new Map([
+        const yieldMap: Map<PredType, () => Noun> = new Map([
             [PredType.ECM, () => cBuilder.yieldEcmNoun()],
             [PredType.OCONTROL, () => cBuilder.yieldOControlNoun()],
             [PredType.RAISING, () => cBuilder.yieldRaisingNoun()],
             [PredType.SCONTROL, () => cBuilder.yieldSControlNoun()]
         ])
 
-        let yieldMethod = yieldMap.get(pType)
+        const yieldMethod = yieldMap.get(pType)
         if (!yieldMethod) {
             throw Error("Unable to get proper yield method for main verb.")
         }
@@ -85,12 +85,12 @@ export class VerbHandler implements WordHandler {
     }
 
     private shipRelClause(cBuilder: ClauseBuilder, ctx: HandlerMethods): void {
-        let rClause: Clause = cBuilder.build()
+        const rClause: Clause = cBuilder.build()
         ctx.add(rClause)
     }
 
     private returnToMatrix(vWord: Word, ctx: HandlerMethods): ClauseBuilder {
-        let matrix: ClauseBuilder = ctx.pop()
+        const matrix: ClauseBuilder = ctx.pop()
         matrix.buildPredicate(vWord)
         return matrix
     }

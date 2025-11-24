@@ -33,34 +33,34 @@ export class Parser {
 
     public parse(wordList: Word[]): Clause[] {
 
-        let fixedWords: Word[] = this.fixPartsOfSpeech(wordList)
+        const fixedWords: Word[] = this.fixPartsOfSpeech(wordList)
 
-        for (let word of fixedWords) {
+        for (const word of fixedWords) {
             console.log(word)
-            let handler = this.registry.getHandler(word)
+            const handler = this.registry.getHandler(word)
 
-            let ctx: HandlerMethods = {
+            const ctx: HandlerMethods = {
                 add: this.addCompleteClause.bind(this),
                 push: this.pushClauseBuilder.bind(this),
                 pop: this.popClauseBuilder.bind(this),
                 peak: this.peakClauseBuilders.bind(this)
             }
 
-            let newCB: ClauseBuilder | void =
+            const newCB: ClauseBuilder | void =
                 handler.handle(word, this.currentBuilder, ctx)
             if (newCB) {
                 this.currentBuilder = newCB
             }
         }
 
-        let clause: Clause = this.currentBuilder.build()
+        const clause: Clause = this.currentBuilder.build()
         this.addCompleteClause(clause)
 
         return this.clauses
     }
 
     private fixPartsOfSpeech(wordList: Word[]): Word[] {
-        for (let i = 0; i < wordList.length; i++) {
+        for (const i = 0; i < wordList.length; i++) {
             if (
                 (
                     wordList[i].name === "don't" ||
@@ -109,7 +109,7 @@ export class Parser {
                 )) {
                 wordList[i].pos = PartsOfSpeech.PERFECTIVE
             } else if (isBeVerb(wordList[i].name)) {
-                let j: number = i + 1
+                const j: number = i + 1
                 while (
                     wordList[j] &&
                     wordList[j].pos !== PartsOfSpeech.VBN &&
@@ -125,7 +125,7 @@ export class Parser {
                 ) {
                     wordList[i].pos = PartsOfSpeech.PsvAgr
 
-                    let index: number =
+                    const index: number =
                         passiveByPhraseIndex(wordList.slice(j))
 
                     if (index >= 0) {
@@ -231,7 +231,7 @@ export class Parser {
     }
 
     private popClauseBuilder(): ClauseBuilder {
-        let cBuilder: ClauseBuilder | undefined = this.clausesInProgress.pop()
+        const cBuilder: ClauseBuilder | undefined = this.clausesInProgress.pop()
         if (!cBuilder) {
             throw ("Tried to pop clause builder that does not exist.")
         }

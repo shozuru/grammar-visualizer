@@ -34,8 +34,8 @@ const UserInput: React.FC = () => {
             }
         )
             .then(res => {
-                let posNumList: number[] = []
-                let posNameList: string[] = []
+                const posNumList: number[] = []
+                const posNameList: string[] = []
 
                 res.data.response.forEach((value: number) => {
                     posNumList.push(value)
@@ -44,7 +44,7 @@ const UserInput: React.FC = () => {
 
                 setSentencePos(posNameList)
 
-                let sentInfo: SentenceInfo = {
+                const sentInfo: SentenceInfo = {
                     wordList: submitted.split(' '),
                     posList: posNumList
                 }

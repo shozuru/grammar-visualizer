@@ -12,7 +12,7 @@ export class AdverbBuilder extends WordBuilder {
     }
 
     public createAndSetAdverb(adverbWord: Word): void {
-        let adverb: Adverb = new Adverb(adverbWord.name)
+        const adverb: Adverb = new Adverb(adverbWord.name)
         this.adverb = adverb
     }
 
@@ -20,13 +20,13 @@ export class AdverbBuilder extends WordBuilder {
         if (!this.adverb) {
             throw Error("Tried to build adverb phrase without head")
         }
-        for (let agr of super.getAgrStack()) {
+        for (const agr of super.getAgrStack()) {
             this.adverb.addAgr(agr)
         }
-        for (let mod of super.getModStack()) {
+        for (const mod of super.getModStack()) {
             this.adverb.addMod(mod)
         }
-        for (let adjunct of super.getAdjunctStack()) {
+        for (const adjunct of super.getAdjunctStack()) {
             this.adverb.addAdjunct(adjunct)
         }
         return this.adverb

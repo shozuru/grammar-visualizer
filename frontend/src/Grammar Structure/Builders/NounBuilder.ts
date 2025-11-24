@@ -12,7 +12,7 @@ export class NounBuilder extends WordBuilder {
     }
 
     public createAndSetNoun(word: Word): void {
-        let noun: Noun = new Noun(word.name)
+        const noun: Noun = new Noun(word.name)
         this.noun = noun
     }
 
@@ -24,7 +24,7 @@ export class NounBuilder extends WordBuilder {
         if (!this.noun) {
             throw Error("Tried to build noun that doesn't have a head")
         }
-        for (let mod of super.getModStack()) {
+        for (const mod of super.getModStack()) {
             this.noun.addModifier(mod)
         }
         return this.noun

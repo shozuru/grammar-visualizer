@@ -42,7 +42,7 @@ export class Predicate implements Phrase {
 
     public addMod(tamm: Mod): void {
         if (tamm.getName().includes("'")) {
-            let mods: Mod[] = uncontractVerbalModifiers(tamm)
+            const mods: Mod[] = uncontractVerbalModifiers(tamm)
             for (const mod of mods) {
                 this.modStack.push(mod)
             }
@@ -64,7 +64,7 @@ export class Predicate implements Phrase {
     }
 
     private isBeVerb(verb: Verb): boolean {
-        let verbName: string = verb.getName()
+        const verbName: string = verb.getName()
         return (
             verbName === "am" ||
             verbName === "are" ||

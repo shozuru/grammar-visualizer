@@ -14,7 +14,7 @@ export class PrepBuilder extends WordBuilder {
     }
 
     public setPreposition(prepWord: Word): void {
-        let prep: Preposition = new Preposition(prepWord.name)
+        const prep: Preposition = new Preposition(prepWord.name)
         this.preposition = prep
     }
 
@@ -44,7 +44,7 @@ export class PrepBuilder extends WordBuilder {
                 "tried to build preposition phrase without preposition"
             )
         }
-        for (let adjunct of super.getAdjunctStack()) {
+        for (const adjunct of super.getAdjunctStack()) {
             this.preposition.addAdjunct(adjunct)
         }
         return this.preposition

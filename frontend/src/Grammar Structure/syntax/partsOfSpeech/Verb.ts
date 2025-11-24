@@ -63,7 +63,7 @@ export class Verb {
 
     // public addMod(tamm: Mod): void {
     //     if (tamm.getName().includes("'")) {
-    //         let mods: Mod[] = uncontractVerbalModifiers(tamm)
+    //         const mods: Mod[] = uncontractVerbalModifiers(tamm)
     //         for (const mod of mods) {
     //             this.modList.push(mod)
     //         }

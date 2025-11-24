@@ -43,7 +43,7 @@ export class Noun implements Phrase {
     }
 
     public addCausative(causeWord: Word): void {
-        let causeMod: Mod = new Mod(causeWord)
+        const causeMod: Mod = new Mod(causeWord)
         this.modifiers.push(causeMod)
     }
 

@@ -8,11 +8,11 @@ export class GrammarVisualizer {
     private clauses: Clause[]
 
     constructor(inputSentence: SentenceInfo) {
-        let sentence: Word[] = this.createZippedWords(
+        const sentence: Word[] = this.createZippedWords(
             inputSentence.posList,
             inputSentence.wordList
         )
-        let parser = new Parser()
+        const parser = new Parser()
         this.clauses = parser.parse(sentence)
         console.log(this.clauses)
     }
@@ -21,10 +21,10 @@ export class GrammarVisualizer {
         listOfPos: number[],
         listOfWords: string[]
     ): Word[] {
-        let zipped: Word[] = []
+        const zipped: Word[] = []
 
-        for (let i = 0; i < listOfPos.length; i++) {
-            let Word: Word = {
+        for (const i = 0; i < listOfPos.length; i++) {
+            const Word: Word = {
 
                 pos: listOfPos[i],
                 name: listOfWords[i]

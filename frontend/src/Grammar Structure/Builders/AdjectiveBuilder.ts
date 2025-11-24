@@ -15,10 +15,10 @@ export class AdjectiveBuilder extends WordBuilder {
     }
 
     public createAndSetAdjective(adjWord: Word): void {
-        let adj: Adjective = new Adjective(adjWord.name)
+        const adj: Adjective = new Adjective(adjWord.name)
         this.adjective = adj
 
-        let lexMod: Mod | null = getLexicalizedMod(adjWord)
+        const lexMod: Mod | null = getLexicalizedMod(adjWord)
         if (lexMod) {
             super.addMod(lexMod)
         }
@@ -37,10 +37,10 @@ export class AdjectiveBuilder extends WordBuilder {
         if (!this.adjective) {
             throw Error("Tried to build adjective phrase without head")
         }
-        for (let agr of super.getAgrStack()) {
+        for (const agr of super.getAgrStack()) {
             this.adjective.addAgr(agr)
         }
-        for (let mod of super.getModStack()) {
+        for (const mod of super.getModStack()) {
             this.adjective.addMod(mod)
         }
         return this.adjective

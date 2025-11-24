@@ -13,7 +13,7 @@ export class RelativeHandler implements WordHandler {
         cBuilder: ClauseBuilder,
         ctx: HandlerMethods
     ): ClauseBuilder | void {
-        let mPred: Predicate | null = cBuilder.getPredicate()
+        const mPred: Predicate | null = cBuilder.getPredicate()
 
         if (mPred) return this.handleObjectRel(cBuilder, ctx)
         return this.handleSubjectRel(cBuilder, ctx)
@@ -26,12 +26,12 @@ export class RelativeHandler implements WordHandler {
         // this is the person [that] knew my name
         // this is the person [that] I knew
         // technically ambiguous with adjuncts that follow
-        let relNoun: Noun = cBuilder.yieldObjectRel()
+        const relNoun: Noun = cBuilder.yieldObjectRel()
 
-        let mtxClause: Clause = cBuilder.build()
+        const mtxClause: Clause = cBuilder.build()
         ctx.add(mtxClause)
 
-        let relClause: ClauseBuilder = new ClauseBuilder()
+        const relClause: ClauseBuilder = new ClauseBuilder()
         relClause.receiveRel(relNoun)
         return relClause
     }
@@ -42,10 +42,10 @@ export class RelativeHandler implements WordHandler {
     ): ClauseBuilder {
         // the person [that] knew my name is here
         // the person [that] i knew is here
-        let relNoun: Noun = cBuilder.yieldSubjectRel()
+        const relNoun: Noun = cBuilder.yieldSubjectRel()
         ctx.push(cBuilder)
 
-        let relClause: ClauseBuilder = new ClauseBuilder()
+        const relClause: ClauseBuilder = new ClauseBuilder()
         relClause.receiveRel(relNoun)
         return relClause
     }

@@ -23,13 +23,13 @@ export class HandlerRegistry {
     }
 
     private setUpHandlers(): void {
-        let nounTags: PartsOfSpeech[] =
+        const nounTags: PartsOfSpeech[] =
             [
                 PartsOfSpeech.NN, PartsOfSpeech.NNP, PartsOfSpeech.NNS,
                 PartsOfSpeech.NNPS, PartsOfSpeech.PRP, PartsOfSpeech.FW,
                 PartsOfSpeech.DT, PartsOfSpeech.PASSIVE, PartsOfSpeech.PRPQ
             ]
-        let verbTags: PartsOfSpeech[] =
+        const verbTags: PartsOfSpeech[] =
             [
                 PartsOfSpeech.VB, PartsOfSpeech.VBD, PartsOfSpeech.VBZ,
                 PartsOfSpeech.VBP, PartsOfSpeech.VBN, PartsOfSpeech.PsvAgr,
@@ -37,56 +37,56 @@ export class HandlerRegistry {
                 PartsOfSpeech.PERFECTIVE, PartsOfSpeech.NEGATION,
                 PartsOfSpeech.MD
             ]
-        let adverbTags: PartsOfSpeech[] =
+        const adverbTags: PartsOfSpeech[] =
             [
                 PartsOfSpeech.RB, PartsOfSpeech.RBR, PartsOfSpeech.RBS
             ]
-        let adjTags: PartsOfSpeech[] =
+        const adjTags: PartsOfSpeech[] =
             [
                 PartsOfSpeech.JJ, PartsOfSpeech.JJR, PartsOfSpeech.JJS,
                 PartsOfSpeech.AdvAgr, PartsOfSpeech.SUPERLATIVE,
                 PartsOfSpeech.COMPARATIVE
             ]
-        let prepTags: PartsOfSpeech[] =
+        const prepTags: PartsOfSpeech[] =
             [
                 PartsOfSpeech.IN
             ]
-        let causTags: PartsOfSpeech[] =
+        const causTags: PartsOfSpeech[] =
             [
                 PartsOfSpeech.CAUSATIVE
             ]
-        let relTags: PartsOfSpeech[] =
+        const relTags: PartsOfSpeech[] =
             [
                 PartsOfSpeech.WDT,
                 PartsOfSpeech.WP,
                 PartsOfSpeech.WPQ
             ]
 
-        for (let tag of nounTags) {
+        for (const tag of nounTags) {
             this.register(tag, new NounHandler())
         }
-        for (let tag of verbTags) {
+        for (const tag of verbTags) {
             this.register(tag, new VerbHandler())
         }
-        for (let tag of adverbTags) {
+        for (const tag of adverbTags) {
             this.register(tag, new AdverbHandler())
         }
-        for (let tag of adjTags) {
+        for (const tag of adjTags) {
             this.register(tag, new AdjectiveHandler())
         }
-        for (let tag of prepTags) {
+        for (const tag of prepTags) {
             this.register(tag, new PrepositionHandler())
         }
-        for (let tag of causTags) {
+        for (const tag of causTags) {
             this.register(tag, new CausativeHandler())
         }
-        for (let tag of relTags) {
+        for (const tag of relTags) {
             this.register(tag, new RelativeHandler())
         }
     }
 
     public getHandler(word: Word): WordHandler {
-        let handler = this.registry.get(word.pos)
+        const handler = this.registry.get(word.pos)
         if (!handler) {
             throw Error(`This word, '${word}' does not have a handler`)
         }

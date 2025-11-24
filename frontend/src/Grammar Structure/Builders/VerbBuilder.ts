@@ -12,7 +12,7 @@
 //     }
 
 //     public createAndSetVerb(word: Word): void {
-//         let verb: Verb = new Verb(word.name)
+//         const verb: Verb = new Verb(word.name)
 //         this.verb = verb
 //     }
 
@@ -24,7 +24,7 @@
 //         if (!(this.verb instanceof Verb)) {
 //             throw Error("Tried to build verb without head")
 //         }
-//         for (let agr of super.getAgrStack()) {
+//         for (const agr of super.getAgrStack()) {
 //         }
 //     }
 // }

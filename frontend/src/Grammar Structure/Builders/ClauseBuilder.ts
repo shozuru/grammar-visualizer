@@ -36,14 +36,14 @@ export class ClauseBuilder {
         this.pendingAdverb = null
     }
 
-    public VerbInProgress(): boolean {
+    public verbInProgress(): boolean {
         return this.unfinishedBuilderList.some(
             builder => builder instanceof PredicateBuilder
         )
     }
 
     public build(): Clause {
-        let clause: Clause = new Clause()
+        const clause: Clause = new Clause()
         this.addSubjectTo(clause)
         this.addNounTo(clause)
         this.addAdjunctTo(clause)
@@ -54,10 +54,10 @@ export class ClauseBuilder {
 
     private addPredicateTo(clause: Clause): void {
         if (!this.predicate) {
-            let unfinishedPred: PredicateBuilder | undefined =
+            const unfinishedPred: PredicateBuilder | undefined =
                 this.unfinishedBuilderList.find(builder =>
                     builder instanceof PredicateBuilder)
-            let pending = this.pendingAdverb
+            const pending = this.pendingAdverb
             if (!(unfinishedPred && pending)) {
                 throw Error("Tried to build clause without a predicate.")
             }
@@ -75,7 +75,7 @@ export class ClauseBuilder {
     }
 
     private addSubjectTo(clause: Clause): void {
-        let subject: Noun | null = this.subject
+        const subject: Noun | null = this.subject
         if (!subject) {
             throw Error("Tried to build clause without a subject.")
         }
@@ -83,19 +83,19 @@ export class ClauseBuilder {
     }
 
     private addAdjunctTo(clause: Clause): void {
-        for (let adjunct of this.adjunctStack) {
+        for (const adjunct of this.adjunctStack) {
             clause.addAdjunct(adjunct)
         }
     }
 
     private addNounTo(clause: Clause): void {
-        for (let noun of this.nounStack) {
+        for (const noun of this.nounStack) {
             clause.addNoun(noun)
         }
     }
 
     public addPhrase(builder: WordBuilder): void {
-        let phrase: Phrase = builder.build()
+        const phrase: Phrase = builder.build()
         if (this.shouldBePredicate()) {
             this.makePredicate(phrase)
         } else {
@@ -125,7 +125,7 @@ export class ClauseBuilder {
     }
 
     public buildAdjective(adjWord: Word): void {
-        let adjBuilder: AdjectiveBuilder =
+        const adjBuilder: AdjectiveBuilder =
             this.getOrCreateBuilder(AdjectiveBuilder)
         if (isAdjectiveMod(adjWord)) {
             adjBuilder.createAndAddMod(adjWord)
@@ -142,7 +142,7 @@ export class ClauseBuilder {
     }
 
     public buildAdverb(adverbWord: Word): void {
-        let adverbBuilder: AdverbBuilder =
+        const adverbBuilder: AdverbBuilder =
             this.getOrCreateBuilder(AdverbBuilder)
 
         this.removeFromBuilderList(adverbBuilder)
@@ -150,12 +150,12 @@ export class ClauseBuilder {
         if (this.pendingAdverb) {
             this.placeAdverbIn(adverbBuilder)
         }
-        let adverb: Adverb = adverbBuilder.build()
+        const adverb: Adverb = adverbBuilder.build()
         this.pendingAdverb = adverb
     }
 
     public buildNominal(nomWord: Word): void {
-        let nounBuilder: NounBuilder = this.getOrCreateBuilder(NounBuilder)
+        const nounBuilder: NounBuilder = this.getOrCreateBuilder(NounBuilder)
         if (isNounMod(nomWord)) {
             nounBuilder.createAndAddMod(nomWord)
         } else {
@@ -166,7 +166,7 @@ export class ClauseBuilder {
     }
 
     public buildPreposition(prepWord: Word): void {
-        let prepBuilder: PrepBuilder = this.getOrCreateBuilder(PrepBuilder)
+        const prepBuilder: PrepBuilder = this.getOrCreateBuilder(PrepBuilder)
         prepBuilder.setPreposition(prepWord)
         if (this.pendingAdverb) {
             this.placeAdverbIn(prepBuilder)
@@ -176,21 +176,21 @@ export class ClauseBuilder {
     public buildPredicate(predWord: Word): void {
         // when you deal with tense in general, you can deal with 
         // inf, since you don't deal with tense in the main clause
-        let predBuilder: PredicateBuilder =
+        const predBuilder: PredicateBuilder =
             this.getOrCreateBuilder(PredicateBuilder)
         if (isVerbAgr(predWord)) {
             predBuilder.createAndAddAgr(predWord)
         } else if (isVerbMod(predWord)) {
             predBuilder.createAndAddMod(predWord)
         } else {
-            let verb: Verb = new Verb(predWord.name)
+            const verb: Verb = new Verb(predWord.name)
             predBuilder.setVerb(verb)
             if (predBuilder.hasSemanticContent()) {
                 if (this.pendingAdverb) {
                     this.placeAdverbIn(predBuilder)
                 }
                 this.removeFromBuilderList(predBuilder)
-                let predicate: Predicate = predBuilder.build()
+                const predicate: Predicate = predBuilder.build()
                 this.pushPredToClause(predicate)
             }
         }
@@ -245,10 +245,10 @@ export class ClauseBuilder {
     }
 
     private makePredicate(phrase: Phrase): void {
-        let predBuilder =
+        const predBuilder =
             this.unfinishedBuilderList.splice(-1, 1)[0] as PredicateBuilder
         predBuilder.setSemanticContent(phrase)
-        let predPhrase: Predicate = predBuilder.build()
+        const predPhrase: Predicate = predBuilder.build()
         this.predicate = predPhrase
     }
 
@@ -260,7 +260,7 @@ export class ClauseBuilder {
         if (
             this.unfinishedBuilderList.at(-1) instanceof PrepBuilder
         ) {
-            let prepBuilder: PrepBuilder =
+            const prepBuilder: PrepBuilder =
                 this.unfinishedBuilderList.splice(-1, 1)[0] as PrepBuilder
             prepBuilder.setObject(nPhrase)
             this.addPhrase(prepBuilder)
@@ -292,7 +292,7 @@ export class ClauseBuilder {
     }
 
     public yieldEcmNoun(): Noun {
-        let ecmSubject: Noun | undefined = this.nounStack.shift()
+        const ecmSubject: Noun | undefined = this.nounStack.shift()
         if (!ecmSubject) {
             throw Error(
                 "Tried to extract subordinate Subject that does not exist."
@@ -306,26 +306,26 @@ export class ClauseBuilder {
             return this.nounStack[0]
         }
 
-        let pred: Predicate | null = this.predicate
-        let content: Phrase | null = pred && pred.getSemanticContent()
+        const pred: Predicate | null = this.predicate
+        const content: Phrase | null = pred && pred.getSemanticContent()
 
         if (content instanceof Noun) return content
         if (content instanceof Preposition) {
-            let object = content.getObject()
+            const object = content.getObject()
             if (object) {
                 return object
             }
         }
         if (!pred) throw Error("No object available to yield to rel clause")
 
-        let predAdjuncts = pred.getAdjunctStack()
-        let lastAdjunct = predAdjuncts.at(-1)
+        const predAdjuncts = pred.getAdjunctStack()
+        const lastAdjunct = predAdjuncts.at(-1)
 
         if (!(lastAdjunct instanceof Preposition)) {
             throw Error("No object available to yield to rel clause")
         }
 
-        let adjunctOb = lastAdjunct.getObject()
+        const adjunctOb = lastAdjunct.getObject()
         if (!adjunctOb) {
             throw Error("No object available to yield to rel clause")
         }
@@ -350,7 +350,7 @@ export class ClauseBuilder {
     }
 
     public yieldRaisingNoun(): Noun {
-        let subSubject: Noun | undefined = this.nounStack.shift()
+        const subSubject: Noun | undefined = this.nounStack.shift()
         if (subSubject) {
             return subSubject
         }
@@ -374,7 +374,7 @@ export class ClauseBuilder {
     }
 
     private shouldBePredicate(): boolean {
-        let unfinishedBuilder = this.unfinishedBuilderList.at(-1)
+        const unfinishedBuilder = this.unfinishedBuilderList.at(-1)
         return (
             unfinishedBuilder instanceof PredicateBuilder &&
             unfinishedBuilder.hasCopula()
@@ -400,7 +400,7 @@ export class ClauseBuilder {
 
     //         } else if (isFocusElement(currentWord)) {
     //             // handleFocusElement(this.wordList)
-    //             let focusWord = this.wordList.shift() as Word
+    //             const focusWord = this.wordList.shift() as Word
     //             console.log(focusWord.name)
     //         }
     // }

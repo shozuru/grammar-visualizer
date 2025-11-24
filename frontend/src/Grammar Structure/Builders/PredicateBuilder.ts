@@ -13,7 +13,7 @@ export class PredicateBuilder extends WordBuilder {
     }
 
     public setVerb(verb: Verb): void {
-        let pred: Predicate = new Predicate(verb)
+        const pred: Predicate = new Predicate(verb)
         this.predicate = pred
     }
 
@@ -25,13 +25,13 @@ export class PredicateBuilder extends WordBuilder {
         if (!this.predicate) {
             throw Error("Tried to build predicate with no head")
         }
-        for (let mod of super.getModStack()) {
+        for (const mod of super.getModStack()) {
             this.predicate.addMod(mod)
         }
-        for (let agr of super.getAgrStack()) {
+        for (const agr of super.getAgrStack()) {
             this.predicate.addAgr(agr)
         }
-        for (let adjunct of super.getAdjunctStack()) {
+        for (const adjunct of super.getAdjunctStack()) {
             this.predicate.addAdjunct(adjunct)
         }
         return this.predicate
