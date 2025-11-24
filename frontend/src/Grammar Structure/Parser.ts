@@ -60,7 +60,7 @@ export class Parser {
     }
 
     private fixPartsOfSpeech(wordList: Word[]): Word[] {
-        for (const i = 0; i < wordList.length; i++) {
+        for (let i = 0; i < wordList.length; i++) {
             if (
                 (
                     wordList[i].name === "don't" ||
@@ -109,7 +109,7 @@ export class Parser {
                 )) {
                 wordList[i].pos = PartsOfSpeech.PERFECTIVE
             } else if (isBeVerb(wordList[i].name)) {
-                const j: number = i + 1
+                let j: number = i + 1
                 while (
                     wordList[j] &&
                     wordList[j].pos !== PartsOfSpeech.VBN &&

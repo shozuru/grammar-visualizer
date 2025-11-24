@@ -23,7 +23,7 @@ export class GrammarVisualizer {
     ): Word[] {
         const zipped: Word[] = []
 
-        for (const i = 0; i < listOfPos.length; i++) {
+        for (let i = 0; i < listOfPos.length; i++) {
             const Word: Word = {
 
                 pos: listOfPos[i],

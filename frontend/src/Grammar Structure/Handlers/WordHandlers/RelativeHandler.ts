@@ -42,9 +42,9 @@ export class RelativeHandler implements WordHandler {
     ): ClauseBuilder {
         // the person [that] knew my name is here
         // the person [that] i knew is here
+
         const relNoun: Noun = cBuilder.yieldSubjectRel()
         ctx.push(cBuilder)
-
         const relClause: ClauseBuilder = new ClauseBuilder()
         relClause.receiveRel(relNoun)
         return relClause

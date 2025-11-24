@@ -1,16 +1,20 @@
 import type { WordHandler } from "./WordHandler"
 import type { Word } from "../../types/Word"
-import type { ClauseBuilder } from "../../Builders/ClauseBuilder"
+import { ClauseBuilder } from "../../Builders/ClauseBuilder"
 import type { Noun } from "../../syntax/partsOfSpeech/Noun"
+import type { HandlerMethods } from "../../Parser"
 
 export class NounHandler implements WordHandler {
 
-    public handle(nominalWord: Word, builder: ClauseBuilder): void {
+    public handle(
+        nominalWord: Word,
+        builder: ClauseBuilder,
+        ctx: HandlerMethods
+    ): void | ClauseBuilder {
         if (this.SubRelWOutThat(builder)) {
             // The store I went to is here
             // The store *(that) was there is red
-            throw Error("I made it here")
-            const relNoun: Noun = builder.yieldSubjectRel()
+            return this.handleSubjectRel(builder, ctx, nominalWord)
         } else {
             builder.buildNominal(nominalWord)
         }
@@ -23,5 +27,18 @@ export class NounHandler implements WordHandler {
             !cBuilder.getPredicate() &&
             !cBuilder.verbInProgress()
         )
+    }
+
+    private handleSubjectRel(
+        builder: ClauseBuilder,
+        ctx: HandlerMethods,
+        noun: Word
+    ): void | ClauseBuilder {
+        const relNoun: Noun = builder.yieldSubjectRel()
+        ctx.push(builder)
+        const relClause: ClauseBuilder = new ClauseBuilder()
+        relClause.buildNominal(noun)
+        relClause.receiveRel(relNoun)
+        return relClause
     }
 }
