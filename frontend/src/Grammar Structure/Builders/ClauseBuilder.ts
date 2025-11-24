@@ -384,14 +384,7 @@ export class ClauseBuilder {
     // public generateClauses(): void {
 
     //         if (isNominalElement(this.wordList)) {
-    //             if (this.currentSubject instanceof Noun &&
-    //                 !(
-    //                     this.currentPredicate instanceof Predicate ||
-    //                     modStackContainsCaus(this.currentSubject.getModifiers())
-    //                 )
-    //             ) {
-    //                 addRelClauseToSubject(this.currentSubject, this.wordList)
-    //             } else if (
+    //             if (
     //                 isPassive(currentWord) &&
     //                 this.nounStack.some(noun => noun.getName() === 'that')
     //             ) {
