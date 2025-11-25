@@ -191,13 +191,8 @@ export class ClauseBuilder {
         // when you deal with tense in general, you can deal with 
         // inf, since you don't deal with tense in the main clause
 
-        if (!this.subject && this.pendingNoun) {
-            this.subject = this.pendingNoun
-            this.pendingNoun = null
-        }
-        if (!this.subject) {
-            throw Error("Sentence does not seem to have a subject.")
-        }
+        this.checkForSubject()
+
         const predBuilder: PredicateBuilder =
             this.getOrCreateBuilder(PredicateBuilder)
         if (isVerbAgr(predWord)) {
@@ -216,6 +211,17 @@ export class ClauseBuilder {
                 this.pushPredToClause(predicate)
             }
         }
+    }
+
+    private checkForSubject(): void {
+        if (this.subject) return
+
+        if (this.pendingNoun) {
+            this.subject = this.pendingNoun
+            this.pendingNoun = null
+
+        } else throw Error("Sentence does not seem to have a subject.")
+
     }
 
     public buildCausative(causeWord: Word): void {
