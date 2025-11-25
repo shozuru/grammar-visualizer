@@ -8,6 +8,7 @@ import {
 import { Mod } from "./Mod"
 import { Predicate } from "./Predicate"
 import type { Phrase } from "./partsOfSpeech/Phrase"
+import type { WordBuilder } from "../Builders/WordBuilder"
 
 
 export function getLexicalizedMod(adjWord: Word): Mod | null {
@@ -45,6 +46,25 @@ export function addStrandedPassive(wordList: Word[], nounStack: Noun[]): void {
     if (relNoun) {
         relNoun.addModifier(passiveMod)
     }
+}
+
+export function getBy(bList: WordBuilder[], stack: Noun[]): void {
+    const index: number = bList
+        .findIndex(builder => builder.getModStack()
+            .some(mod => mod.getName() === "by")
+        )
+    if (index === -1) return
+
+    const builder: WordBuilder = bList[index]
+    const mod: Mod | undefined = builder.getModStack().find(
+        mod => mod.getName() === "by"
+    )
+    if (!mod) return
+
+    bList = bList.splice(index, 1)
+
+    const nPhrase: Noun = stack[0]
+    nPhrase.addModifier(mod)
 }
 
 // export function handleFocusElement(wordList: Word[]): void {

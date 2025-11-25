@@ -1,4 +1,5 @@
 import {
+    getBy,
     isAdjectiveAgr, isAdjectiveMod, isNounMod, isVerbAgr, isVerbMod
 } from "../syntax/SyntaxMethods"
 import { Adverb } from "../syntax/partsOfSpeech/Adverb"
@@ -26,6 +27,7 @@ export class ClauseBuilder {
     private unfinishedBuilderList: WordBuilder[]
 
     private pendingAdverb: Adverb | null
+    private pendingNoun: Noun | null
 
     constructor() {
         this.predicate = null
@@ -34,6 +36,7 @@ export class ClauseBuilder {
         this.adjunctStack = []
         this.unfinishedBuilderList = []
         this.pendingAdverb = null
+        this.pendingNoun = null
     }
 
     public verbInProgress(): boolean {
@@ -43,13 +46,20 @@ export class ClauseBuilder {
     }
 
     public build(): Clause {
+        this.handleStrandedPreps()
+
         const clause: Clause = new Clause()
         this.addSubjectTo(clause)
-        this.addNounTo(clause)
-        this.addAdjunctTo(clause)
+        this.addNounsTo(clause)
+        this.addAdjunctsTo(clause)
         this.addPredicateTo(clause)
         this.addPendingAdverbTo(clause)
         return clause
+    }
+
+    private handleStrandedPreps(): void {
+        const unfinished: WordBuilder[] = this.unfinishedBuilderList
+        this.handleStrandedBy(unfinished)
     }
 
     private addPredicateTo(clause: Clause): void {
@@ -82,13 +92,13 @@ export class ClauseBuilder {
         clause.addNoun(subject)
     }
 
-    private addAdjunctTo(clause: Clause): void {
+    private addAdjunctsTo(clause: Clause): void {
         for (const adjunct of this.adjunctStack) {
             clause.addAdjunct(adjunct)
         }
     }
 
-    private addNounTo(clause: Clause): void {
+    private addNounsTo(clause: Clause): void {
         for (const noun of this.nounStack) {
             clause.addNoun(noun)
         }
@@ -155,6 +165,10 @@ export class ClauseBuilder {
     }
 
     public buildNominal(nomWord: Word): void {
+        if (this.pendingNoun) {
+            this.nounStack.push(this.pendingNoun)
+            this.pendingNoun = null
+        }
         const nounBuilder: NounBuilder = this.getOrCreateBuilder(NounBuilder)
         if (isNounMod(nomWord)) {
             nounBuilder.createAndAddMod(nomWord)
@@ -176,6 +190,14 @@ export class ClauseBuilder {
     public buildPredicate(predWord: Word): void {
         // when you deal with tense in general, you can deal with 
         // inf, since you don't deal with tense in the main clause
+
+        if (!this.subject && this.pendingNoun) {
+            this.subject = this.pendingNoun
+            this.pendingNoun = null
+        }
+        if (!this.subject) {
+            throw Error("Sentence does not seem to have a subject.")
+        }
         const predBuilder: PredicateBuilder =
             this.getOrCreateBuilder(PredicateBuilder)
         if (isVerbAgr(predWord)) {
@@ -280,11 +302,7 @@ export class ClauseBuilder {
     }
 
     public receiveRel(relNoun: Noun): void {
-        if (!this.subject) {
-            this.subject = relNoun
-        } else {
-            this.nounStack.push(relNoun)
-        }
+        this.pendingNoun = relNoun
     }
 
     public yieldEcmNoun(): Noun {
@@ -375,6 +393,11 @@ export class ClauseBuilder {
             unfinishedBuilder instanceof PredicateBuilder &&
             unfinishedBuilder.hasCopula()
         )
+    }
+
+    private handleStrandedBy(bList: WordBuilder[]): void {
+        const nounStack: Noun[] = this.nounStack
+        getBy(bList, nounStack)
     }
 
     // public generateClauses(): void {

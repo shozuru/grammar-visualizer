@@ -36,7 +36,7 @@ export class GrammarVisualizer {
 }
 
 // TODO: questions, punctuation, conjunctions, relative clauses, 
-// ambiguous sentences, visualization
+// ambiguous sentences, visualization, stranded prepositions
 
 // yes/no questions
 // wh questions with subject WH (no tense promotion)
