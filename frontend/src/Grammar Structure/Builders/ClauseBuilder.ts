@@ -407,16 +407,7 @@ export class ClauseBuilder {
     }
 
     // public generateClauses(): void {
-
-    //         if (isNominalElement(this.wordList)) {
-    //             if (
-    //                 isPassive(currentWord) &&
-    //                 this.nounStack.some(noun => noun.getName() === 'that')
-    //             ) {
-    //                 addStrandedPassive(this.wordList, this.nounStack)
-    //             }
-
-    //         } else if (isFocusElement(currentWord)) {
+    //         if (isFocusElement(currentWord)) {
     //             // handleFocusElement(this.wordList)
     //             const focusWord = this.wordList.shift() as Word
     //             console.log(focusWord.name)

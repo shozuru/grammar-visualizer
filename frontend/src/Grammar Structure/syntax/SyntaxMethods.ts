@@ -2,6 +2,7 @@ import type { Word } from "../types/Word"
 import { Noun } from "./partsOfSpeech/Noun"
 import { Verb } from "./partsOfSpeech/Verb"
 import {
+    ditransitiveList,
     ecmVerbs, objectControlVerbs, PartsOfSpeech,
     raisingVerbs
 } from "./SyntaxConstants"
@@ -135,6 +136,13 @@ export function isConjunction(word: Word): boolean {
         //     conjunctions.has(currentWord)
         // )
     )
+}
+
+export function isDitransitive(predicate: Predicate): boolean {
+    const verb: Phrase | null = predicate.getSemanticContent()
+    if (!(verb instanceof Verb)) return false
+    const name: string = verb.getName()
+    return ditransitiveList.includes(name)
 }
 
 export function isECMPred(pred: Predicate): boolean {

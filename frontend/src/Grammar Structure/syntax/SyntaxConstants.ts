@@ -191,3 +191,42 @@ export const impersonalVerbs: string[] =
         "mean",
         "result"
     ]
+
+export const ditransitiveList: string[] =
+    [
+        "allow",
+        "ask",
+        "bake",
+        "bet",
+        "borrow",
+        "bring",
+        "buy",
+        "call",
+        "conceive",
+        "consider",
+        "cost",
+        "deem",
+        "deny",
+        "feed",
+        "find",
+        "forbid",
+        "get",
+        "give",
+        "grant",
+        "hand",
+        "loan",
+        "mail",
+        "make",
+        "name",
+        "owe",
+        "pass",
+        "promise",
+        "refuse",
+        "render",
+        "sell",
+        "send",
+        "teach",
+        "tell",
+        "wish",
+        "write"
+    ]
