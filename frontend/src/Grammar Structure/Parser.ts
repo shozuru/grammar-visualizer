@@ -36,6 +36,7 @@ export class Parser {
 
         for (const word of fixedWords) {
             console.log(word)
+            // debugger
             const handler = this.registry.getHandler(word)
 
             const ctx: HandlerMethods = {
@@ -47,6 +48,7 @@ export class Parser {
 
             const newCB: ClauseBuilder | void =
                 handler.handle(word, this.currentBuilder, ctx)
+
             if (newCB) {
                 this.currentBuilder = newCB
             }

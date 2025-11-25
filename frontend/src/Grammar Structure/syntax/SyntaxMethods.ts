@@ -56,7 +56,6 @@ export function addStrandedPassive(wordList: Word[], nounStack: Noun[]): void {
 //         )
 // }
 
-
 export function isAdverb(word: Word): boolean {
     return (
         word.pos === PartsOfSpeech.RB ||

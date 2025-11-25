@@ -196,10 +196,6 @@ export class ClauseBuilder {
         }
     }
 
-    public buildRelative(relWord: Word): void {
-        throw Error("I made it here good job so far.")
-    }
-
     public buildCausative(causeWord: Word): void {
         if (!this.subject) {
             throw Error("Causative sentence does not have Effector.")

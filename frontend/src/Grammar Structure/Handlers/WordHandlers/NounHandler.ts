@@ -3,6 +3,7 @@ import type { Word } from "../../types/Word"
 import { ClauseBuilder } from "../../Builders/ClauseBuilder"
 import type { Noun } from "../../syntax/partsOfSpeech/Noun"
 import type { HandlerMethods } from "../../Parser"
+import { isPassive } from "../../syntax/SyntaxMethods"
 
 export class NounHandler implements WordHandler {
 
@@ -11,10 +12,15 @@ export class NounHandler implements WordHandler {
         builder: ClauseBuilder,
         ctx: HandlerMethods
     ): void | ClauseBuilder {
-        if (this.SubRelWOutThat(builder)) {
+
+        if (isPassive(nominalWord)) {
+            throw Error("I made it here")
+
+        } else if (this.SubRelWOutThat(builder)) {
             // The store I went to is here
             // The store *(that) was there is red
             return this.handleSubjectRel(builder, ctx, nominalWord)
+
         } else {
             builder.buildNominal(nominalWord)
         }

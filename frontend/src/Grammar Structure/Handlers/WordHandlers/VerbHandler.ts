@@ -16,6 +16,7 @@ enum PredType {
 }
 
 export class VerbHandler implements WordHandler {
+
     public handle(
         verbalWord: Word,
         cBuilder: ClauseBuilder,
@@ -29,9 +30,11 @@ export class VerbHandler implements WordHandler {
             // the boy went to the school that is blue
             this.shipRelClause(cBuilder, ctx)
             return this.returnToMatrix(verbalWord, ctx)
+
         } else if (currentPred) {
             return this.handleNonfinite(
                 verbalWord, currentPred, cBuilder, ctx.add)
+
         } else {
             cBuilder.buildPredicate(verbalWord)
         }
