@@ -4,7 +4,8 @@ import { ClauseBuilder } from "../../Builders/ClauseBuilder"
 import type { Noun } from "../../syntax/partsOfSpeech/Noun"
 import type { HandlerMethods } from "../../Parser"
 import type { Predicate } from "../../syntax/Predicate"
-import { isDitransitive } from "../../syntax/SyntaxMethods"
+import { isDitransitive, isNounPred } from "../../syntax/SyntaxMethods"
+import type { Clause } from "../../syntax/partsOfSpeech/Clause"
 
 export class NounHandler implements WordHandler {
 
@@ -13,18 +14,17 @@ export class NounHandler implements WordHandler {
         builder: ClauseBuilder,
         ctx: HandlerMethods
     ): void | ClauseBuilder {
-        // This is the person it was done by.
-        // I met the person the book was written by.
-
-        // If there are two nouns in a row and they are after the verb and the 
-        // verb is not ditransitive, it is likely one of these conditions.
 
         if (this.subRelWOutThat(builder)) {
             // The store I went to is here
             // The store *(that) was there is red
             return this.handleSubjectRel(builder, ctx, nominalWord)
+
         } else if (this.obRelWOutThat(builder)) {
-            throw Error("I made it this far.")
+            // This is the person [I] know
+            // This is the person [it] was done by.
+            // I met the person [it] was written by.
+            return this.handleObjectRel(builder, ctx, nominalWord)
 
         } else {
             builder.buildNominal(nominalWord)
@@ -53,12 +53,33 @@ export class NounHandler implements WordHandler {
         return relClause
     }
 
+    private handleObjectRel(
+        builder: ClauseBuilder,
+        ctx: HandlerMethods,
+        noun: Word
+    ): void | ClauseBuilder {
+        const relNoun: Noun = builder.yieldObjectRel()
+        const mtxClause: Clause = builder.build()
+        ctx.add(mtxClause)
+        const relClause: ClauseBuilder = new ClauseBuilder()
+        relClause.receiveRel(relNoun)
+        relClause.buildNominal(noun)
+        return relClause
+    }
+
     private obRelWOutThat(cBuilder: ClauseBuilder): boolean {
         const pred: Predicate | null = cBuilder.getPredicate()
         if (!pred) return false
         return (
             !isDitransitive(pred) &&
-            cBuilder.getNounStack().length > 0
+            this.hasObjectNoun(pred, cBuilder)
+        )
+    }
+
+    private hasObjectNoun(pred: Predicate, builder: ClauseBuilder): boolean {
+        return (
+            isNounPred(pred) ||
+            builder.getNounStack().length > 0
         )
     }
 }

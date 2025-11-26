@@ -191,6 +191,11 @@ export function isNounMod(
     )
 }
 
+export function isNounPred(pred: Predicate): boolean {
+    const content = pred.getSemanticContent()
+    return content instanceof Noun
+}
+
 export function isObjectControlPred(pred: Predicate): boolean {
     const sCont: Phrase | null = pred.getSemanticContent()
     if (!(sCont instanceof Verb)) return false
