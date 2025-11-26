@@ -4,7 +4,10 @@ import { ClauseBuilder } from "../../Builders/ClauseBuilder"
 import type { Noun } from "../../syntax/partsOfSpeech/Noun"
 import type { HandlerMethods } from "../../Parser"
 import type { Predicate } from "../../syntax/Predicate"
-import { isDitransitive, isNounPred, isPassive } from "../../syntax/SyntaxMethods"
+import {
+    isDitransitive, isNounPred,
+    isPassive
+} from "../../syntax/SyntaxMethods"
 import type { Clause } from "../../syntax/partsOfSpeech/Clause"
 
 export class NounHandler implements WordHandler {
@@ -20,7 +23,10 @@ export class NounHandler implements WordHandler {
             // The store *(that) was there is red
             return this.handleSubjectRel(builder, ctx, nominalWord)
 
-        } else if (this.obRelWOutThat(builder, nominalWord)) {
+        } else if (
+            !isPassive(nominalWord) &&
+            this.obRelWOutThat(builder)
+        ) {
             // This is the person [I] know
             // This is the person [it] was done by.
             // I met the person [it] was written by.
@@ -67,11 +73,10 @@ export class NounHandler implements WordHandler {
         return relClause
     }
 
-    private obRelWOutThat(cBuilder: ClauseBuilder, word: Word): boolean {
+    private obRelWOutThat(cBuilder: ClauseBuilder): boolean {
         const pred: Predicate | null = cBuilder.getPredicate()
         if (!pred) return false
         return (
-            !isPassive(word) &&
             !isDitransitive(pred) &&
             this.hasObjectNoun(pred, cBuilder)
         )
