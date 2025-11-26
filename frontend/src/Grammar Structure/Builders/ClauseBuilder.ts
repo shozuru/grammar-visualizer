@@ -20,12 +20,10 @@ import { Clause } from "../syntax/partsOfSpeech/Clause"
 export class ClauseBuilder {
 
     private predicate: Predicate | null
-
     private subject: Noun | null
     private nounStack: Noun[]
     private adjunctStack: (Preposition | Adverb)[]
     private unfinishedBuilderList: WordBuilder[]
-
     private pendingAdverb: Adverb | null
     private pendingNoun: Noun | null
 
@@ -60,6 +58,27 @@ export class ClauseBuilder {
     private handleStrandedPreps(): void {
         const unfinished: WordBuilder[] = this.unfinishedBuilderList
         this.handleStrandedBy(unfinished)
+
+        const pBuilder: PrepBuilder | undefined = this.unfinishedPrep()
+        if (pBuilder) {
+            this.resolvePrep(pBuilder)
+        }
+    }
+
+    private resolvePrep(builder: PrepBuilder): void {
+        if (this.pendingNoun) {
+            builder.setObject(this.pendingNoun)
+            this.pendingNoun = null
+        }
+        this.removeFromBuilderList(builder)
+        const pPhrase: Preposition = builder.build()
+        this.adjunctStack.push(pPhrase)
+    }
+
+    private unfinishedPrep(): PrepBuilder | undefined {
+        return this.unfinishedBuilderList.find(
+            builder => builder instanceof PrepBuilder
+        )
     }
 
     private addPredicateTo(clause: Clause): void {
@@ -99,6 +118,10 @@ export class ClauseBuilder {
     }
 
     private addNounsTo(clause: Clause): void {
+        if (this.pendingNoun) {
+            this.nounStack.push(this.pendingNoun)
+            this.pendingNoun = null
+        }
         for (const noun of this.nounStack) {
             clause.addNoun(noun)
         }
@@ -165,10 +188,6 @@ export class ClauseBuilder {
     }
 
     public buildNominal(nomWord: Word): void {
-        if (this.pendingNoun) {
-            this.nounStack.push(this.pendingNoun)
-            this.pendingNoun = null
-        }
         const nounBuilder: NounBuilder = this.getOrCreateBuilder(NounBuilder)
         if (isNounMod(nomWord)) {
             nounBuilder.createAndAddMod(nomWord)

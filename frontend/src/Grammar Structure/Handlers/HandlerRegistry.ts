@@ -88,7 +88,7 @@ export class HandlerRegistry {
     public getHandler(word: Word): WordHandler {
         const handler = this.registry.get(word.pos)
         if (!handler) {
-            throw Error(`This word, '${word}' does not have a handler`)
+            throw Error(`This word, '${word.name}' does not have a handler`)
         }
         return handler
     }
