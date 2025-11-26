@@ -109,32 +109,12 @@ export class Parser {
                     wordList[i + 1].pos == PartsOfSpeech.VBN
                 )) {
                 wordList[i].pos = PartsOfSpeech.PERFECTIVE
-            } else if (isBeVerb(wordList[i].name)) {
-                let j: number = i + 1
-                while (
-                    wordList[j] &&
-                    wordList[j].pos !== PartsOfSpeech.VBN &&
-                    wordList[j].pos !== PartsOfSpeech.IN &&
-                    wordList[j].pos !== PartsOfSpeech.WDT &&
-                    wordList[j].pos !== PartsOfSpeech.TO
 
-                ) {
-                    j += 1
-                }
-                if (wordList[j] &&
-                    wordList[j].pos === PartsOfSpeech.VBN
-                ) {
-                    wordList[i].pos = PartsOfSpeech.PsvAgr
 
-                    const index: number =
-                        passiveByPhraseIndex(wordList.slice(j))
 
-                    if (index >= 0) {
-                        wordList[j + index].pos = PartsOfSpeech.PASSIVE
-                    }
-                }
+
             }
-
+            this.handlePassive(wordList, i)
             if (
                 (i === 0 &&
                     (
@@ -237,5 +217,48 @@ export class Parser {
             throw ("Tried to pop clause builder that does not exist.")
         }
         return cBuilder
+    }
+
+    private handlePassive(wordList: Word[], i: number) {
+        // the presence of a 'by', in which the BE is just a form of agr
+        // the presence of BE + VBN, without 'by'
+
+        // if we see BE + VBN, tag it first as impersonal
+        // if we also see a by phrase, then we change it to agr
+
+        if (isBeVerb(wordList[i].name)) {
+            let j: number = i + 1
+            if (wordList[j].pos === PartsOfSpeech.RB) {
+                j += 1
+            }
+            if (wordList[j] && wordList[j].pos === PartsOfSpeech.VBN) {
+                wordList[i].pos = PartsOfSpeech.IMPERSONAL
+
+                const index: number =
+                    passiveByPhraseIndex(wordList.slice(j))
+
+                if (index >= 0) {
+                    wordList[j + index].pos = PartsOfSpeech.PASSIVE
+                    wordList[i].pos = PartsOfSpeech.PsvAgr
+                }
+            }
+            // while (
+            //     wordList[j] &&
+            //     wordList[j].pos !== PartsOfSpeech.VBN &&
+            //     wordList[j].pos !== PartsOfSpeech.IN &&
+            //     wordList[j].pos !== PartsOfSpeech.WDT &&
+            //     wordList[j].pos !== PartsOfSpeech.TO
+
+            // ) {
+            //     j += 1
+            // }
+            // if (wordList[j] &&
+            //     wordList[j].pos === PartsOfSpeech.VBN
+            // ) {
+            //     wordList[i].pos = PartsOfSpeech.PsvAgr
+
+
+            // }
+        }
     }
 }
