@@ -35,7 +35,7 @@ export class HandlerRegistry {
                 PartsOfSpeech.VBP, PartsOfSpeech.VBN, PartsOfSpeech.PsvAgr,
                 PartsOfSpeech.InfAgr, PartsOfSpeech.TO, PartsOfSpeech.TENSE,
                 PartsOfSpeech.PERFECTIVE, PartsOfSpeech.NEGATION,
-                PartsOfSpeech.MD, PartsOfSpeech.QTense
+                PartsOfSpeech.MD, PartsOfSpeech.QTense, PartsOfSpeech.VBG
             ]
         const adverbTags: PartsOfSpeech[] =
             [

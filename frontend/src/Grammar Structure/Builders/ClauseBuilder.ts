@@ -211,29 +211,33 @@ export class ClauseBuilder {
         // when you deal with tense in general, you can deal with 
         // inf, since you don't deal with tense in the main clause
 
-        this.checkForSubject()
-
+        this.movePendingNoun()
         const predBuilder: PredicateBuilder =
             this.getOrCreateBuilder(PredicateBuilder)
+
         if (isVerbAgr(predWord)) {
             predBuilder.createAndAddAgr(predWord)
         } else if (isVerbMod(predWord)) {
             predBuilder.createAndAddMod(predWord)
         } else {
-            const verb: Verb = new Verb(predWord.name)
-            predBuilder.setVerb(verb)
-            if (predBuilder.hasSemanticContent()) {
-                if (this.pendingAdverb) {
-                    this.placeAdverbIn(predBuilder)
-                }
-                this.removeFromBuilderList(predBuilder)
-                const predicate: Predicate = predBuilder.build()
-                this.pushPredToClause(predicate)
-            }
+            this.createPred(predBuilder, predWord)
         }
     }
 
-    private checkForSubject(): void {
+    private createPred(pBuilder: PredicateBuilder, pWord: Word): void {
+        const verb: Verb = new Verb(pWord.name)
+        pBuilder.setVerb(verb)
+        if (pBuilder.hasSemanticContent()) {
+            if (this.pendingAdverb) {
+                this.placeAdverbIn(pBuilder)
+            }
+            this.removeFromBuilderList(pBuilder)
+            const predicate: Predicate = pBuilder.build()
+            this.pushPredToClause(predicate)
+        }
+    }
+
+    private movePendingNoun(): void {
         if (this.pendingNoun) {
             this.subject = this.pendingNoun
             this.pendingNoun = null
