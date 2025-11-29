@@ -234,14 +234,10 @@ export class ClauseBuilder {
     }
 
     private checkForSubject(): void {
-        if (this.subject) return
-
         if (this.pendingNoun) {
             this.subject = this.pendingNoun
             this.pendingNoun = null
-
-        } else throw Error("Sentence does not seem to have a subject.")
-
+        }
     }
 
     public buildCausative(causeWord: Word): void {

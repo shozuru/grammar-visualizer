@@ -150,7 +150,7 @@ export class Parser {
                     )
                 )
             ) {
-                wordList[i].pos = PartsOfSpeech.QuestionTense
+                wordList[i].pos = PartsOfSpeech.QTense
             } else if (
                 (
                     wordList[i].name === "make" ||
@@ -242,23 +242,6 @@ export class Parser {
                     wordList[i].pos = PartsOfSpeech.PsvAgr
                 }
             }
-            // while (
-            //     wordList[j] &&
-            //     wordList[j].pos !== PartsOfSpeech.VBN &&
-            //     wordList[j].pos !== PartsOfSpeech.IN &&
-            //     wordList[j].pos !== PartsOfSpeech.WDT &&
-            //     wordList[j].pos !== PartsOfSpeech.TO
-
-            // ) {
-            //     j += 1
-            // }
-            // if (wordList[j] &&
-            //     wordList[j].pos === PartsOfSpeech.VBN
-            // ) {
-            //     wordList[i].pos = PartsOfSpeech.PsvAgr
-
-
-            // }
         }
     }
 }

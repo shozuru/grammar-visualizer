@@ -169,7 +169,7 @@ export function isECMPred(pred: Predicate): boolean {
 
 export function isFocusElement(word: Word): boolean {
     return (
-        word.pos === PartsOfSpeech.QuestionTense
+        word.pos === PartsOfSpeech.QTense
     )
 }
 
@@ -295,7 +295,8 @@ export function isVerbMod(word: Word): boolean {
         word.pos === PartsOfSpeech.PERFECTIVE ||
         word.pos === PartsOfSpeech.NEGATION ||
         word.pos === PartsOfSpeech.MD ||
-        word.pos === PartsOfSpeech.CAUSATIVE
+        word.pos === PartsOfSpeech.CAUSATIVE ||
+        word.pos === PartsOfSpeech.QTense
     )
 }
 

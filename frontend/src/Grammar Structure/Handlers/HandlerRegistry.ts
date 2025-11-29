@@ -35,7 +35,7 @@ export class HandlerRegistry {
                 PartsOfSpeech.VBP, PartsOfSpeech.VBN, PartsOfSpeech.PsvAgr,
                 PartsOfSpeech.InfAgr, PartsOfSpeech.TO, PartsOfSpeech.TENSE,
                 PartsOfSpeech.PERFECTIVE, PartsOfSpeech.NEGATION,
-                PartsOfSpeech.MD
+                PartsOfSpeech.MD, PartsOfSpeech.QTense
             ]
         const adverbTags: PartsOfSpeech[] =
             [
@@ -89,7 +89,7 @@ export class HandlerRegistry {
     public getHandler(word: Word): WordHandler {
         const handler = this.registry.get(word.pos)
         if (!handler) {
-            throw Error(`This word, '${word.name}' does not have a handler`)
+            throw Error(`This word, '${word.name}', does not have a handler`)
         }
         return handler
     }

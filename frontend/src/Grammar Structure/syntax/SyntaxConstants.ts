@@ -49,7 +49,7 @@ export enum PartsOfSpeech {
     TENSE,
     NEGATION,
     PERFECTIVE,
-    QuestionTense,
+    QTense,
     CAUSATIVE,
     PASSIVE,
     PsvAgr,
