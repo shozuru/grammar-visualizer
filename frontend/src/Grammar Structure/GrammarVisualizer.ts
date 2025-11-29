@@ -60,9 +60,8 @@ export class GrammarVisualizer {
 
 // -----------------------------------------------------------------------------
 
-// experiencer verbs might be super limited
 // determining if intransitive verb is unaccusative or unergative might prove 
-// more challenging
+// challenging
 // might want to look into an ML model that can classify it or make one yourself
 
 // might want to do stuff for case and agreement on nouns and verbs
