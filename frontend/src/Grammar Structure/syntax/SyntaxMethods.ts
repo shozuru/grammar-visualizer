@@ -77,6 +77,16 @@ export function getBy(bList: WordBuilder[], stack: Noun[]): void {
 //         )
 // }
 
+export function isAdjunctRel(word: Word): boolean {
+    return (
+        word.pos === PartsOfSpeech.WR ||
+        (
+            word.pos === PartsOfSpeech.WDT &&
+            word.name === "which"
+        )
+    )
+}
+
 export function isAdverb(word: Word): boolean {
     return (
         word.pos === PartsOfSpeech.RB ||

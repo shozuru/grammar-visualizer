@@ -58,6 +58,7 @@ export class HandlerRegistry {
         const relTags: PartsOfSpeech[] =
             [
                 PartsOfSpeech.WDT,
+                PartsOfSpeech.WR,
                 PartsOfSpeech.WP,
                 PartsOfSpeech.WPQ
             ]

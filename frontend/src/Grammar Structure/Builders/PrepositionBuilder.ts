@@ -3,6 +3,7 @@ import type { Word } from "../types/Word";
 import { WordBuilder } from "./WordBuilder";
 import type { Noun } from "../syntax/partsOfSpeech/Noun";
 import { Adverb } from "../syntax/partsOfSpeech/Adverb";
+import { PartsOfSpeech } from "../syntax/SyntaxConstants";
 
 export class PrepBuilder extends WordBuilder {
 
@@ -36,6 +37,15 @@ export class PrepBuilder extends WordBuilder {
             )
         }
         this.preposition.addAdjunct(adverb)
+    }
+
+    public setGenericPrep(name: string): void {
+        this.setPreposition(
+            {
+                pos: PartsOfSpeech.IN,
+                name: name
+            }
+        )
     }
 
     public build(): Preposition {

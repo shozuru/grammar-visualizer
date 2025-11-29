@@ -59,7 +59,7 @@ export class ClauseBuilder {
         const unfinished: WordBuilder[] = this.unfinishedBuilderList
         this.handleStrandedBy(unfinished)
 
-        const pBuilder: PrepBuilder | undefined = this.unfinishedPrep()
+        const pBuilder: PrepBuilder | undefined = this.getUnfinishedPrep()
         if (pBuilder) {
             this.resolvePrep(pBuilder)
         }
@@ -70,15 +70,16 @@ export class ClauseBuilder {
             builder.setObject(this.pendingNoun)
             this.pendingNoun = null
         }
-        this.removeFromBuilderList(builder)
         const pPhrase: Preposition = builder.build()
         this.adjunctStack.push(pPhrase)
     }
 
-    private unfinishedPrep(): PrepBuilder | undefined {
-        return this.unfinishedBuilderList.find(
+    public getUnfinishedPrep(): PrepBuilder | undefined {
+        const prep: PrepBuilder | undefined = this.unfinishedBuilderList.find(
             builder => builder instanceof PrepBuilder
         )
+        if (prep) this.removeFromBuilderList(prep)
+        return prep
     }
 
     private addPredicateTo(clause: Clause): void {
@@ -326,8 +327,20 @@ export class ClauseBuilder {
         this.subject = subject
     }
 
-    public receiveRel(relNoun: Noun): void {
+    public receiveRelNoun(relNoun: Noun): void {
         this.pendingNoun = relNoun
+    }
+
+    public receiveRelAdjunct(relAdjunct: Noun): void {
+        const adjunctPhrase = new PrepBuilder()
+        adjunctPhrase.setGenericPrep("LOCATION")
+        adjunctPhrase.setObject(relAdjunct)
+        this.addPhrase(adjunctPhrase)
+    }
+
+    public receiveRelPrep(noun: Noun, relPrep: PrepBuilder): void {
+        relPrep.setObject(noun)
+        this.addPhrase(relPrep)
     }
 
     public yieldEcmNoun(): Noun {
@@ -425,11 +438,9 @@ export class ClauseBuilder {
         getBy(bList, nounStack)
     }
 
-    // public generateClauses(): void {
     //         if (isFocusElement(currentWord)) {
     //             // handleFocusElement(this.wordList)
     //             const focusWord = this.wordList.shift() as Word
     //             console.log(focusWord.name)
     //         }
-    // }
 }

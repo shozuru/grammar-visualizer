@@ -55,7 +55,7 @@ export class NounHandler implements WordHandler {
         ctx.push(builder)
         const relClause: ClauseBuilder = new ClauseBuilder()
         relClause.buildNominal(noun)
-        relClause.receiveRel(relNoun)
+        relClause.receiveRelNoun(relNoun)
         return relClause
     }
 
@@ -68,7 +68,7 @@ export class NounHandler implements WordHandler {
         const mtxClause: Clause = builder.build()
         ctx.add(mtxClause)
         const relClause: ClauseBuilder = new ClauseBuilder()
-        relClause.receiveRel(relNoun)
+        relClause.receiveRelNoun(relNoun)
         relClause.buildNominal(noun)
         return relClause
     }
