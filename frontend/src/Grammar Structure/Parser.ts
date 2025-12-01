@@ -65,43 +65,8 @@ export class Parser {
             this.handleContractions(wordList, i)
             this.handlePerfect(wordList, i)
             this.handlePassive(wordList, i)
+            this.handleQTense(wordList, i)
             if (
-                (i === 0 &&
-                    (
-                        wordList[i].pos === PartsOfSpeech.VBD ||
-                        wordList[i].pos === PartsOfSpeech.VBZ ||
-                        wordList[i].pos === PartsOfSpeech.VBP ||
-                        wordList[i].pos === PartsOfSpeech.MD ||
-                        wordList[i].pos === PartsOfSpeech.TENSE
-                    )
-
-                ) &&
-                (
-                    isNoun(
-                        {
-                            pos: wordList[i + 1].pos,
-                            name: wordList[i + 1].name
-                        }
-                    ) ||
-                    (
-                        isAdverb(
-                            {
-                                pos: wordList[i + 1].pos,
-                                name: wordList[i + 1].name
-                            }
-                        )
-                        &&
-                        isNoun(
-                            {
-                                pos: wordList[i + 2].pos,
-                                name: wordList[i + 2].name
-                            }
-                        )
-                    )
-                )
-            ) {
-                wordList[i].pos = PartsOfSpeech.QTense
-            } else if (
                 (
                     wordList[i].name === "make" ||
                     wordList[i].name === "made" ||
@@ -264,5 +229,44 @@ export class Parser {
         else if (wordList[i + 1].pos == PartsOfSpeech.VBN) {
             current.pos = PartsOfSpeech.PERFECTIVE
         }
+    }
+
+    private handleQTense(wordList: Word[], i: number): void {
+        if (i !== 0) return
+        if (!wordList[i + 1]) return
+
+        const current: Word = wordList[i]
+        const next: Word = wordList[i + 1]
+        const tenseList: number[] = [
+            PartsOfSpeech.VBD, PartsOfSpeech.VBZ, PartsOfSpeech.VBP,
+            PartsOfSpeech.MD, PartsOfSpeech.TENSE
+        ]
+
+        if (!tenseList.includes(current.pos)) return
+        if (this.isNoun(next) || (
+            wordList[i + 2] &&
+            this.isAdverb(next) &&
+            isNoun(wordList[i + 2])
+        )) {
+            wordList[i].pos = PartsOfSpeech.QTense
+        }
+    }
+
+    private isNoun(word: Word): boolean {
+        return isNoun(
+            {
+                pos: word.pos,
+                name: word.name
+            }
+        )
+    }
+
+    private isAdverb(word: Word): boolean {
+        return isAdverb(
+            {
+                pos: word.pos,
+                name: word.name
+            }
+        )
     }
 }
