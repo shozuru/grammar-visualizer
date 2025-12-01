@@ -173,6 +173,10 @@ export function isFocusElement(word: Word): boolean {
     )
 }
 
+export function isNominal(word: Word): boolean {
+    return isNoun(word) || isNounMod(word)
+}
+
 export function isNoun(word: Word): boolean {
     const currentPOS: number = word.pos
     return (currentPOS === PartsOfSpeech.NN ||
@@ -296,7 +300,9 @@ export function isVerbMod(word: Word): boolean {
         word.pos === PartsOfSpeech.NEGATION ||
         word.pos === PartsOfSpeech.MD ||
         word.pos === PartsOfSpeech.CAUSATIVE ||
-        word.pos === PartsOfSpeech.QTense
+        word.pos === PartsOfSpeech.QTense ||
+        word.pos === PartsOfSpeech.PRESENT ||
+        word.pos === PartsOfSpeech.PAST
     )
 }
 

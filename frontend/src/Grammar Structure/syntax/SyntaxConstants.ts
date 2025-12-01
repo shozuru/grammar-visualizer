@@ -58,7 +58,9 @@ export enum PartsOfSpeech {
     SUPERLATIVE,
     COMPARATIVE,
     IMPERSONAL,
-    WHWord
+    WHWord,
+    PRESENT,
+    PAST
 }
 
 export enum Case {
@@ -143,7 +145,6 @@ export const ecmVerbs: string[] =
         "estimate",
     ]
 
-
 export const objectControlVerbs: string[] =
     [
         "ask",
@@ -164,7 +165,6 @@ export const objectControlVerbs: string[] =
         "pay",
         "paid"
     ]
-
 
 export const raisingVerbs: string[] =
     [

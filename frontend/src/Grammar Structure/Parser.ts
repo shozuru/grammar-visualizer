@@ -2,7 +2,7 @@ import { ClauseBuilder } from "./Builders/ClauseBuilder";
 import type { Clause } from "./syntax/partsOfSpeech/Clause";
 import { PartsOfSpeech } from "./syntax/SyntaxConstants";
 import {
-    isAdverb, isBeVerb, isNoun, isVerb, passiveByPhraseIndex
+    isAdverb, isBeVerb, isNominal, isNoun, isVerb, passiveByPhraseIndex
 } from "./syntax/SyntaxMethods";
 import type { Word } from "./types/Word";
 import { HandlerRegistry } from "./Handlers/HandlerRegistry"
@@ -197,12 +197,45 @@ export class Parser {
 
     private handleWHWords(wordList: Word[], i: number): void {
         // What did you say?
-        if (i === 0) {
-            const current: Word = wordList[i]
-            const pos: number = current.pos
-            if (pos === PartsOfSpeech.WP) {
-                current.pos = PartsOfSpeech.WHWord
-            }
+        if (i !== 0) return
+        const current: Word = wordList[i]
+        const pos: number = current.pos
+        if (pos !== PartsOfSpeech.WP) return
+        current.pos = PartsOfSpeech.WHWord
+
+        this.handleTensePromotion(wordList, i)
+
+        // if the next word is 'did' and the following word is nominal, 
+        // then the second word should either be present tense or past tense
+
+
+        // tentatively have all 'do' and 'did' as tense in this condition.
+        // If we see a verb coming up, then change the verb to tense, 
+        // and process it accordingly.
+        // then process the verb
+
+        // Who went to the park?
+
+        // Who [did] the laundry (impress)?
+
+        // Who [did] you see?
+
+        // Who saw the people?
+
+        // Who is going to the park?
+
+
+    }
+
+    private handleTensePromotion(wordList: Word[], i: number): void {
+        const secondWord: Word = wordList[i + 1]
+        const thirdWord: Word = wordList[i + 2]
+
+        if (!isNominal(thirdWord)) return
+        if (secondWord.name === 'do') {
+            secondWord.pos = PartsOfSpeech.PRESENT
+        } else if (secondWord.name === 'did') {
+            secondWord.pos = PartsOfSpeech.PAST
         }
     }
 
