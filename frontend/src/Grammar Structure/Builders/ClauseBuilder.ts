@@ -51,8 +51,8 @@ export class ClauseBuilder {
         const clause: Clause = new Clause()
         this.addSubjectTo(clause)
         this.addNounsTo(clause)
-        this.addAdjunctsTo(clause)
         this.addPredicateTo(clause)
+        this.addAdjunctsTo(clause)
         this.addPendingAdverbTo(clause)
         return clause
     }
@@ -119,8 +119,9 @@ export class ClauseBuilder {
     }
 
     private addPendingAdverbTo(clause: Clause): void {
+        const pred = clause.getPredicate()
         if (this.pendingAdverb) {
-            clause.addAdjunct(this.pendingAdverb)
+            pred.addAdjunct(this.pendingAdverb)
         }
     }
 
@@ -133,8 +134,9 @@ export class ClauseBuilder {
     }
 
     private addAdjunctsTo(clause: Clause): void {
+        const pred = clause.getPredicate()
         for (const adjunct of this.adjunctStack) {
-            clause.addAdjunct(adjunct)
+            pred.addAdjunct(adjunct)
         }
     }
 

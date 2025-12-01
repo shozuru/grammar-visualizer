@@ -1,12 +1,9 @@
 import { Noun } from "./Noun"
-import { Preposition } from "./Preposition"
-import { Adverb } from "./Adverb"
 import { Predicate } from "../Predicate"
 
 export class Clause {
     private predicate: Predicate | null
     private nounList: Noun[]
-    private adjunctList: (Adverb | Preposition)[]
 
 
     // maybe this should wait until semantics are dealt with since it introduces
@@ -16,7 +13,6 @@ export class Clause {
     constructor() {
         this.predicate = null
         this.nounList = []
-        this.adjunctList = []
 
         // this.causativeNoun = null
     }
@@ -32,11 +28,14 @@ export class Clause {
         this.predicate = pred
     }
 
-    public addAdjunct(adjunct: Preposition | Adverb) {
-        this.adjunctList.push(adjunct)
-    }
-
     public getNouns(): Noun[] {
         return this.nounList
+    }
+
+    public getPredicate(): Predicate {
+        if (!this.predicate) {
+            throw Error("No predicate has been set")
+        }
+        return this.predicate
     }
 }
