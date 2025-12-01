@@ -61,24 +61,12 @@ export class Parser {
 
     private fixPartsOfSpeech(wordList: Word[]): Word[] {
         for (let i = 0; i < wordList.length; i++) {
-
             this.handleContractions(wordList, i)
             this.handlePerfect(wordList, i)
             this.handlePassive(wordList, i)
             this.handleQTense(wordList, i)
+            this.handleCausative(wordList, i)
             if (
-                (
-                    wordList[i].name === "make" ||
-                    wordList[i].name === "made" ||
-                    wordList[i].name === "let"
-                ) && (
-                    wordList
-                        .slice(i)
-                        .some(item => item.pos === PartsOfSpeech.VB)
-                )
-            ) {
-                wordList[i].pos = PartsOfSpeech.CAUSATIVE
-            } else if (
                 wordList[i].pos === PartsOfSpeech.DT &&
                 (
                     wordList[i + 1].pos === PartsOfSpeech.RBS ||
@@ -268,5 +256,18 @@ export class Parser {
                 name: word.name
             }
         )
+    }
+
+    private handleCausative(wordList: Word[], i: number): void {
+        const causList: string[] = ["make", "made", "let"]
+        const current = wordList[i]
+
+        if (causList.includes(current.name) &&
+            wordList
+                .slice(i)
+                .some(word => word.pos === PartsOfSpeech.VB)
+        ) {
+            current.pos = PartsOfSpeech.CAUSATIVE
+        }
     }
 }
