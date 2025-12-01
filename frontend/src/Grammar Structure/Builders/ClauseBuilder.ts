@@ -458,6 +458,14 @@ export class ClauseBuilder {
         getBy(bList, nounStack)
     }
 
+    public hasUnfinishedPrep(): boolean {
+        const builder: PrepBuilder | undefined =
+            this.unfinishedBuilderList.find(
+                builder => builder instanceof PrepBuilder
+            )
+        return !!builder
+    }
+
     //         if (isFocusElement(currentWord)) {
     //             // handleFocusElement(this.wordList)
     //             const focusWord = this.wordList.shift() as Word

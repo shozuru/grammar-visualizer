@@ -78,6 +78,7 @@ export class NounHandler implements WordHandler {
         if (!pred) return false
 
         return (
+            !cBuilder.hasUnfinishedPrep() &&
             !isDitransitive(pred) &&
             this.hasObjectNoun(pred, cBuilder)
         )
