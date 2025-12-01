@@ -61,43 +61,16 @@ export class Parser {
 
     private fixPartsOfSpeech(wordList: Word[]): Word[] {
         for (let i = 0; i < wordList.length; i++) {
+
             this.handleContractions(wordList, i)
             this.handlePerfect(wordList, i)
             this.handlePassive(wordList, i)
             this.handleQTense(wordList, i)
             this.handleCausative(wordList, i)
-            if (
-                wordList[i].pos === PartsOfSpeech.DT &&
-                (
-                    wordList[i + 1].pos === PartsOfSpeech.RBS ||
-                    wordList[i + 1].pos === PartsOfSpeech.JJS
-                )
-            ) {
-                wordList[i].pos = PartsOfSpeech.AdvAgr
-                if (wordList[i + 1].name === "most") {
-                    wordList[i + 1].pos = PartsOfSpeech.SUPERLATIVE
-                }
-            } else if (
-                wordList[i].pos === PartsOfSpeech.SUPERLATIVE &&
-                wordList[i + 1].pos === PartsOfSpeech.NN
-            ) {
-                wordList[i + 1].pos = PartsOfSpeech.RB
-            } else if (
-                wordList[i].pos === PartsOfSpeech.TO &&
-                wordList[i].name === "to"
-            ) {
-                wordList[i].pos = PartsOfSpeech.InfAgr
-            } else if (
-                wordList[i].pos === PartsOfSpeech.RB &&
-                wordList[i].name === "not"
-            ) {
-                wordList[i].pos = PartsOfSpeech.NEGATION
-            } else if (
-                wordList[i].pos === PartsOfSpeech.DT &&
-                isVerb(wordList[i + 1])
-            ) {
-                wordList[i].pos = PartsOfSpeech.PRP
-            }
+            this.handleSuperlative(wordList, i)
+            this.handleNonFinite(wordList, i)
+            this.handleNegation(wordList, i)
+            this.handlePronouns(wordList, i)
             this.handleWHWords(wordList, i)
         }
         return wordList
@@ -269,5 +242,55 @@ export class Parser {
         ) {
             current.pos = PartsOfSpeech.CAUSATIVE
         }
+    }
+
+    private handleSuperlative(wordList: Word[], i: number): void {
+        if (!wordList[i + 1]) return
+
+        const superList: number[] = [PartsOfSpeech.RBS, PartsOfSpeech.JJS]
+
+        const current: Word = wordList[i]
+        const next: Word = wordList[i + 1]
+
+        if (current.pos === PartsOfSpeech.DT && superList.includes(next.pos)) {
+            current.pos = PartsOfSpeech.AdvAgr
+            if (next.name === "most") {
+                next.pos = PartsOfSpeech.SUPERLATIVE
+            }
+        } else if (
+            current.pos === PartsOfSpeech.SUPERLATIVE &&
+            next.pos === PartsOfSpeech.NN
+        ) {
+            next.pos = PartsOfSpeech.RB
+        }
+    }
+
+    private handleNonFinite(wordList: Word[], i: number): void {
+        const current: Word = wordList[i]
+        if (!(current.pos === PartsOfSpeech.TO &&
+            current.name === "to"
+        )) return
+        current.pos = PartsOfSpeech.InfAgr
+    }
+
+    private handleNegation(wordList: Word[], i: number): void {
+        const current: Word = wordList[i]
+        if (!(
+            current.pos === PartsOfSpeech.RB &&
+            current.name === "not"
+        )) return
+        current.pos = PartsOfSpeech.NEGATION
+    }
+
+    private handlePronouns(wordList: Word[], i: number): void {
+        if (!wordList[i + 1]) return
+        const current: Word = wordList[i]
+        const next: Word = wordList[i + 1]
+
+        if (!(
+            current.pos === PartsOfSpeech.DT &&
+            isVerb(next)
+        )) return
+        current.pos = PartsOfSpeech.PRP
     }
 }
