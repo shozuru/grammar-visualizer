@@ -30,6 +30,7 @@ export class NounHandler implements WordHandler {
             // This is the person [I] know
             // This is the person [it] was done by.
             // I met the person [it] was written by.
+            // ***When did you go to [the] store?
             return this.handleObjectRel(builder, ctx, nominalWord)
 
         } else {
@@ -76,6 +77,7 @@ export class NounHandler implements WordHandler {
     private obRelWOutThat(cBuilder: ClauseBuilder): boolean {
         const pred: Predicate | null = cBuilder.getPredicate()
         if (!pred) return false
+
         return (
             !isDitransitive(pred) &&
             this.hasObjectNoun(pred, cBuilder)

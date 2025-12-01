@@ -196,13 +196,14 @@ export class Parser {
     }
 
     private handleWHWords(wordList: Word[], i: number): void {
-        // What did you say?
         if (i !== 0) return
         const current: Word = wordList[i]
         const pos: number = current.pos
-        if (pos !== PartsOfSpeech.WP) return
-        current.pos = PartsOfSpeech.WHWord
-
+        if (pos === PartsOfSpeech.WP) {
+            current.pos = PartsOfSpeech.WHNoun
+        } else if (pos === PartsOfSpeech.WR) {
+            current.pos = PartsOfSpeech.WHAdverb
+        }
         this.handleTensePromotion(wordList, i)
 
         // if the next word is 'did' and the following word is nominal, 

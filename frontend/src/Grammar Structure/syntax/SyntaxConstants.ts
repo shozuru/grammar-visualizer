@@ -58,7 +58,8 @@ export enum PartsOfSpeech {
     SUPERLATIVE,
     COMPARATIVE,
     IMPERSONAL,
-    WHWord,
+    WHNoun,
+    WHAdverb,
     PRESENT,
     PAST
 }
