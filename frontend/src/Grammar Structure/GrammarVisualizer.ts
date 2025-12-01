@@ -27,7 +27,7 @@ export class GrammarVisualizer {
             const Word: Word = {
 
                 pos: listOfPos[i],
-                name: listOfWords[i]
+                name: listOfWords[i].toLowerCase().replace(/[^\w\s]|_/g, '')
             }
             zipped.push(Word)
         }

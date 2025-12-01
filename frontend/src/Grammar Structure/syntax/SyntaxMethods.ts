@@ -10,6 +10,7 @@ import { Mod } from "./Mod"
 import { Predicate } from "./Predicate"
 import type { Phrase } from "./partsOfSpeech/Phrase"
 import type { WordBuilder } from "../Builders/WordBuilder"
+import type { PredicateBuilder } from "../Builders/PredicateBuilder"
 
 
 export function getLexicalizedMod(adjWord: Word): Mod | null {
@@ -345,4 +346,30 @@ export function uncontractVerbalModifiers(modifier: Mod): Mod[] {
     } else {
         return [modifier]
     }
+}
+
+export function getVerbFromTense(pBuilder: PredicateBuilder): Verb | undefined {
+    const tMod: Mod | undefined = pBuilder.getModStack().find(
+        mod => (
+            mod.getName() === "do" ||
+            mod.getName() === "did"
+        )
+    )
+    if (!tMod) return undefined
+
+    pBuilder.removeMod(tMod)
+    const verb: Verb = new Verb(tMod.getName())
+    return verb
+}
+
+export function isWHWord(name: string): boolean {
+    const whWords: string[] = [
+        "who",
+        "what",
+        "where",
+        "why",
+        "when",
+        "how"
+    ]
+    return whWords.includes(name)
 }

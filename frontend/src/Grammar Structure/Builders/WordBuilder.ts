@@ -27,6 +27,15 @@ export abstract class WordBuilder {
         this.modStack.push(mod)
     }
 
+    public removeMod(modToRemove: Mod): void {
+        if (!this.modStack.includes(modToRemove)) {
+            throw Error("mod to remove not in modStack")
+        }
+        this.modStack = this.modStack.filter(
+            mod => mod !== modToRemove
+        )
+    }
+
     public createAndAddAgr(word: Word): void {
         const agr: Agr = new Agr(word)
         this.agrStack.push(agr)
@@ -34,6 +43,15 @@ export abstract class WordBuilder {
 
     public addAgr(agr: Agr): void {
         this.agrStack.push(agr)
+    }
+
+    public removeAgr(agrToRemove: Agr): void {
+        if (!this.agrStack.includes(agrToRemove)) {
+            throw Error("agr to remove not in agrStack")
+        }
+        this.agrStack = this.agrStack.filter(
+            agr => agr !== agrToRemove
+        )
     }
 
     public getAgrStack(): Agr[] {

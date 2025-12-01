@@ -1,6 +1,8 @@
 import {
     getBy,
-    isAdjectiveAgr, isAdjectiveMod, isNounMod, isVerbAgr, isVerbMod
+    getVerbFromTense,
+    isAdjectiveAgr, isAdjectiveMod, isNounMod, isVerbAgr, isVerbMod,
+    isWHWord
 } from "../syntax/SyntaxMethods"
 import { Adverb } from "../syntax/partsOfSpeech/Adverb"
 import { Noun } from "../syntax/partsOfSpeech/Noun"
@@ -83,19 +85,37 @@ export class ClauseBuilder {
     }
 
     private addPredicateTo(clause: Clause): void {
-        if (!this.predicate) {
-            const unfinishedPred: PredicateBuilder | undefined =
-                this.unfinishedBuilderList.find(builder =>
-                    builder instanceof PredicateBuilder)
-            const pending = this.pendingAdverb
-            if (!(unfinishedPred && pending)) {
-                throw Error("Tried to build clause without a predicate.")
-            }
+        if (this.predicate) {
+            clause.setPredicate(this.predicate)
+            return
+        }
+
+        const unfinishedPred: PredicateBuilder | undefined =
+            this.unfinishedBuilderList.find(builder =>
+                builder instanceof PredicateBuilder)
+        const pending = this.pendingAdverb
+        if (unfinishedPred && pending) {
             this.pendingAdverb = null
             unfinishedPred.setSemanticContent(pending)
-            this.predicate = unfinishedPred.build()
+            clause.setPredicate(unfinishedPred.build())
+            return
         }
-        clause.setPredicate(this.predicate)
+        if (!unfinishedPred) {
+            throw Error("Tried to build clause without a predicate.")
+        }
+        this.handleDoQuestion(clause, unfinishedPred)
+    }
+
+    private handleDoQuestion(clause: Clause, pBuilder: PredicateBuilder): void {
+        const whWord: Noun | undefined = clause.getNouns().find(
+            noun => isWHWord(noun.getName())
+        )
+        const verb: Verb | undefined = getVerbFromTense(pBuilder)
+
+        if (whWord && verb) {
+            pBuilder.setVerb(verb)
+            clause.setPredicate(pBuilder.build())
+        }
     }
 
     private addPendingAdverbTo(clause: Clause): void {

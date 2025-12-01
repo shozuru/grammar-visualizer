@@ -210,9 +210,8 @@ export class Parser {
 
 
         // tentatively have all 'do' and 'did' as tense in this condition.
-        // If we see a verb coming up, then change the verb to tense, 
-        // and process it accordingly.
-        // then process the verb
+        // If no verb, but if there is 'do' or 'did' and there is WH word,
+        // change the tense back to the main verb
 
         // Who went to the park?
 

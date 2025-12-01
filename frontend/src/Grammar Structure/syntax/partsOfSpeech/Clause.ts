@@ -35,4 +35,8 @@ export class Clause {
     public addAdjunct(adjunct: Preposition | Adverb) {
         this.adjunctList.push(adjunct)
     }
+
+    public getNouns(): Noun[] {
+        return this.nounList
+    }
 }
