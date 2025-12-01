@@ -63,26 +63,7 @@ export class Parser {
         for (let i = 0; i < wordList.length; i++) {
 
             this.handleContractions(wordList, i)
-            if ((
-                wordList[i].name === "have" ||
-                wordList[i].name === "has" ||
-                wordList[i].name === "had"
-            ) && (
-                    wordList[i + 1].pos === PartsOfSpeech.RB
-                )
-            ) {
-                wordList[i].pos = PartsOfSpeech.PERFECTIVE
-
-            } else if (
-                (
-                    wordList[i].name === "have" ||
-                    wordList[i].name === "has" ||
-                    wordList[i].name === "had"
-                ) && (
-                    wordList[i + 1].pos == PartsOfSpeech.VBN
-                )) {
-                wordList[i].pos = PartsOfSpeech.PERFECTIVE
-            }
+            this.handlePerfect(wordList, i)
             this.handlePassive(wordList, i)
             if (
                 (i === 0 &&
@@ -179,26 +160,6 @@ export class Parser {
             current.pos = PartsOfSpeech.WHAdverb
         }
         this.handleTensePromotion(wordList, i)
-
-        // if the next word is 'did' and the following word is nominal, 
-        // then the second word should either be present tense or past tense
-
-
-        // tentatively have all 'do' and 'did' as tense in this condition.
-        // If no verb, but if there is 'do' or 'did' and there is WH word,
-        // change the tense back to the main verb
-
-        // Who went to the park?
-
-        // Who [did] the laundry (impress)?
-
-        // Who [did] you see?
-
-        // Who saw the people?
-
-        // Who is going to the park?
-
-
     }
 
     private handleTensePromotion(wordList: Word[], i: number): void {
@@ -286,6 +247,22 @@ export class Parser {
         wordList[i].pos = PartsOfSpeech.TENSE
         if (next.name === "not") {
             next.pos = PartsOfSpeech.NEGATION
+        }
+    }
+
+    private handlePerfect(wordList: Word[], i: number): void {
+        const current: Word = wordList[i]
+        const perfectList: string[] = ["have", "has", "had"]
+        if (!(
+            perfectList.includes(current.name) &&
+            wordList[i + 1]
+        )) return
+
+        if (wordList[i + 1].pos === PartsOfSpeech.RB) {
+            current.pos = PartsOfSpeech.PERFECTIVE
+        }
+        else if (wordList[i + 1].pos == PartsOfSpeech.VBN) {
+            current.pos = PartsOfSpeech.PERFECTIVE
         }
     }
 }
