@@ -30,7 +30,6 @@ export class NounHandler implements WordHandler {
             // This is the person [I] know
             // This is the person [it] was done by.
             // I met the person [it] was written by.
-            // ***When did you go to [the] store?
             return this.handleObjectRel(builder, ctx, nominalWord)
 
         } else {

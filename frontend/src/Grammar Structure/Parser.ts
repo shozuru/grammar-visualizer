@@ -61,35 +61,9 @@ export class Parser {
 
     private fixPartsOfSpeech(wordList: Word[]): Word[] {
         for (let i = 0; i < wordList.length; i++) {
-            if (
-                (
-                    wordList[i].name === "don't" ||
-                    wordList[i].name === "doesn't" ||
-                    wordList[i].name === "didn't"
-                ) && (
-                    wordList[i].pos === PartsOfSpeech.RB
-                )
-            ) {
-                wordList[i].pos = PartsOfSpeech.NEGATION
 
-            } else if (
-                (
-                    wordList[i].name === "do" ||
-                    wordList[i].name === "does" ||
-                    wordList[i].name === "did"
-                ) && (
-                    (
-                        wordList[i + 1].name === "n't" ||
-                        wordList[i + 1].name === "not"
-                    )
-                )
-            ) {
-                wordList[i].pos = PartsOfSpeech.TENSE
-                if (wordList[i + 1].name === "not") {
-                    wordList[i + 1].pos = PartsOfSpeech.NEGATION
-                }
-
-            } else if ((
+            this.handleContractions(wordList, i)
+            if ((
                 wordList[i].name === "have" ||
                 wordList[i].name === "has" ||
                 wordList[i].name === "had"
@@ -282,6 +256,36 @@ export class Parser {
                     wordList[i].pos = PartsOfSpeech.PsvAgr
                 }
             }
+        }
+    }
+
+    private handleContractions(wordList: Word[], i: number): void {
+        const current: Word = wordList[i]
+
+        const negDO: string[] = [
+            "don't", "doesn't", "didn't"
+        ]
+
+        if (
+            negDO.includes(current.name) &&
+            current.pos === PartsOfSpeech.RB
+        ) {
+            current.pos = PartsOfSpeech.NEGATION
+            return
+        }
+
+        const presDO: string[] = ["do", "does", "did"]
+        const neg: string[] = ["n't", "not"]
+        if (!wordList[i + 1]) return
+
+        const next: Word = wordList[i + 1]
+        if (!(presDO.includes(current.name) &&
+            neg.includes(next.name)
+        )) return
+
+        wordList[i].pos = PartsOfSpeech.TENSE
+        if (next.name === "not") {
+            next.pos = PartsOfSpeech.NEGATION
         }
     }
 }
