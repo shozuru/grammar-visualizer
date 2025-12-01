@@ -56,7 +56,6 @@ export class Parser {
 
         const clause: Clause = this.currentBuilder.build()
         this.addCompleteClause(clause)
-
         return this.clauses
     }
 
@@ -109,10 +108,6 @@ export class Parser {
                     wordList[i + 1].pos == PartsOfSpeech.VBN
                 )) {
                 wordList[i].pos = PartsOfSpeech.PERFECTIVE
-
-
-
-
             }
             this.handlePassive(wordList, i)
             if (
@@ -195,8 +190,20 @@ export class Parser {
             ) {
                 wordList[i].pos = PartsOfSpeech.PRP
             }
+            this.handleWHWords(wordList, i)
         }
         return wordList
+    }
+
+    private handleWHWords(wordList: Word[], i: number): void {
+        // What did you say?
+        if (i === 0) {
+            const current: Word = wordList[i]
+            const pos: number = current.pos
+            if (pos === PartsOfSpeech.WP) {
+                current.pos = PartsOfSpeech.WHWord
+            }
+        }
     }
 
     private addCompleteClause(clause: Clause): void {

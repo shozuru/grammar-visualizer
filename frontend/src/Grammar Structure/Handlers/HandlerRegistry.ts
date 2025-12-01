@@ -27,7 +27,8 @@ export class HandlerRegistry {
             [
                 PartsOfSpeech.NN, PartsOfSpeech.NNP, PartsOfSpeech.NNS,
                 PartsOfSpeech.NNPS, PartsOfSpeech.PRP, PartsOfSpeech.FW,
-                PartsOfSpeech.DT, PartsOfSpeech.PASSIVE, PartsOfSpeech.PRPQ
+                PartsOfSpeech.DT, PartsOfSpeech.PASSIVE, PartsOfSpeech.PRPQ,
+                PartsOfSpeech.WHWord
             ]
         const verbTags: PartsOfSpeech[] =
             [
