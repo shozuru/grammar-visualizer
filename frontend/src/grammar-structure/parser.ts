@@ -35,7 +35,7 @@ export class Parser {
 
         for (const word of fixedWords) {
             console.log(word)
-            // debugger
+            debugger
             const handler = this.registry.getHandler(word)
 
             const ctx: HandlerMethods = {

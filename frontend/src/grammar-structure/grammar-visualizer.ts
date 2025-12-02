@@ -36,12 +36,14 @@ export class GrammarVisualizer {
     }
 }
 
-// TODO: questions, punctuation, conjunctions, relative clauses, 
-// ambiguous sentences, visualization, stranded prepositions
-
-// yes/no questions
-// wh questions with subject WH (no tense promotion)
-// wh questions with object WH (tense promotion)
+// TODO: conjunctions, ambiguous sentences, visualization
+// this is an example sentence
+// I gave the kid cake. (ambiguous)
+// I gave the dog food (technically ambiguous)
+// I ate the kid cake (not ambiguous)
+// in most cases, you want to treat DET NN NN as one thing, but if the verb
+// is ditransitive, it is ambiguous if it comes after the verb
+// DET NN NN
 
 // the man that is a soccer player came back --> the soccer player man came back
 // who i knew was great was dead --> the person that I knew was great was dead

@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import './UserInput.css'
+import './user-input.css'
 import Circle from '../../grammar-structure/visuals/circle/Circle'
 import { type SentenceInfo } from '../../grammar-structure/types/sentence-info'
 import { PartsOfSpeech } from '../../grammar-structure/syntax/syntax-constants'
 import { GrammarVisualizer }
     from '../../grammar-structure/grammar-visualizer'
+import type { Clause } from '../../grammar-structure/syntax/parts-of-speech/clause'
 
 const UserInput: React.FC = () => {
 
@@ -49,7 +50,9 @@ const UserInput: React.FC = () => {
                     posList: posNumList
                 }
 
-                const sentenceStructure = new GrammarVisualizer(sentInfo)
+                const structure = new GrammarVisualizer(sentInfo)
+                const clauses: Clause[] = structure.getClauses()
+                console.log(clauses)
             })
 
     }, [submitted])

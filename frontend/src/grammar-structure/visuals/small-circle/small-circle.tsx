@@ -1,4 +1,4 @@
-import './SmallCircle.css'
+import './small-circle.css'
 
 const SmallCircle: React.FC = () => {
 
