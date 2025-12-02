@@ -1,0 +1,60 @@
+import { WordBuilder } from "./word-builder"
+import { Predicate } from "../syntax/predicate"
+import type { Verb } from "../syntax/parts-of-speech/verb"
+import type { Phrase } from "../syntax/parts-of-speech/phrase"
+
+export class PredicateBuilder extends WordBuilder {
+
+    private predicate: Predicate | null
+
+    constructor() {
+        super()
+        this.predicate = null
+    }
+
+    public setVerb(verb: Verb): void {
+        const pred: Predicate = new Predicate(verb)
+        this.predicate = pred
+    }
+
+    public getPred(): Predicate | null {
+        return this.predicate
+    }
+
+    public build(): Predicate {
+        if (!this.predicate) {
+            throw Error("Tried to build predicate with no head")
+        }
+        for (const mod of super.getModStack()) {
+            this.predicate.addMod(mod)
+        }
+        for (const agr of super.getAgrStack()) {
+            this.predicate.addAgr(agr)
+        }
+        for (const adjunct of super.getAdjunctStack()) {
+            this.predicate.addAdjunct(adjunct)
+        }
+        return this.predicate
+    }
+
+    public hasSemanticContent(): boolean {
+        if (!this.predicate) {
+            throw Error("predicate Builder does not have a predicate")
+        }
+        return this.predicate.getSemanticContent() !== null
+    }
+
+    public setSemanticContent(content: Phrase): void {
+        if (!this.predicate) {
+            throw Error("predicate Builder does not have a predicate")
+        }
+        this.predicate.setSemanticElement(content)
+    }
+
+    public hasCopula(): boolean {
+        if (!this.predicate) {
+            return false
+        }
+        return (this.predicate.getCopula() !== null)
+    }
+}

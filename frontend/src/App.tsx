@@ -1,4 +1,4 @@
-import UserInput from "./components/UserInput/UserInput"
+import UserInput from "./components/user-input/user-input"
 import './App.css'
 
 
