@@ -107,7 +107,10 @@ export class ClauseBuilder {
         this.handleDoQuestion(clause, unfinishedPred)
     }
 
-    private handleDoQuestion(clause: Clause, pBuilder: PredicateBuilder): void {
+    private handleDoQuestion(
+        clause: Clause,
+        pBuilder: PredicateBuilder
+    ): void {
         const whWord: Noun | undefined = clause.getNouns().find(
             noun => isWHWord(noun.getName())
         )
@@ -476,11 +479,6 @@ export class ClauseBuilder {
     }
 
     public buildAdjRelClause(adjWord: Word): ClauseBuilder {
-        // to add:
-        // add the 'subject'
-
-        // copy the last noun builder and put it into the relative clause's noun 
-        // list (to get determiners and such)
         const verb = new Verb('be')
         const pred = new Predicate(verb)
         const adj: Adjective = new Adjective(adjWord.name)
