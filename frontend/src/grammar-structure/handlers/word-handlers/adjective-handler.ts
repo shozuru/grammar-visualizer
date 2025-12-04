@@ -15,6 +15,8 @@ export class AdjectiveHandler implements WordHandler {
             builder.buildAdjective(adjWord)
             return
         }
+        // [Good] ideas are scarce
+
         // This is a red balloon (this is a balloon that is red)
         // This is a birthday cake (this is a cake that is X a birthday)
         ctx.push(builder)
