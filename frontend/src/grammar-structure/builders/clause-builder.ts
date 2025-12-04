@@ -161,6 +161,7 @@ export class ClauseBuilder {
 
     public attachToClause(phrase: Phrase): void {
         if (
+            // is post-predicate modifying phrase
             this.isModifyingPhrase(phrase) &&
             this.predicate instanceof Predicate
         ) {
@@ -472,10 +473,4 @@ export class ClauseBuilder {
             )
         return !!builder
     }
-
-    //         if (isFocusElement(currentWord)) {
-    //             // handleFocusElement(this.wordList)
-    //             const focusWord = this.wordList.shift() as Word
-    //             console.log(focusWord.name)
-    //         }
 }
