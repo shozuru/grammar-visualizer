@@ -40,7 +40,7 @@ export class GrammarVisualizer {
 // this is an example sentence
 // I gave the kid cake. (ambiguous)
 // I gave the dog food (technically ambiguous)
-// I ate the kid cake (not ambiguous)
+// I ate the birthday cake (not ambiguous)
 // in most cases, you want to treat DET NN NN as one thing, but if the verb
 // is ditransitive, it is ambiguous if it comes after the verb
 // DET NN NN

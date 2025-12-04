@@ -48,7 +48,7 @@ export class HandlerRegistry {
             [
                 PartsOfSpeech.JJ, PartsOfSpeech.JJR, PartsOfSpeech.JJS,
                 PartsOfSpeech.AdvAgr, PartsOfSpeech.SUPERLATIVE,
-                PartsOfSpeech.COMPARATIVE
+                PartsOfSpeech.COMPARATIVE, PartsOfSpeech.AdjectivalNoun
             ]
         const prepTags: PartsOfSpeech[] =
             [

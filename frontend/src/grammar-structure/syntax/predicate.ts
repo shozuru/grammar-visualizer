@@ -1,8 +1,8 @@
 import { Agr } from "./agr";
 import { Mod } from "./mod";
-import type { Adverb } from "./parts-of-speech/adverb";
+import { Adverb } from "./parts-of-speech/adverb";
 import type { Phrase } from "./parts-of-speech/phrase";
-import type { Preposition } from "./parts-of-speech/preposition";
+import { Preposition } from "./parts-of-speech/preposition";
 import type { Verb } from "./parts-of-speech/verb";
 import { uncontractVerbalModifiers } from "./syntax-methods";
 
@@ -77,8 +77,14 @@ export class Predicate implements Phrase {
         )
     }
 
-    public addAdjunct(adverb: Adverb | Preposition): void {
-        this.adjunctStack.push(adverb)
+    public addAdjunctPhrase(phrase: Phrase): void {
+        if (!(
+            phrase instanceof Adverb ||
+            phrase instanceof Preposition
+        )) {
+            throw Error("Tried to add adjunct that is not an adjunct phrase")
+        }
+        this.adjunctStack.push(phrase)
     }
 
     public getAdjunctStack(): (Adverb | Preposition)[] {

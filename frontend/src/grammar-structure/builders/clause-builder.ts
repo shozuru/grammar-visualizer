@@ -121,7 +121,7 @@ export class ClauseBuilder {
     private addPendingAdverbTo(clause: Clause): void {
         const pred = clause.getPredicate()
         if (this.pendingAdverb) {
-            pred.addAdjunct(this.pendingAdverb)
+            pred.addAdjunctPhrase(this.pendingAdverb)
         }
     }
 
@@ -136,7 +136,7 @@ export class ClauseBuilder {
     private addAdjunctsTo(clause: Clause): void {
         const pred = clause.getPredicate()
         for (const adjunct of this.adjunctStack) {
-            pred.addAdjunct(adjunct)
+            pred.addAdjunctPhrase(adjunct)
         }
     }
 
@@ -161,23 +161,22 @@ export class ClauseBuilder {
 
     public attachToClause(phrase: Phrase): void {
         if (
-            (
-                phrase instanceof Adverb ||
-                phrase instanceof Preposition
-            ) && (
-                this.predicate instanceof Predicate
-            )
+            this.isModifyingPhrase(phrase) &&
+            this.predicate instanceof Predicate
         ) {
-            this.predicate.addAdjunct(phrase)
-        }
-        else if (
-            phrase instanceof Adverb ||
-            phrase instanceof Preposition
-        ) {
+            this.predicate.addAdjunctPhrase(phrase)
+        } else if (this.isModifyingPhrase(phrase)) {
             this.pushAdjunctToClause(phrase)
         } else if (phrase instanceof Noun) {
             this.pushNounToClause(phrase)
         }
+    }
+
+    private isModifyingPhrase(phrase: Phrase): boolean {
+        return (
+            phrase instanceof Adverb ||
+            phrase instanceof Preposition
+        )
     }
 
     public buildAdjective(adjWord: Word): void {
@@ -318,8 +317,14 @@ export class ClauseBuilder {
         this.predicate = predPhrase
     }
 
-    private pushAdjunctToClause(adjunctPhrase: Adverb | Preposition): void {
-        this.adjunctStack.push(adjunctPhrase)
+    private pushAdjunctToClause(phrase: Phrase): void {
+        if (!(
+            phrase instanceof Adverb ||
+            phrase instanceof Preposition
+        )) {
+            throw Error("Tried to push adjunct that is not an adjunct phrase")
+        }
+        this.adjunctStack.push(phrase)
     }
 
     private pushNounToClause(nPhrase: Noun): void {

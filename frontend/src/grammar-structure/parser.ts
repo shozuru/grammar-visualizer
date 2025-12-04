@@ -1,8 +1,8 @@
 import { ClauseBuilder } from "./builders/clause-builder";
 import type { Clause } from "./syntax/parts-of-speech/clause";
-import { PartsOfSpeech } from "./syntax/syntax-constants";
+import { ditransitiveList, PartsOfSpeech } from "./syntax/syntax-constants";
 import {
-    isAdverb, isBeVerb, isNominal, isNoun, isVerb, passiveByPhraseIndex
+    isAdverb, isBeVerb, isDitransitive, isNominal, isNoun, isVerb, passiveByPhraseIndex
 } from "./syntax/syntax-methods";
 import type { Word } from "./types/word";
 import { HandlerRegistry } from "./handlers/handler-registry"
@@ -35,7 +35,7 @@ export class Parser {
 
         for (const word of fixedWords) {
             console.log(word)
-            debugger
+            // debugger
             const handler = this.registry.getHandler(word)
 
             const ctx: HandlerMethods = {
@@ -76,6 +76,29 @@ export class Parser {
         this.handleNegation(wordList, i)
         this.handlePronouns(wordList, i)
         this.handleWHWords(wordList, i)
+        this.handleModifyingNoun(wordList, i)
+    }
+
+    private handleModifyingNoun(wordList: Word[], i: number): void {
+        const current: Word = wordList[i]
+        if (!this.isAmbiguousVerb(current)) return
+
+        let next: Word = wordList[i + 1]
+        while (i < wordList.length && !isNoun(next)) {
+            i += 1
+            next = wordList[i]
+        }
+        if (i >= wordList.length - 1) return
+
+        const after: Word = wordList[i + 1]
+        if (isNoun(after)) {
+            next.pos = PartsOfSpeech.AdjectivalNoun
+        }
+    }
+
+    private isAmbiguousVerb(word: Word): boolean {
+        if (!isVerb(word)) return false
+        return !ditransitiveList.includes(word.name)
     }
 
     private handleWHWords(wordList: Word[], i: number): void {
