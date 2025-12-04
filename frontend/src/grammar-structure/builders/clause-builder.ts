@@ -18,6 +18,7 @@ import { AdverbBuilder } from "./adverb-builder"
 import type { Phrase } from "../syntax/parts-of-speech/phrase"
 import { AdjectiveBuilder } from "./adjective-builder"
 import { Clause } from "../syntax/parts-of-speech/clause"
+import { Adjective } from "../syntax/parts-of-speech/adjectives"
 
 export class ClauseBuilder {
 
@@ -472,5 +473,27 @@ export class ClauseBuilder {
                 builder => builder instanceof PrepBuilder
             )
         return !!builder
+    }
+
+    public buildAdjRelClause(adjWord: Word): ClauseBuilder {
+        // to add:
+        // add the 'subject'
+
+        // copy the last noun builder and put it into the relative clause's noun 
+        // list (to get determiners and such)
+        const verb = new Verb('be')
+        const pred = new Predicate(verb)
+        const adj: Adjective = new Adjective(adjWord.name)
+        pred.setSemanticElement(adj)
+
+        const relClause: ClauseBuilder = new ClauseBuilder()
+        relClause.predicate = pred
+
+        const lastBuilder: WordBuilder | undefined =
+            this.unfinishedBuilderList.at(-1)
+        if (lastBuilder instanceof NounBuilder) {
+            relClause.unfinishedBuilderList.push(lastBuilder)
+        }
+        return relClause
     }
 }

@@ -2,7 +2,7 @@ import { ClauseBuilder } from "./builders/clause-builder";
 import type { Clause } from "./syntax/parts-of-speech/clause";
 import { ditransitiveList, PartsOfSpeech } from "./syntax/syntax-constants";
 import {
-    isAdverb, isBeVerb, isDitransitive, isNominal, isNoun, isVerb, passiveByPhraseIndex
+    isAdverb, isBeVerb, isNominal, isNoun, isVerb, passiveByPhraseIndex
 } from "./syntax/syntax-methods";
 import type { Word } from "./types/word";
 import { HandlerRegistry } from "./handlers/handler-registry"
