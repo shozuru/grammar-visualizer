@@ -479,15 +479,7 @@ export class ClauseBuilder {
     }
 
     public buildAdjRelClause(adjWord: Word): ClauseBuilder {
-        const verb = new Verb('be')
-        const pred = new Predicate(verb)
-        const adj: Adjective = new Adjective(adjWord.name)
-        pred.setSemanticElement(adj)
-        if (this.pendingAdverb) {
-            pred.addAdjunctPhrase(this.pendingAdverb)
-            this.pendingAdverb = null
-        }
-
+        const pred: Predicate = this.buildAdjPred(adjWord)
         const relClause: ClauseBuilder = new ClauseBuilder()
         relClause.predicate = pred
 
@@ -521,5 +513,17 @@ export class ClauseBuilder {
             this.getUnfinishedPredBuilder()
         if (!pBuilder) return null
         return pBuilder.getPred()
+    }
+
+    private buildAdjPred(adjWord: Word): Predicate {
+        const verb = new Verb('be')
+        const pred = new Predicate(verb)
+        const adj: Adjective = new Adjective(adjWord.name)
+        pred.setSemanticElement(adj)
+        if (this.pendingAdverb) {
+            pred.addAdjunctPhrase(this.pendingAdverb)
+            this.pendingAdverb = null
+        }
+        return pred
     }
 }
