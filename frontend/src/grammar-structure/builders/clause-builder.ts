@@ -204,8 +204,8 @@ export class ClauseBuilder {
     public buildAdverb(adverbWord: Word): void {
         const adverbBuilder: AdverbBuilder =
             this.getOrCreateBuilder(AdverbBuilder)
-
         this.removeFromBuilderList(adverbBuilder)
+
         adverbBuilder.createAndSetAdverb(adverbWord)
         if (this.pendingAdverb) {
             this.placeAdverbIn(adverbBuilder)
@@ -483,6 +483,10 @@ export class ClauseBuilder {
         const pred = new Predicate(verb)
         const adj: Adjective = new Adjective(adjWord.name)
         pred.setSemanticElement(adj)
+        if (this.pendingAdverb) {
+            pred.addAdjunctPhrase(this.pendingAdverb)
+            this.pendingAdverb = null
+        }
 
         const relClause: ClauseBuilder = new ClauseBuilder()
         relClause.predicate = pred
@@ -495,11 +499,27 @@ export class ClauseBuilder {
         return relClause
     }
 
-    public getUnfinishedPredBuilder(): PredicateBuilder | undefined {
+    public isLastBuilderNoun(): boolean {
+        const bList: WordBuilder[] = this.unfinishedBuilderList
+        return bList.at(-1) instanceof NounBuilder
+    }
+
+    public hasUnfinishedPredicate(): boolean {
+        return this.getUnfinishedPredBuilder() !== undefined
+    }
+
+    private getUnfinishedPredBuilder(): PredicateBuilder | undefined {
         const builder: PredicateBuilder | undefined =
             this.unfinishedBuilderList.find(
                 builder => builder instanceof PredicateBuilder
             )
         return builder
+    }
+
+    public getUnfinishedPredicate(): Predicate | null {
+        const pBuilder: PredicateBuilder | undefined =
+            this.getUnfinishedPredBuilder()
+        if (!pBuilder) return null
+        return pBuilder.getPred()
     }
 }

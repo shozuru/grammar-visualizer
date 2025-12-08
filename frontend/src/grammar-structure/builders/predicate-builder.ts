@@ -32,7 +32,7 @@ export class PredicateBuilder extends WordBuilder {
             this.predicate.addAgr(agr)
         }
         for (const adjunct of super.getAdjunctStack()) {
-            this.predicate.addAdjunct(adjunct)
+            this.predicate.addAdjunctPhrase(adjunct)
         }
         return this.predicate
     }
