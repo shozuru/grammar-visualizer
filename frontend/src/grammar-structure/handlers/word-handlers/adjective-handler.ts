@@ -3,6 +3,7 @@ import type { Word } from "../../types/word"
 import type { ClauseBuilder } from "../../builders/clause-builder"
 import type { Predicate } from "../../syntax/predicate"
 import type { HandlerMethods } from "../../parser"
+import type { PredicateBuilder } from "../../builders/predicate-builder"
 
 export class AdjectiveHandler implements WordHandler {
 
@@ -16,7 +17,6 @@ export class AdjectiveHandler implements WordHandler {
             return
         }
         // [Good] ideas are scarce
-
         // This is a red balloon (this is a balloon that is red)
         // This is a birthday cake (this is a cake that is X a birthday)
         ctx.push(builder)
@@ -24,7 +24,11 @@ export class AdjectiveHandler implements WordHandler {
     }
 
     private isPredicateAdj(cBuilder: ClauseBuilder): boolean {
-        const pred: Predicate | null = cBuilder.getPredicate()
+        const pBuilder: PredicateBuilder | undefined =
+            cBuilder.getUnfinishedPredBuilder()
+
+        if (!pBuilder) return false
+        const pred: Predicate | null = pBuilder.getPred()
         if (!pred) return false
         return !pred.getSemanticContent()
     }

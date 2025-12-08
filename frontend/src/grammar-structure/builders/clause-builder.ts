@@ -494,4 +494,12 @@ export class ClauseBuilder {
         }
         return relClause
     }
+
+    public getUnfinishedPredBuilder(): PredicateBuilder | undefined {
+        const builder: PredicateBuilder | undefined =
+            this.unfinishedBuilderList.find(
+                builder => builder instanceof PredicateBuilder
+            )
+        return builder
+    }
 }
