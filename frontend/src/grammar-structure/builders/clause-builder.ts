@@ -40,120 +40,7 @@ export class ClauseBuilder {
         this.pendingNoun = null
     }
 
-    public verbInProgress(): boolean {
-        return this.unfinishedBuilderList.some(
-            builder => builder instanceof PredicateBuilder
-        )
-    }
-
-    public build(): Clause {
-        this.handleStrandedPreps()
-
-        const clause: Clause = new Clause()
-        this.addSubjectTo(clause)
-        this.addNounsTo(clause)
-        this.addPredicateTo(clause)
-        this.addAdjunctsTo(clause)
-        this.addPendingAdverbTo(clause)
-        return clause
-    }
-
-    private handleStrandedPreps(): void {
-        const unfinished: WordBuilder[] = this.unfinishedBuilderList
-        this.handleStrandedBy(unfinished)
-
-        const pBuilder: PrepBuilder | undefined = this.getUnfinishedPrep()
-        if (pBuilder) {
-            this.resolvePrep(pBuilder)
-        }
-    }
-
-    private resolvePrep(builder: PrepBuilder): void {
-        if (this.pendingNoun) {
-            builder.setObject(this.pendingNoun)
-            this.pendingNoun = null
-        }
-        const pPhrase: Preposition = builder.build()
-        this.adjunctStack.push(pPhrase)
-    }
-
-    public getUnfinishedPrep(): PrepBuilder | undefined {
-        const prep: PrepBuilder | undefined = this.unfinishedBuilderList.find(
-            builder => builder instanceof PrepBuilder
-        )
-        if (prep) this.removeFromBuilderList(prep)
-        return prep
-    }
-
-    private addPredicateTo(clause: Clause): void {
-        if (this.predicate) {
-            clause.setPredicate(this.predicate)
-            return
-        }
-
-        const unfinishedPred: PredicateBuilder | undefined =
-            this.unfinishedBuilderList.find(builder =>
-                builder instanceof PredicateBuilder)
-        const pending = this.pendingAdverb
-        if (unfinishedPred && pending) {
-            this.pendingAdverb = null
-            unfinishedPred.setSemanticContent(pending)
-            clause.setPredicate(unfinishedPred.build())
-            return
-        }
-        if (!unfinishedPred) {
-            throw Error("Tried to build clause without a predicate.")
-        }
-        this.handleDoQuestion(clause, unfinishedPred)
-    }
-
-    private handleDoQuestion(
-        clause: Clause,
-        pBuilder: PredicateBuilder
-    ): void {
-        const whWord: Noun | undefined = clause.getNouns().find(
-            noun => isWHWord(noun.getName())
-        )
-        const verb: Verb | undefined = getVerbFromTense(pBuilder)
-
-        if (whWord && verb) {
-            pBuilder.setVerb(verb)
-            clause.setPredicate(pBuilder.build())
-        }
-    }
-
-    private addPendingAdverbTo(clause: Clause): void {
-        const pred = clause.getPredicate()
-        if (this.pendingAdverb) {
-            pred.addAdjunctPhrase(this.pendingAdverb)
-        }
-    }
-
-    private addSubjectTo(clause: Clause): void {
-        const subject: Noun | null = this.subject
-        if (!subject) {
-            throw Error("Tried to build clause without a subject.")
-        }
-        clause.addNoun(subject)
-    }
-
-    private addAdjunctsTo(clause: Clause): void {
-        const pred = clause.getPredicate()
-        for (const adjunct of this.adjunctStack) {
-            pred.addAdjunctPhrase(adjunct)
-        }
-    }
-
-    private addNounsTo(clause: Clause): void {
-        if (this.pendingNoun) {
-            this.nounStack.push(this.pendingNoun)
-            this.pendingNoun = null
-        }
-        for (const noun of this.nounStack) {
-            clause.addNoun(noun)
-        }
-    }
-
+    // public API
     public addPhrase(builder: WordBuilder): void {
         const phrase: Phrase = builder.build()
         if (this.shouldBePredicate()) {
@@ -177,11 +64,16 @@ export class ClauseBuilder {
         }
     }
 
-    private isModifyingPhrase(phrase: Phrase): boolean {
-        return (
-            phrase instanceof Adverb ||
-            phrase instanceof Preposition
-        )
+    public build(): Clause {
+        this.handleStrandedPreps()
+
+        const clause: Clause = new Clause()
+        this.addSubjectTo(clause)
+        this.addNounsTo(clause)
+        this.addPredicateTo(clause)
+        this.addAdjunctsTo(clause)
+        this.addPendingAdverbTo(clause)
+        return clause
     }
 
     public buildAdjective(adjWord: Word): void {
@@ -201,6 +93,19 @@ export class ClauseBuilder {
         }
     }
 
+    public buildAdjRelClause(adjWord: Word): ClauseBuilder {
+        const pred: Predicate = this.buildAdjPred(adjWord)
+        const relClause: ClauseBuilder = new ClauseBuilder()
+        relClause.predicate = pred
+
+        const lastBuilder: WordBuilder | undefined =
+            this.unfinishedBuilderList.at(-1)
+        if (lastBuilder instanceof NounBuilder) {
+            relClause.unfinishedBuilderList.push(lastBuilder)
+        }
+        return relClause
+    }
+
     public buildAdverb(adverbWord: Word): void {
         const adverbBuilder: AdverbBuilder =
             this.getOrCreateBuilder(AdverbBuilder)
@@ -214,6 +119,14 @@ export class ClauseBuilder {
         this.pendingAdverb = adverb
     }
 
+    public buildCausative(causeWord: Word): void {
+        if (!this.subject) {
+            throw Error("Causative sentence does not have Effector.")
+        }
+        this.subject.addCausative(causeWord)
+        this.buildPredicate(causeWord)
+    }
+
     public buildNominal(nomWord: Word): void {
         const nounBuilder: NounBuilder = this.getOrCreateBuilder(NounBuilder)
         if (isNounMod(nomWord)) {
@@ -222,14 +135,6 @@ export class ClauseBuilder {
             this.removeFromBuilderList(nounBuilder)
             nounBuilder.createAndSetNoun(nomWord)
             this.addPhrase(nounBuilder)
-        }
-    }
-
-    public buildPreposition(prepWord: Word): void {
-        const prepBuilder: PrepBuilder = this.getOrCreateBuilder(PrepBuilder)
-        prepBuilder.setPreposition(prepWord)
-        if (this.pendingAdverb) {
-            this.placeAdverbIn(prepBuilder)
         }
     }
 
@@ -250,117 +155,56 @@ export class ClauseBuilder {
         }
     }
 
-    private createPred(pBuilder: PredicateBuilder, pWord: Word): void {
-        const verb: Verb = new Verb(pWord.name)
-        pBuilder.setVerb(verb)
-        if (pBuilder.hasSemanticContent()) {
-            if (this.pendingAdverb) {
-                this.placeAdverbIn(pBuilder)
-            }
-            this.removeFromBuilderList(pBuilder)
-            const predicate: Predicate = pBuilder.build()
-            this.pushPredToClause(predicate)
+    public buildPreposition(prepWord: Word): void {
+        const prepBuilder: PrepBuilder = this.getOrCreateBuilder(PrepBuilder)
+        prepBuilder.setPreposition(prepWord)
+        if (this.pendingAdverb) {
+            this.placeAdverbIn(prepBuilder)
         }
-    }
-
-    private movePendingNoun(): void {
-        if (this.pendingNoun) {
-            this.subject = this.pendingNoun
-            this.pendingNoun = null
-        }
-    }
-
-    public buildCausative(causeWord: Word): void {
-        if (!this.subject) {
-            throw Error("Causative sentence does not have Effector.")
-        }
-        this.subject.addCausative(causeWord)
-        this.buildPredicate(causeWord)
-    }
-
-    private placeAdverbIn(builder: WordBuilder): void {
-        if (!this.pendingAdverb) {
-            throw Error("Tried to set adverb that does not exist.")
-        }
-        builder.addAdjunct(this.pendingAdverb)
-        this.pendingAdverb = null
-    }
-
-    public getPredicate(): Predicate | null {
-        return this.predicate
     }
 
     public getNounStack(): Noun[] {
         return this.nounStack
     }
 
-    private getOrCreateBuilder<T extends WordBuilder>(
-        buildType: new () => T
-    ): T {
-
-        let builder: T | undefined =
-            this.unfinishedBuilderList.find(
-                build => build instanceof buildType
-            ) as T | undefined
-
-        if (!builder) {
-            builder = new buildType()
-            this.unfinishedBuilderList.push(builder)
-        }
-        return builder
+    public getPredicate(): Predicate | null {
+        return this.predicate
     }
 
     public getSubject(): Noun | null {
         return this.subject
     }
 
-    private makePredicate(phrase: Phrase): void {
-        const predBuilder =
-            this.unfinishedBuilderList.splice(-1, 1)[0] as PredicateBuilder
-        predBuilder.setSemanticContent(phrase)
-        const predPhrase: Predicate = predBuilder.build()
-        this.predicate = predPhrase
+    public getUnfinishedPredicate(): Predicate | null {
+        const pBuilder: PredicateBuilder | undefined =
+            this.getUnfinishedPredBuilder()
+        if (!pBuilder) return null
+        return pBuilder.getPred()
     }
 
-    private pushAdjunctToClause(phrase: Phrase): void {
-        if (!(
-            phrase instanceof Adverb ||
-            phrase instanceof Preposition
-        )) {
-            throw Error("Tried to push adjunct that is not an adjunct phrase")
-        }
-        this.adjunctStack.push(phrase)
+    public getUnfinishedPrep(): PrepBuilder | undefined {
+        const prep: PrepBuilder | undefined = this.unfinishedBuilderList.find(
+            builder => builder instanceof PrepBuilder
+        )
+        if (prep) this.removeFromBuilderList(prep)
+        return prep
     }
 
-    private pushNounToClause(nPhrase: Noun): void {
-        if (
-            this.unfinishedBuilderList.at(-1) instanceof PrepBuilder
-        ) {
-            const prepBuilder: PrepBuilder =
-                this.unfinishedBuilderList.splice(-1, 1)[0] as PrepBuilder
-            prepBuilder.setObject(nPhrase)
-            this.addPhrase(prepBuilder)
-
-        } else if (!this.subject) {
-            this.subject = nPhrase
-        } else {
-            this.nounStack.push(nPhrase)
-        }
+    public hasUnfinishedPredicate(): boolean {
+        return this.getUnfinishedPredBuilder() !== undefined
     }
 
-    private pushPredToClause(pred: Predicate): void {
-        this.predicate = pred
+    public hasUnfinishedPrep(): boolean {
+        const builder: PrepBuilder | undefined =
+            this.unfinishedBuilderList.find(
+                builder => builder instanceof PrepBuilder
+            )
+        return !!builder
     }
 
-    public receiveSubject(subject: Noun): void {
-        if (this.subject) {
-            throw Error("clause already has subject")
-        }
-        this.subject = subject
-    }
-
-    public receiveRelNoun(relNoun: Noun): void {
-        this.pendingNoun = relNoun
+    public isLastBuilderNoun(): boolean {
+        const bList: WordBuilder[] = this.unfinishedBuilderList
+        return bList.at(-1) instanceof NounBuilder
     }
 
     public receiveRelAdjunct(relAdjunct: Noun): void {
@@ -370,9 +214,26 @@ export class ClauseBuilder {
         this.addPhrase(adjunctPhrase)
     }
 
+    public receiveRelNoun(relNoun: Noun): void {
+        this.pendingNoun = relNoun
+    }
+
     public receiveRelPrep(noun: Noun, relPrep: PrepBuilder): void {
         relPrep.setObject(noun)
         this.addPhrase(relPrep)
+    }
+
+    public receiveSubject(subject: Noun): void {
+        if (this.subject) {
+            throw Error("clause already has subject")
+        }
+        this.subject = subject
+    }
+
+    public verbInProgress(): boolean {
+        return this.unfinishedBuilderList.some(
+            builder => builder instanceof PredicateBuilder
+        )
     }
 
     public yieldEcmNoun(): Noun {
@@ -383,6 +244,16 @@ export class ClauseBuilder {
             )
         }
         return ecmSubject
+    }
+
+    public yieldOControlNoun(): Noun {
+        if (this.nounStack.length > 0) {
+            return this.nounStack[0]
+        }
+        if (!this.subject) {
+            throw Error("Sentence does not seem to have a subject.")
+        }
+        return this.subject
     }
 
     public yieldObjectRel(): Noun {
@@ -416,23 +287,6 @@ export class ClauseBuilder {
         return adjunctOb
     }
 
-    public yieldSubjectRel(): Noun {
-        if (!this.subject) {
-            throw Error("no subject available to yield to rel clause")
-        }
-        return this.subject
-    }
-
-    public yieldOControlNoun(): Noun {
-        if (this.nounStack.length > 0) {
-            return this.nounStack[0]
-        }
-        if (!this.subject) {
-            throw Error("Sentence does not seem to have a subject.")
-        }
-        return this.subject
-    }
-
     public yieldRaisingNoun(): Noun {
         const subSubject: Noun | undefined = this.nounStack.shift()
         if (subSubject) {
@@ -451,68 +305,67 @@ export class ClauseBuilder {
         return this.subject
     }
 
-    private removeFromBuilderList(WordBuilder: WordBuilder) {
-        this.unfinishedBuilderList = this.unfinishedBuilderList.filter(
-            builder => builder !== WordBuilder
-        )
-    }
-
-    private shouldBePredicate(): boolean {
-        const unfinishedBuilder = this.unfinishedBuilderList.at(-1)
-        return (
-            unfinishedBuilder instanceof PredicateBuilder &&
-            unfinishedBuilder.hasCopula()
-        )
-    }
-
-    private handleStrandedBy(bList: WordBuilder[]): void {
-        const nounStack: Noun[] = this.nounStack
-        getBy(bList, nounStack)
-    }
-
-    public hasUnfinishedPrep(): boolean {
-        const builder: PrepBuilder | undefined =
-            this.unfinishedBuilderList.find(
-                builder => builder instanceof PrepBuilder
-            )
-        return !!builder
-    }
-
-    public buildAdjRelClause(adjWord: Word): ClauseBuilder {
-        const pred: Predicate = this.buildAdjPred(adjWord)
-        const relClause: ClauseBuilder = new ClauseBuilder()
-        relClause.predicate = pred
-
-        const lastBuilder: WordBuilder | undefined =
-            this.unfinishedBuilderList.at(-1)
-        if (lastBuilder instanceof NounBuilder) {
-            relClause.unfinishedBuilderList.push(lastBuilder)
+    public yieldSubjectRel(): Noun {
+        if (!this.subject) {
+            throw Error("no subject available to yield to rel clause")
         }
-        return relClause
+        return this.subject
     }
 
-    public isLastBuilderNoun(): boolean {
-        const bList: WordBuilder[] = this.unfinishedBuilderList
-        return bList.at(-1) instanceof NounBuilder
+
+    // private helper methods
+    private addAdjunctsTo(clause: Clause): void {
+        const pred = clause.getPredicate()
+        for (const adjunct of this.adjunctStack) {
+            pred.addAdjunctPhrase(adjunct)
+        }
     }
 
-    public hasUnfinishedPredicate(): boolean {
-        return this.getUnfinishedPredBuilder() !== undefined
+    private addNounsTo(clause: Clause): void {
+        if (this.pendingNoun) {
+            this.nounStack.push(this.pendingNoun)
+            this.pendingNoun = null
+        }
+        for (const noun of this.nounStack) {
+            clause.addNoun(noun)
+        }
     }
 
-    private getUnfinishedPredBuilder(): PredicateBuilder | undefined {
-        const builder: PredicateBuilder | undefined =
-            this.unfinishedBuilderList.find(
-                builder => builder instanceof PredicateBuilder
-            )
-        return builder
+    private addPendingAdverbTo(clause: Clause): void {
+        const pred = clause.getPredicate()
+        if (this.pendingAdverb) {
+            pred.addAdjunctPhrase(this.pendingAdverb)
+        }
     }
 
-    public getUnfinishedPredicate(): Predicate | null {
-        const pBuilder: PredicateBuilder | undefined =
-            this.getUnfinishedPredBuilder()
-        if (!pBuilder) return null
-        return pBuilder.getPred()
+    private addPredicateTo(clause: Clause): void {
+        if (this.predicate) {
+            clause.setPredicate(this.predicate)
+            return
+        }
+
+        const unfinishedPred: PredicateBuilder | undefined =
+            this.unfinishedBuilderList.find(builder =>
+                builder instanceof PredicateBuilder)
+        const pending = this.pendingAdverb
+        if (unfinishedPred && pending) {
+            this.pendingAdverb = null
+            unfinishedPred.setSemanticContent(pending)
+            clause.setPredicate(unfinishedPred.build())
+            return
+        }
+        if (!unfinishedPred) {
+            throw Error("Tried to build clause without a predicate.")
+        }
+        this.handleDoQuestion(clause, unfinishedPred)
+    }
+
+    private addSubjectTo(clause: Clause): void {
+        const subject: Noun | null = this.subject
+        if (!subject) {
+            throw Error("Tried to build clause without a subject.")
+        }
+        clause.addNoun(subject)
     }
 
     private buildAdjPred(adjWord: Word): Predicate {
@@ -525,5 +378,155 @@ export class ClauseBuilder {
             this.pendingAdverb = null
         }
         return pred
+    }
+
+    private createPred(pBuilder: PredicateBuilder, pWord: Word): void {
+        const verb: Verb = new Verb(pWord.name)
+        pBuilder.setVerb(verb)
+        if (pBuilder.hasSemanticContent()) {
+            if (this.pendingAdverb) {
+                this.placeAdverbIn(pBuilder)
+            }
+            this.removeFromBuilderList(pBuilder)
+            const predicate: Predicate = pBuilder.build()
+            this.pushPredToClause(predicate)
+        }
+    }
+
+    private getOrCreateBuilder<T extends WordBuilder>(
+        buildType: new () => T
+    ): T {
+
+        let builder: T | undefined =
+            this.unfinishedBuilderList.find(
+                build => build instanceof buildType
+            ) as T | undefined
+
+        if (!builder) {
+            builder = new buildType()
+            this.unfinishedBuilderList.push(builder)
+        }
+        return builder
+    }
+
+    private getUnfinishedPredBuilder(): PredicateBuilder | undefined {
+        const builder: PredicateBuilder | undefined =
+            this.unfinishedBuilderList.find(
+                builder => builder instanceof PredicateBuilder
+            )
+        return builder
+    }
+
+    private handleDoQuestion(
+        clause: Clause,
+        pBuilder: PredicateBuilder
+    ): void {
+        const whWord: Noun | undefined = clause.getNouns().find(
+            noun => isWHWord(noun.getName())
+        )
+        const verb: Verb | undefined = getVerbFromTense(pBuilder)
+
+        if (whWord && verb) {
+            pBuilder.setVerb(verb)
+            clause.setPredicate(pBuilder.build())
+        }
+    }
+
+    private handleStrandedBy(bList: WordBuilder[]): void {
+        const nounStack: Noun[] = this.nounStack
+        getBy(bList, nounStack)
+    }
+
+    private handleStrandedPreps(): void {
+        const unfinished: WordBuilder[] = this.unfinishedBuilderList
+        this.handleStrandedBy(unfinished)
+
+        const pBuilder: PrepBuilder | undefined = this.getUnfinishedPrep()
+        if (pBuilder) {
+            this.resolvePrep(pBuilder)
+        }
+    }
+
+    private isModifyingPhrase(phrase: Phrase): boolean {
+        return (
+            phrase instanceof Adverb ||
+            phrase instanceof Preposition
+        )
+    }
+
+    private makePredicate(phrase: Phrase): void {
+        const predBuilder =
+            this.unfinishedBuilderList.splice(-1, 1)[0] as PredicateBuilder
+        predBuilder.setSemanticContent(phrase)
+        const predPhrase: Predicate = predBuilder.build()
+        this.predicate = predPhrase
+    }
+
+    private movePendingNoun(): void {
+        if (this.pendingNoun) {
+            this.subject = this.pendingNoun
+            this.pendingNoun = null
+        }
+    }
+
+    private placeAdverbIn(builder: WordBuilder): void {
+        if (!this.pendingAdverb) {
+            throw Error("Tried to set adverb that does not exist.")
+        }
+        builder.addAdjunct(this.pendingAdverb)
+        this.pendingAdverb = null
+    }
+
+    private pushAdjunctToClause(phrase: Phrase): void {
+        if (!(
+            phrase instanceof Adverb ||
+            phrase instanceof Preposition
+        )) {
+            throw Error("Tried to push adjunct that is not an adjunct phrase")
+        }
+        this.adjunctStack.push(phrase)
+    }
+
+    private pushNounToClause(nPhrase: Noun): void {
+        if (
+            this.unfinishedBuilderList.at(-1) instanceof PrepBuilder
+        ) {
+            const prepBuilder: PrepBuilder =
+                this.unfinishedBuilderList.splice(-1, 1)[0] as PrepBuilder
+            prepBuilder.setObject(nPhrase)
+            this.addPhrase(prepBuilder)
+
+        } else if (!this.subject) {
+            this.subject = nPhrase
+        } else {
+            this.nounStack.push(nPhrase)
+        }
+    }
+
+    private pushPredToClause(pred: Predicate): void {
+        this.predicate = pred
+    }
+
+    private removeFromBuilderList(WordBuilder: WordBuilder) {
+        this.unfinishedBuilderList = this.unfinishedBuilderList.filter(
+            builder => builder !== WordBuilder
+        )
+    }
+
+    private resolvePrep(builder: PrepBuilder): void {
+        if (this.pendingNoun) {
+            builder.setObject(this.pendingNoun)
+            this.pendingNoun = null
+        }
+        const pPhrase: Preposition = builder.build()
+        this.adjunctStack.push(pPhrase)
+    }
+
+    private shouldBePredicate(): boolean {
+        const unfinishedBuilder = this.unfinishedBuilderList.at(-1)
+        return (
+            unfinishedBuilder instanceof PredicateBuilder &&
+            unfinishedBuilder.hasCopula()
+        )
     }
 }

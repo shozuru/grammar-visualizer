@@ -49,17 +49,12 @@ export class GrammarVisualizer {
 // who i knew was great was dead --> the person that I knew was great was dead
 // I made the game (be) easier
 
-// make the clauses a private attribute and not static, and just create a helper
-// method and add it as an argument when you use it
-
-// create another class to hold your parses ('Sentence')
-
 // need to add for adverbs:
 // The boy that slowly walked went to school quickly
 // ambiguous:
 // the boy that walked [slowly] went to school
 
-// They are at the school that I went to.
+// They are at the school that I went to
 
 // -----------------------------------------------------------------------------
 
