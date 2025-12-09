@@ -80,20 +80,39 @@ export class Parser {
     }
 
     private handleModifyingNoun(wordList: Word[], i: number): void {
+        // This is an example sentence.
+        // They (are) at [the [school] I] went to.
+        // They are the band friends I know.
+
         const current: Word = wordList[i]
         if (!this.isAmbiguousVerb(current)) return
 
-        let next: Word = wordList[i + 1]
-        while (i < wordList.length && !isNoun(next)) {
-            i += 1
-            next = wordList[i]
-        }
-        if (i >= wordList.length - 1) return
+        const firstIndex: number = this.getNextNounIndex(wordList, i)
+        if (firstIndex === -1) return
+        if (firstIndex + 1 >= wordList.length) return
 
-        const after: Word = wordList[i + 1]
-        if (isNoun(after)) {
-            next.pos = PartsOfSpeech.AdjectivalNoun
+        const nextWord = wordList[firstIndex + 1]
+        if (!isNominal(nextWord)) return
+
+        const secondIndex: number =
+            this.getNextNounIndex(wordList, firstIndex + 1)
+        if (secondIndex === -1) return
+
+        const verbIndex: number = secondIndex + 1
+
+        if (
+            verbIndex >= wordList.length ||
+            !isVerb(wordList[verbIndex])
+        ) {
+            wordList[firstIndex].pos = PartsOfSpeech.AdjectivalNoun
         }
+    }
+
+    private getNextNounIndex(wList: Word[], start: number): number {
+        for (let i = start; i < wList.length; i++) {
+            if (isNoun(wList[i])) return i
+        }
+        return -1
     }
 
     private isAmbiguousVerb(word: Word): boolean {

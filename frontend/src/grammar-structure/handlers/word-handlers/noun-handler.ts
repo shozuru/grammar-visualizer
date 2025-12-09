@@ -7,7 +7,8 @@ import type { Predicate } from "../../syntax/predicate"
 import type { Phrase } from "../../syntax/parts-of-speech/phrase"
 import {
     isDitransitive, isNounPred,
-    isPassive
+    isPassive,
+    isPrepPred
 } from "../../syntax/syntax-methods"
 import type { Clause } from "../../syntax/parts-of-speech/clause"
 
@@ -82,6 +83,7 @@ export class NounHandler implements WordHandler {
     }
 
     private obRelWOutThat(cBuilder: ClauseBuilder): boolean {
+        // They are at the school [I] went to
         const pred: Predicate | null = cBuilder.getPredicate()
         if (!pred) return false
 
@@ -95,6 +97,7 @@ export class NounHandler implements WordHandler {
     private hasObjectNoun(pred: Predicate, builder: ClauseBuilder): boolean {
         return (
             isNounPred(pred) ||
+            isPrepPred(pred) ||
             builder.getNounStack().length > 0
         )
     }

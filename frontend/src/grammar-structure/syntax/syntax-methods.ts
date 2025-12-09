@@ -11,6 +11,7 @@ import { Predicate } from "./predicate"
 import type { Phrase } from "./parts-of-speech/phrase"
 import type { WordBuilder } from "../builders/word-builder"
 import type { PredicateBuilder } from "../builders/predicate-builder"
+import { Preposition } from "./parts-of-speech/preposition"
 
 
 export function getLexicalizedMod(adjWord: Word): Mod | null {
@@ -209,6 +210,11 @@ export function isNounMod(
 export function isNounPred(pred: Predicate): boolean {
     const content = pred.getSemanticContent()
     return content instanceof Noun
+}
+
+export function isPrepPred(pred: Predicate): boolean {
+    const content = pred.getSemanticContent()
+    return content instanceof Preposition
 }
 
 export function isObjectControlPred(pred: Predicate): boolean {
