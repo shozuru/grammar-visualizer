@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import './user-input.css'
-import Circle from '../visualization/shapes/circle/Circle'
+import Visualizer from '../visualization/visualizer'
 import { type SentenceInfo } from '../../grammar-structure/types/sentence-info'
 import { PartsOfSpeech } from '../../grammar-structure/syntax/syntax-constants'
 import { GrammarVisualizer }
@@ -103,7 +103,7 @@ const UserInput: React.FC = () => {
 
                         </div>
 
-                        <Circle />
+                        <Visualizer />
 
                         <ul>
                             {sentencePos.map((value, index) => (
