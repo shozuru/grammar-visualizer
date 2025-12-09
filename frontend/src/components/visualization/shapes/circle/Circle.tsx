@@ -1,5 +1,5 @@
 import SmallCircle from '../small-circle/small-circle'
-import './Circle.css'
+import './circle.css'
 
 const Circle: React.FC = () => {
 

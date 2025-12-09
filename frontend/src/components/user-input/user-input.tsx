@@ -6,31 +6,24 @@ import { type SentenceInfo } from '../../grammar-structure/types/sentence-info'
 import { PartsOfSpeech } from '../../grammar-structure/syntax/syntax-constants'
 import { GrammarVisualizer }
     from '../../grammar-structure/grammar-visualizer'
-import type { Clause } from '../../grammar-structure/syntax/parts-of-speech/clause'
+import { Clause }
+    from '../../grammar-structure/syntax/parts-of-speech/clause'
 
 const UserInput: React.FC = () => {
 
     const [inputSentence, setInputSentence] = useState<string>('')
     const [submitted, setSubmitted] = useState<string>('')
     const [sentencePos, setSentencePos] = useState<string[]>([])
+    const [clauses, setClauses] = useState<Clause[]>([])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInputSentence(e.target.value)
     }
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        if (inputSentence.length > 0) {
-            setSubmitted(inputSentence)
-        }
-
-        setInputSentence('')
-    }
-
-    useEffect(() => {
+    const submitSentence = (input: string) => {
         axios.post('https://grammar-visualizer.duckdns.org/pos/',
             {
-                sentence: submitted
+                sentence: input
                     .replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()'"]/g, "")
             }
         )
@@ -46,18 +39,58 @@ const UserInput: React.FC = () => {
                 setSentencePos(posNameList)
 
                 const sentInfo: SentenceInfo = {
-                    wordList: submitted.split(' '),
+                    wordList: inputSentence.split(' '),
                     posList: posNumList
                 }
 
                 const structure: GrammarVisualizer =
                     new GrammarVisualizer(sentInfo)
+
                 const clauses: Clause[] = structure.getClauses()
-
-                console.log(clauses)
+                setClauses(clauses)
             })
+    }
 
-    }, [submitted])
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        if (inputSentence.length > 0) {
+            setSubmitted(inputSentence)
+            submitSentence(inputSentence)
+            setInputSentence('')
+        }
+    }
+
+    // useEffect(() => {
+    //     axios.post('https://grammar-visualizer.duckdns.org/pos/',
+    //         {
+    //             sentence: submitted
+    //                 .replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()'"]/g, "")
+    //         }
+    //     )
+    //         .then(res => {
+    //             const posNumList: number[] = []
+    //             const posNameList: string[] = []
+
+    //             res.data.response.forEach((value: number) => {
+    //                 posNumList.push(value)
+    //                 posNameList.push(PartsOfSpeech[value])
+    //             })
+
+    //             setSentencePos(posNameList)
+
+    //             const sentInfo: SentenceInfo = {
+    //                 wordList: submitted.split(' '),
+    //                 posList: posNumList
+    //             }
+
+    //             const structure: GrammarVisualizer =
+    //                 new GrammarVisualizer(sentInfo)
+
+    //             const clauses: Clause[] = structure.getClauses()
+    //             setClauses(clauses)
+    //         })
+
+    // }, [submitted])
 
     return (
         <div>
@@ -86,6 +119,8 @@ const UserInput: React.FC = () => {
                 </form>
 
                 {submitted.length > 0 &&
+                    clauses.length > 0 &&
+
                     <div>
                         <div
                             className='submitted-container'
@@ -103,7 +138,9 @@ const UserInput: React.FC = () => {
 
                         </div>
 
-                        <Visualizer />
+                        <Visualizer
+                            clauseList={clauses}
+                        />
 
                         <ul>
                             {sentencePos.map((value, index) => (
