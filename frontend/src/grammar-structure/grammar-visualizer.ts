@@ -37,24 +37,17 @@ export class GrammarVisualizer {
 }
 
 // TODO: conjunctions, ambiguous sentences, visualization
-// this is an example sentence
 // I gave the kid cake. (ambiguous)
 // I gave the dog food (technically ambiguous)
 // I ate the birthday cake (not ambiguous)
-// in most cases, you want to treat DET NN NN as one thing, but if the verb
-// is ditransitive, it is ambiguous if it comes after the verb
-// DET NN NN
 
 // the man that is a soccer player came back --> the soccer player man came back
-// who i knew was great was dead --> the person that I knew was great was dead
 // I made the game (be) easier
 
 // need to add for adverbs:
 // The boy that slowly walked went to school quickly
 // ambiguous:
 // the boy that walked [slowly] went to school
-
-// They are at the school that I went to
 
 // -----------------------------------------------------------------------------
 
