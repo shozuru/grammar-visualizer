@@ -3,7 +3,6 @@ import type { Word } from "../../types/word"
 import type { ClauseBuilder } from "../../builders/clause-builder"
 import type { Predicate } from "../../syntax/predicate"
 import type { HandlerMethods } from "../../parser"
-import type { Adverb } from "../../syntax/parts-of-speech/adverb"
 
 export class AdjectiveHandler implements WordHandler {
 

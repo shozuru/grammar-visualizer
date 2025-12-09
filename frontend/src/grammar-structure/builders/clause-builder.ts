@@ -142,7 +142,7 @@ export class ClauseBuilder {
         // when you deal with tense in general, you can deal with 
         // inf, since you don't deal with tense in the main clause
 
-        this.movePendingNoun()
+        this.makePendingNounSubject()
         const predBuilder: PredicateBuilder =
             this.getOrCreateBuilder(PredicateBuilder)
 
@@ -462,8 +462,11 @@ export class ClauseBuilder {
         this.predicate = predPhrase
     }
 
-    private movePendingNoun(): void {
-        if (this.pendingNoun) {
+    private makePendingNounSubject(): void {
+        if (!this.pendingNoun) {
+            return
+        }
+        if (!this.subject) {
             this.subject = this.pendingNoun
             this.pendingNoun = null
         }
@@ -514,10 +517,16 @@ export class ClauseBuilder {
     }
 
     private resolvePrep(builder: PrepBuilder): void {
+
         if (this.pendingNoun) {
+            // They are at the school that I went [to]
             builder.setObject(this.pendingNoun)
             this.pendingNoun = null
+
+        } else if (this.subject) {
+            builder.setObject(this.subject)
         }
+
         const pPhrase: Preposition = builder.build()
         this.adjunctStack.push(pPhrase)
     }
