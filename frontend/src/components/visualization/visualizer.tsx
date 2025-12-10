@@ -1,12 +1,15 @@
-import Circle from './shapes/circle/circle.tsx'
+// import Circle from './shapes/circle/circle.tsx'
 import { Clause } from '../../grammar-structure/syntax/parts-of-speech/clause'
 import './visualizer.css'
 import type { Predicate } from '../../grammar-structure/syntax/predicate.ts'
 import { Verb } from '../../grammar-structure/syntax/parts-of-speech/verb.ts'
-import type { Phrase } from '../../grammar-structure/syntax/parts-of-speech/phrase.ts'
+import type { Phrase }
+    from '../../grammar-structure/syntax/parts-of-speech/phrase.ts'
 import { Noun } from '../../grammar-structure/syntax/parts-of-speech/noun.ts'
-import { Preposition } from '../../grammar-structure/syntax/parts-of-speech/preposition.ts'
-import { Adjective } from '../../grammar-structure/syntax/parts-of-speech/adjectives.ts'
+import { Preposition }
+    from '../../grammar-structure/syntax/parts-of-speech/preposition.ts'
+import { Adjective }
+    from '../../grammar-structure/syntax/parts-of-speech/adjectives.ts'
 
 type VisualProps = {
     clauseList: Clause[]
@@ -36,7 +39,7 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
         >
             {clauseList.map((clause, i) => {
                 const pred: Predicate = clause.getPredicate()
-                const copula: Verb | null = pred.getCopula()
+                // const copula: Verb | null = pred.getCopula()
                 const predPhrase: Phrase | null = pred.getSemanticContent()
                 const verbName: string = getPredName(predPhrase)
 

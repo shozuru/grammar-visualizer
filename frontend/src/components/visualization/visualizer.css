@@ -1,6 +1,7 @@
 .clause-container {
     border: solid black 2px;
     border-radius: 45px;
+    background-color: rgba(0, 0, 0, 0.1);
     padding: 0.5rem;
     width: fit-content;
     margin: 0.5rem;
@@ -10,7 +11,7 @@
 .noun {
     border: solid green 2px;
     border-radius: 2rem;
-    background-color: rgba(0, 255, 0, 0.3);
+    background-color: rgba(0, 255, 0, 0.2);
     padding: 0.5rem;
     width: fit-content;
     margin: 0 auto;
@@ -19,7 +20,7 @@
 .verb {
     border: solid blue 2px;
     border-radius: 2rem;
-    background-color: rgba(0, 0, 255, 0.3);
+    background-color: rgba(0, 0, 255, 0.2);
     padding: 0.5rem;
     width: fit-content;
     margin: 0 auto;

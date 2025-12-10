@@ -171,6 +171,7 @@ export const objectControlVerbs: string[] =
 export const raisingVerbs: string[] =
     [
         "want",
+        "need",
         "expect",
         "know",
         "knew",
