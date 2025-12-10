@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import axios from 'axios'
 import './user-input.css'
 import Visualizer from '../visualization/visualizer'
@@ -59,38 +59,6 @@ const UserInput: React.FC = () => {
             setInputSentence('')
         }
     }
-
-    // useEffect(() => {
-    //     axios.post('https://grammar-visualizer.duckdns.org/pos/',
-    //         {
-    //             sentence: submitted
-    //                 .replace(/[.,\/#!?$%\^&\*;:{}=\-_`~()'"]/g, "")
-    //         }
-    //     )
-    //         .then(res => {
-    //             const posNumList: number[] = []
-    //             const posNameList: string[] = []
-
-    //             res.data.response.forEach((value: number) => {
-    //                 posNumList.push(value)
-    //                 posNameList.push(PartsOfSpeech[value])
-    //             })
-
-    //             setSentencePos(posNameList)
-
-    //             const sentInfo: SentenceInfo = {
-    //                 wordList: submitted.split(' '),
-    //                 posList: posNumList
-    //             }
-
-    //             const structure: GrammarVisualizer =
-    //                 new GrammarVisualizer(sentInfo)
-
-    //             const clauses: Clause[] = structure.getClauses()
-    //             setClauses(clauses)
-    //         })
-
-    // }, [submitted])
 
     return (
         <div>
