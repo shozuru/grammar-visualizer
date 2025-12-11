@@ -49,6 +49,8 @@ export class GrammarVisualizer {
 // ambiguous:
 // the boy that walked [slowly] went to school
 
+// [one of] the boys ate a sandwich
+
 // -----------------------------------------------------------------------------
 
 // determining if intransitive verb is unaccusative or unergative might prove 

@@ -1,4 +1,3 @@
-// import Circle from './shapes/circle/circle.tsx'
 import { Clause } from '../../grammar-structure/syntax/parts-of-speech/clause'
 import './visualizer.css'
 import type { Predicate } from '../../grammar-structure/syntax/predicate.ts'
@@ -9,7 +8,6 @@ import { Preposition }
     from '../../grammar-structure/syntax/parts-of-speech/preposition.ts'
 import { Adverb }
     from '../../grammar-structure/syntax/parts-of-speech/adverb.ts'
-import NounCirle from './shapes/noun-circle.tsx'
 import ClauseCircle from './clause-circle.tsx'
 
 type VisualProps = {
@@ -17,6 +15,7 @@ type VisualProps = {
 }
 
 const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
+
     console.log(clauseList)
 
     const getAdverbs = (predicate: Predicate): Adverb[] => {
@@ -65,6 +64,10 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
                 if (!predPhrase) {
                     throw Error("Clause does not have a predicate")
                 }
+                const nounList: Noun[] = clause.getNouns()
+                if (nounList.length < 1) {
+                    throw Error("Clause has no nouns")
+                }
                 const adverbList: Adverb[] = getAdverbs(pred)
                 const prepositionList: Preposition[] = getPrepositions(pred)
                 const prepObjects: Noun[] = getPrepObjs(prepositionList)
@@ -78,26 +81,12 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
 
                         <ClauseCircle
                             verb={predPhrase}
+                            nounList={nounList}
                         />
 
                         <div
                             className='clause'
                         >
-                            <div
-                                className='noun-container'
-                            >
-                                {clause.getNouns().map(
-                                    (noun, i) => (
-                                        <div
-                                            className='noun-container'
-                                            key={i}
-                                        >
-                                            <NounCirle
-                                                noun={noun} />
-                                        </div>
-                                    )
-                                )}
-                            </div>
 
                             {adverbList.map(
                                 (adverb, i) => (
