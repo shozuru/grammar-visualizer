@@ -39,7 +39,7 @@ const VerbCircle: React.FC<PredProp> = ({ predicate }) => {
             />
 
             <span
-                className="name"
+                className="verb-name"
             >
                 {predName}
             </span>

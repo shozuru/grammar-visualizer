@@ -10,7 +10,6 @@ import { Preposition }
 import { Adverb }
     from '../../grammar-structure/syntax/parts-of-speech/adverb.ts'
 import NounCirle from './shapes/noun-circle.tsx'
-import VerbCircle from './verb-circle.tsx'
 import ClauseCircle from './clause-circle.tsx'
 
 type VisualProps = {
@@ -98,15 +97,6 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
                                         </div>
                                     )
                                 )}
-                            </div>
-
-                            <div
-                                className='verb'
-                            >
-                                <VerbCircle
-                                    predicate={predPhrase}
-                                />
-
                             </div>
 
                             {adverbList.map(
