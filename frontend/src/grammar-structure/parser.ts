@@ -133,6 +133,8 @@ export class Parser {
     }
 
     private handleTensePromotion(wordList: Word[], i: number): void {
+        if (i + 3 > wordList.length) return
+
         const secondWord: Word = wordList[i + 1]
         const thirdWord: Word = wordList[i + 2]
 

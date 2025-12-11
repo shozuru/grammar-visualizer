@@ -10,6 +10,9 @@ import { Preposition }
     from '../../grammar-structure/syntax/parts-of-speech/preposition.ts'
 import { Adjective }
     from '../../grammar-structure/syntax/parts-of-speech/adjectives.ts'
+import { Adverb }
+    from '../../grammar-structure/syntax/parts-of-speech/adverb.ts'
+import NounCirle from './shapes/noun-circle.tsx'
 
 type VisualProps = {
     clauseList: Clause[]
@@ -33,6 +36,41 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
         return phrase.getName()
     }
 
+    const getAdverbs = (predicate: Predicate): Adverb[] => {
+        const adjunctList: (Preposition | Adverb)[] =
+            predicate.getAdjunctStack()
+        let adverbList: Adverb[] = []
+        for (const adverb of adjunctList) {
+            if (adverb instanceof Adverb) {
+                adverbList.push(adverb)
+            }
+        }
+        return adverbList
+    }
+
+    const getPrepositions = (predicate: Predicate): Preposition[] => {
+        const adjunctList: (Preposition | Adverb)[] =
+            predicate.getAdjunctStack()
+        let prepList: Preposition[] = []
+        for (const prep of adjunctList) {
+            if (prep instanceof Preposition) {
+                prepList.push(prep)
+            }
+        }
+        return prepList
+    }
+
+    const getPrepObjs = (prepList: Preposition[]): Noun[] => {
+        let nounList: Noun[] = []
+        for (const prep of prepList) {
+            const object: Noun | null = prep.getObject()
+            if (object) {
+                nounList.push(object)
+            }
+        }
+        return nounList
+    }
+
     return (
         <div
             className='visual-container'
@@ -43,12 +81,17 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
                 const predPhrase: Phrase | null = pred.getSemanticContent()
                 const verbName: string = getPredName(predPhrase)
 
+                const adverbList: Adverb[] = getAdverbs(pred)
+                const prepositionList: Preposition[] = getPrepositions(pred)
+                const prepObjects: Noun[] = getPrepObjs(prepositionList)
+
                 return (
 
                     <div
                         className='clause-container'
                         key={i}
                     >
+
                         <div
                             className='clause'
                         >
@@ -58,19 +101,48 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
                                 {clause.getNouns().map(
                                     (noun, i) => (
                                         <div
-                                            className='noun'
+                                            className='noun-container'
                                             key={i}
                                         >
-                                            {noun.getName()}
+                                            <NounCirle
+                                                noun={noun} />
                                         </div>
                                     )
                                 )}
                             </div>
+
                             <div
                                 className='verb'
                             >
                                 {verbName}
                             </div>
+
+                            {adverbList.map(
+                                (adverb, i) => (
+                                    <>
+                                        <div
+                                            key={i}
+                                            className='adverb'
+                                        >
+                                            {adverb.getName()}
+                                        </div>
+                                    </>
+                                )
+                            )}
+
+                            {prepObjects.map(
+                                (noun, i) => (
+                                    <>
+                                        <div
+                                            key={i}
+                                            className='noun'
+                                        >
+                                            {noun.getName()}
+                                        </div>
+                                    </>
+                                )
+                            )}
+
                         </div>
                     </div>
                 )

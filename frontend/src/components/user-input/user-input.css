@@ -2,6 +2,8 @@ header h1 {
     border: solid black 2px;
     padding: 0 1rem;
     border-radius: 25px;
+    max-width: 20rem;
+    margin: 0 auto;
 }
 
 ul {

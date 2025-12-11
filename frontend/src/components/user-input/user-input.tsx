@@ -13,7 +13,7 @@ const UserInput: React.FC = () => {
 
     const [inputSentence, setInputSentence] = useState<string>('')
     const [submitted, setSubmitted] = useState<string>('')
-    const [sentencePos, setSentencePos] = useState<string[]>([])
+    // const [sentencePos, setSentencePos] = useState<string[]>([])
     const [clauses, setClauses] = useState<Clause[]>([])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,7 +36,7 @@ const UserInput: React.FC = () => {
                     posNameList.push(PartsOfSpeech[value])
                 })
 
-                setSentencePos(posNameList)
+                // setSentencePos(posNameList)
 
                 const sentInfo: SentenceInfo = {
                     wordList: inputSentence.split(' '),
@@ -106,11 +106,15 @@ const UserInput: React.FC = () => {
 
                         </div>
 
+                        <div>
+                            Sentence representation:
+                        </div>
+
                         <Visualizer
                             clauseList={clauses}
                         />
 
-                        <ul>
+                        {/* <ul>
                             {sentencePos.map((value, index) => (
                                 <li
                                     key={index}
@@ -118,7 +122,7 @@ const UserInput: React.FC = () => {
                                     {value}
                                 </li>
                             ))}
-                        </ul>
+                        </ul> */}
                     </div>
                 }
             </main>
