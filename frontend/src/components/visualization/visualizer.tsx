@@ -2,17 +2,16 @@
 import { Clause } from '../../grammar-structure/syntax/parts-of-speech/clause'
 import './visualizer.css'
 import type { Predicate } from '../../grammar-structure/syntax/predicate.ts'
-import { Verb } from '../../grammar-structure/syntax/parts-of-speech/verb.ts'
 import type { Phrase }
     from '../../grammar-structure/syntax/parts-of-speech/phrase.ts'
 import { Noun } from '../../grammar-structure/syntax/parts-of-speech/noun.ts'
 import { Preposition }
     from '../../grammar-structure/syntax/parts-of-speech/preposition.ts'
-import { Adjective }
-    from '../../grammar-structure/syntax/parts-of-speech/adjectives.ts'
 import { Adverb }
     from '../../grammar-structure/syntax/parts-of-speech/adverb.ts'
 import NounCirle from './shapes/noun-circle.tsx'
+import VerbCircle from './verb-circle.tsx'
+import ClauseCircle from './clause-circle.tsx'
 
 type VisualProps = {
     clauseList: Clause[]
@@ -20,21 +19,6 @@ type VisualProps = {
 
 const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
     console.log(clauseList)
-
-    const getPredName = (phrase: Phrase | null): string => {
-        if (!phrase) {
-            throw Error("Clause does not have semantic verb")
-        }
-        if (!(
-            phrase instanceof Noun ||
-            phrase instanceof Verb ||
-            phrase instanceof Preposition ||
-            phrase instanceof Adjective
-        )) {
-            throw Error("pred is not a valid phrase")
-        }
-        return phrase.getName()
-    }
 
     const getAdverbs = (predicate: Predicate): Adverb[] => {
         const adjunctList: (Preposition | Adverb)[] =
@@ -79,8 +63,9 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
                 const pred: Predicate = clause.getPredicate()
                 // const copula: Verb | null = pred.getCopula()
                 const predPhrase: Phrase | null = pred.getSemanticContent()
-                const verbName: string = getPredName(predPhrase)
-
+                if (!predPhrase) {
+                    throw Error("Clause does not have a predicate")
+                }
                 const adverbList: Adverb[] = getAdverbs(pred)
                 const prepositionList: Preposition[] = getPrepositions(pred)
                 const prepObjects: Noun[] = getPrepObjs(prepositionList)
@@ -91,6 +76,10 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
                         className='clause-container'
                         key={i}
                     >
+
+                        <ClauseCircle
+                            verb={predPhrase}
+                        />
 
                         <div
                             className='clause'
@@ -114,7 +103,10 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
                             <div
                                 className='verb'
                             >
-                                {verbName}
+                                <VerbCircle
+                                    predicate={predPhrase}
+                                />
+
                             </div>
 
                             {adverbList.map(

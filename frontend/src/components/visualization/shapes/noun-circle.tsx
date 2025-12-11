@@ -7,7 +7,9 @@ type NounProps = {
 
 const NounCirle: React.FC<NounProps> = ({ noun }) => {
     return (
-        <>
+        <div
+            className='noun-container'
+        >
             <span
                 className="noun-circle"
             />
@@ -16,7 +18,7 @@ const NounCirle: React.FC<NounProps> = ({ noun }) => {
             >
                 {noun.getName()}
             </span>
-        </>
+        </div>
     )
 }
 
