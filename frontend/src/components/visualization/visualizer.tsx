@@ -8,7 +8,7 @@ import { Preposition }
     from '../../grammar-structure/syntax/parts-of-speech/preposition.ts'
 import { Adverb }
     from '../../grammar-structure/syntax/parts-of-speech/adverb.ts'
-import ClauseCircle from './clause-circle.tsx'
+import ClauseCircle from './shapes/clause/clause-circle.tsx'
 
 type VisualProps = {
     clauseList: Clause[]

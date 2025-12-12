@@ -1,7 +1,7 @@
 .verb-circle {
     width: 1rem;
     height: 1rem;
-    border: solid blue 2px;
+    border: solid black 2px;
     border-radius: 50%;
     background-color: blue;
     display: inline-block;

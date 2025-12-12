@@ -1,7 +1,7 @@
 .noun-circle {
     width: 1rem;
     height: 1rem;
-    border: solid green 2px;
+    border: solid black 2px;
     background-color: green;
     border-radius: 50%;
     display: inline-block;

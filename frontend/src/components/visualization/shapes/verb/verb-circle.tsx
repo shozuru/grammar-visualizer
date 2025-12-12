@@ -1,11 +1,11 @@
 import { Adjective }
-    from "../../grammar-structure/syntax/parts-of-speech/adjectives"
-import { Noun } from "../../grammar-structure/syntax/parts-of-speech/noun"
+    from "../../../../grammar-structure/syntax/parts-of-speech/adjectives"
+import { Noun } from "../../../../grammar-structure/syntax/parts-of-speech/noun"
 import type { Phrase }
-    from "../../grammar-structure/syntax/parts-of-speech/phrase"
+    from "../../../../grammar-structure/syntax/parts-of-speech/phrase"
 import { Preposition }
-    from "../../grammar-structure/syntax/parts-of-speech/preposition"
-import { Verb } from "../../grammar-structure/syntax/parts-of-speech/verb"
+    from "../../../../grammar-structure/syntax/parts-of-speech/preposition"
+import { Verb } from "../../../../grammar-structure/syntax/parts-of-speech/verb"
 import './verb-circle.css'
 
 type PredProp = {

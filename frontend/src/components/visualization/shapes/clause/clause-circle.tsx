@@ -1,9 +1,10 @@
-import type { Noun } from '../../grammar-structure/syntax/parts-of-speech/noun'
+import type { Noun }
+    from '../../../../grammar-structure/syntax/parts-of-speech/noun'
 import type { Phrase }
-    from '../../grammar-structure/syntax/parts-of-speech/phrase'
+    from '../../../../grammar-structure/syntax/parts-of-speech/phrase'
 import './clause-circle.css'
-import NounCirle from './shapes/noun-circle'
-import VerbCircle from './verb-circle'
+import NounCirle from '../noun/noun-circle'
+import VerbCircle from '../verb/verb-circle'
 
 type ClauseProps = {
     verb: Phrase

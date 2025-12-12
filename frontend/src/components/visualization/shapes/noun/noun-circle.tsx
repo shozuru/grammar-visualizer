@@ -1,4 +1,5 @@
-import type { Noun } from '../../../grammar-structure/syntax/parts-of-speech/noun'
+import type { Noun }
+    from '../../../../grammar-structure/syntax/parts-of-speech/noun'
 import './noun-circle.css'
 
 type NounProps = {
