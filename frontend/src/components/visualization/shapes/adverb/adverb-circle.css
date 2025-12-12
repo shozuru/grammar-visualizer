@@ -1,13 +1,13 @@
-.noun-circle {
+.adverb-circle {
     width: 0.5rem;
     height: 0.5rem;
     border: solid black 1px;
-    background-color: green;
+    background-color: red;
     border-radius: 50%;
     display: inline-block;
 }
 
-.noun-name {
+.adverb-name {
     font-size: 10px;
     border: solid black 1px;
     border-radius: 5px;

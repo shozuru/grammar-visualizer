@@ -68,6 +68,7 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
                 if (nounList.length < 1) {
                     throw Error("Clause has no nouns")
                 }
+
                 const adverbList: Adverb[] = getAdverbs(pred)
                 const prepositionList: Preposition[] = getPrepositions(pred)
                 const prepObjects: Noun[] = getPrepObjs(prepositionList)
@@ -82,24 +83,12 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
                         <ClauseCircle
                             verb={predPhrase}
                             nounList={nounList}
+                            adverbList={adverbList}
                         />
 
                         <div
                             className='clause'
                         >
-
-                            {adverbList.map(
-                                (adverb, i) => (
-                                    <>
-                                        <div
-                                            key={i}
-                                            className='adverb'
-                                        >
-                                            {adverb.getName()}
-                                        </div>
-                                    </>
-                                )
-                            )}
 
                             {prepObjects.map(
                                 (noun, i) => (

@@ -10,7 +10,7 @@ type NounProps = {
 }
 
 const NounCirle: React.FC<NounProps> = ({ noun, index, total, radius }) => {
-    const arcSpan: number = 90
+    const arcSpan: number = 45
     const half: number = arcSpan / 2
 
     const angleDeg: number = -half + (index / (total - 1 || 1)) * arcSpan
@@ -22,7 +22,6 @@ const NounCirle: React.FC<NounProps> = ({ noun, index, total, radius }) => {
 
     const nounName: string = noun.getName()
     const circleSize: number = 1.2 * 16
-    const margin: number = 8
 
     return (
         <div
@@ -43,7 +42,7 @@ const NounCirle: React.FC<NounProps> = ({ noun, index, total, radius }) => {
                 style={{
                     position: "absolute",
                     top: `calc(50% + ${y}px)`,
-                    left: `calc(50% + ${x}px + ${circleSize / 2 + margin}px)`,
+                    left: `calc(50% + ${x}px + ${circleSize / 2}px)`,
                     transform: "translateY(-50%)",
                 }}
             >

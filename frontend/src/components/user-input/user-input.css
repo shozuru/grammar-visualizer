@@ -7,12 +7,9 @@ header h1 {
 }
 
 .input-container {
-    margin: 1rem 0;
-}
-
-.input-container p,
-.input-container form {
     width: fit-content;
+    margin: 1rem auto;
+    text-align: left;
 }
 
 .input-container p {
