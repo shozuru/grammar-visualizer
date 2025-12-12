@@ -13,7 +13,6 @@ const UserInput: React.FC = () => {
 
     const [inputSentence, setInputSentence] = useState<string>('')
     const [submitted, setSubmitted] = useState<string>('')
-    // const [sentencePos, setSentencePos] = useState<string[]>([])
     const [clauses, setClauses] = useState<Clause[]>([])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,23 +67,27 @@ const UserInput: React.FC = () => {
                 </h1>
             </header>
             <main>
-                <p>
-                    Enter a sentence to be analyzed
-                </p>
-                <form
-                    onSubmit={handleSubmit}
+                <div
+                    className='input-container'
                 >
-                    <input
-                        type='text'
-                        placeholder='This is a sample sentence'
-                        value={inputSentence}
-                        onChange={handleInputChange}
-                    />
-                    <input
-                        type='submit'
-                        value='Submit'
-                    />
-                </form>
+                    <p>
+                        Enter a sentence to be analyzed
+                    </p>
+                    <form
+                        onSubmit={handleSubmit}
+                    >
+                        <input
+                            type='text'
+                            placeholder='This is a sample sentence'
+                            value={inputSentence}
+                            onChange={handleInputChange}
+                        />
+                        <input
+                            type='submit'
+                            value='Submit'
+                        />
+                    </form>
+                </div>
 
                 {submitted.length > 0 &&
                     clauses.length > 0 &&
@@ -106,7 +109,9 @@ const UserInput: React.FC = () => {
 
                         </div>
 
-                        <div>
+                        <div
+                            className='representation-heading'
+                        >
                             Sentence representation:
                         </div>
 
@@ -114,15 +119,6 @@ const UserInput: React.FC = () => {
                             clauseList={clauses}
                         />
 
-                        {/* <ul>
-                            {sentencePos.map((value, index) => (
-                                <li
-                                    key={index}
-                                >
-                                    {value}
-                                </li>
-                            ))}
-                        </ul> */}
                     </div>
                 }
             </main>

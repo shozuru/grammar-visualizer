@@ -12,7 +12,7 @@ type ClauseProps = {
 }
 
 const ClauseCircle: React.FC<ClauseProps> = ({ verb, nounList }) => {
-    const radius: number = 80
+    const radius: number = 56
 
     return (
         <div

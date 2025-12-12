@@ -6,23 +6,17 @@ header h1 {
     margin: 0 auto;
 }
 
-ul {
-    border: solid blue 2px;
-    border-radius: 25px;
-    padding: 0 1rem;
-    padding-top: 0.25rem;
-    width: fit-content;
-    margin: 0 auto;
+.input-container {
+    margin: 1rem 0;
 }
 
-li {
-    background-color: rgba(255, 255, 255, 0.2);
-    border: solid black 2px;
-    border-radius: 25px;
-    padding: 0 1rem;
-    margin-bottom: 0.25rem;
+.input-container p,
+.input-container form {
     width: fit-content;
-    list-style: none;
+}
+
+.input-container p {
+    margin: 0;
 }
 
 .submitted-container {
@@ -41,4 +35,9 @@ li {
 
 .submitted-sentence {
     font-weight: bold;
+    max-width: 20rem;
+}
+
+div .representation-heading {
+    margin-bottom: 1rem;
 }
