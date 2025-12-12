@@ -4,21 +4,14 @@ import './noun-circle.css'
 
 type NounProps = {
     noun: Noun
-    index: number
-    total: number
+    angle: number
     radius: number
 }
 
-const NounCirle: React.FC<NounProps> = ({ noun, index, total, radius }) => {
-    const arcSpan: number = 45
-    const half: number = arcSpan / 2
-
-    const angleDeg: number = -half + (index / (total - 1 || 1)) * arcSpan
-    const rad: number = (angleDeg * Math.PI) / 180
-
+const NounCirle: React.FC<NounProps> = ({ noun, angle, radius }) => {
+    const rad: number = angle * Math.PI / 180
     const x: number = Math.cos(rad) * radius
     const y: number = Math.sin(rad) * radius
-
 
     const nounName: string = noun.getName()
     const circleSize: number = 1.2 * 16

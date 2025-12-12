@@ -89,7 +89,6 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
                         <div
                             className='clause'
                         >
-
                             {prepObjects.map(
                                 (noun, i) => (
                                     <>
@@ -102,17 +101,10 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
                                     </>
                                 )
                             )}
-
                         </div>
                     </div>
                 )
             })}
-
-            {/* {Array.from({ length: clauseList.length }).map((_, i) => (
-                <Circle
-                    key={i}
-                />
-            ))} */}
         </div >
     )
 }

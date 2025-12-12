@@ -118,7 +118,6 @@ const UserInput: React.FC = () => {
                         <Visualizer
                             clauseList={clauses}
                         />
-
                     </div>
                 }
             </main>
