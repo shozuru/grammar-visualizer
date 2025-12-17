@@ -9,19 +9,24 @@ import { Adverb }
     from '../../../../grammar-structure/syntax/parts-of-speech/adverb'
 import AdverbCircle from '../adverb/adverb-circle'
 
-type ClauseProps = {
-    verb: Phrase
-    nounList: Noun[]
-    adverbList: Adverb[]
-}
-
 enum PartOfSpeech {
     NOUN,
     VERB,
     ADVERB
 }
 
-type Coupling = {
+export enum Coupling {
+    INPHASE,
+    ANTIPHASE
+}
+
+type ClauseProps = {
+    verb: Phrase
+    nounList: Noun[]
+    adverbList: Adverb[]
+}
+
+type CoupledElement = {
     type: PartOfSpeech
     value: Phrase
 }
@@ -30,11 +35,17 @@ const ClauseCircle: React.FC<ClauseProps> =
     ({ verb, nounList, adverbList }) => {
 
         const radius: number = 56
-        const inPhase: Coupling[] = [
-            ...nounList.map((noun) =>
+        const inPhase: CoupledElement[] = [
+            ...nounList.slice(0, 1).map((noun) =>
                 ({ type: PartOfSpeech.NOUN, value: noun })),
             ...adverbList.map((adverb) =>
                 ({ type: PartOfSpeech.ADVERB, value: adverb }))
+        ]
+
+        const antiPhase: CoupledElement[] = [
+            ...nounList.slice(1).map(noun => (
+                { type: PartOfSpeech.NOUN, value: noun }
+            ))
         ]
 
         const arcSpan: number = 45
@@ -54,9 +65,7 @@ const ClauseCircle: React.FC<ClauseProps> =
             angles = angles.map(a => a + shift)
         }
 
-
         return (
-
             <div
                 className="clause-circle"
             >
@@ -72,11 +81,11 @@ const ClauseCircle: React.FC<ClauseProps> =
                     }
 
                     const angle: number = angles[i]
-
                     if (item.value instanceof Noun) {
                         return (
                             <NounCirle
                                 noun={item.value}
+                                coupling={Coupling.INPHASE}
                                 angle={angle}
                                 radius={radius}
                                 key={`noun-${i}`}
@@ -89,6 +98,21 @@ const ClauseCircle: React.FC<ClauseProps> =
                             angle={angle}
                             radius={radius}
                             key={`adverb-${i}`}
+                        />
+                    )
+                })}
+
+                {antiPhase.map((noun, i) => {
+                    if (!(noun.value instanceof Noun)) {
+                        throw Error("Antiphase item is not a noun")
+                    }
+                    return (
+                        <NounCirle
+                            noun={noun.value}
+                            coupling={Coupling.ANTIPHASE}
+                            angle={180}
+                            radius={radius}
+                            key={`noun-${i}`}
                         />
                     )
                 })}
