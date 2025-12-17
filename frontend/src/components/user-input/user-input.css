@@ -38,3 +38,12 @@ header h1 {
 div .representation-heading {
     margin-bottom: 1rem;
 }
+
+.visual-container {
+    border: solid black 1px;
+    width: fit-content;
+    margin: 0 auto;
+    padding: 1rem 5rem;
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.1);
+}

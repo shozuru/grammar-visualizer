@@ -115,9 +115,13 @@ const UserInput: React.FC = () => {
                             Sentence representation:
                         </div>
 
-                        <Visualizer
-                            clauseList={clauses}
-                        />
+                        <div
+                            className='visualizer-container'
+                        >
+                            <Visualizer
+                                clauseList={clauses}
+                            />
+                        </div>
                     </div>
                 }
             </main>

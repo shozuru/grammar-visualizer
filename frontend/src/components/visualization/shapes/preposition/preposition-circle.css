@@ -1,0 +1,12 @@
+.preposition-circle {
+    width: 0.5rem;
+    height: 0.5rem;
+    border: solid black 1px;
+    background-color: yellow;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.preposition-name {
+    font-size: 10px;
+}

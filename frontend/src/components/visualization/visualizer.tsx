@@ -72,6 +72,11 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
                 const adverbList: Adverb[] = getAdverbs(pred)
                 const prepositionList: Preposition[] = getPrepositions(pred)
                 const prepObjects: Noun[] = getPrepObjs(prepositionList)
+                prepObjects.forEach((object) => {
+                    nounList.push(object)
+                })
+
+                // preposition should be part of main clause, but there 
 
                 return (
 
@@ -79,29 +84,12 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
                         className='clause-container'
                         key={i}
                     >
-
                         <ClauseCircle
                             verb={predPhrase}
                             nounList={nounList}
                             adverbList={adverbList}
+                            prepList={prepositionList}
                         />
-
-                        <div
-                            className='clause'
-                        >
-                            {prepObjects.map(
-                                (noun, i) => (
-                                    <>
-                                        <div
-                                            key={i}
-                                            className='noun'
-                                        >
-                                            {noun.getName()}
-                                        </div>
-                                    </>
-                                )
-                            )}
-                        </div>
                     </div>
                 )
             })}

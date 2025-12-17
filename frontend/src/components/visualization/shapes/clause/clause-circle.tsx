@@ -8,11 +8,15 @@ import VerbCircle from '../verb/verb-circle'
 import { Adverb }
     from '../../../../grammar-structure/syntax/parts-of-speech/adverb'
 import AdverbCircle from '../adverb/adverb-circle'
+import { Preposition }
+    from '../../../../grammar-structure/syntax/parts-of-speech/preposition'
+import PrepositionCircle from '../preposition/preposition-circle'
 
 enum PartOfSpeech {
     NOUN,
     VERB,
-    ADVERB
+    ADVERB,
+    PREPOSITION
 }
 
 export enum Coupling {
@@ -24,6 +28,7 @@ type ClauseProps = {
     verb: Phrase
     nounList: Noun[]
     adverbList: Adverb[]
+    prepList: Preposition[]
 }
 
 type CoupledElement = {
@@ -32,14 +37,16 @@ type CoupledElement = {
 }
 
 const ClauseCircle: React.FC<ClauseProps> =
-    ({ verb, nounList, adverbList }) => {
+    ({ verb, nounList, adverbList, prepList }) => {
 
         const radius: number = 56
         const inPhase: CoupledElement[] = [
             ...nounList.slice(0, 1).map((noun) =>
                 ({ type: PartOfSpeech.NOUN, value: noun })),
             ...adverbList.map((adverb) =>
-                ({ type: PartOfSpeech.ADVERB, value: adverb }))
+                ({ type: PartOfSpeech.ADVERB, value: adverb })),
+            ...prepList.map((prep) =>
+                ({ type: PartOfSpeech.PREPOSITION, value: prep }))
         ]
 
         const antiPhase: CoupledElement[] = [
@@ -75,7 +82,8 @@ const ClauseCircle: React.FC<ClauseProps> =
 
                 {inPhase.map((item, i) => {
                     if (!(item.value instanceof Adverb ||
-                        item.value instanceof Noun
+                        item.value instanceof Noun ||
+                        item.value instanceof Preposition
                     )) {
                         throw Error(`${item.type} is not a valid object.`)
                     }
@@ -92,14 +100,26 @@ const ClauseCircle: React.FC<ClauseProps> =
                             />
                         )
                     }
-                    return (
-                        <AdverbCircle
-                            adverb={item.value}
-                            angle={angle}
-                            radius={radius}
-                            key={`adverb-${i}`}
-                        />
-                    )
+                    if (item.value instanceof Adverb) {
+                        return (
+                            <AdverbCircle
+                                adverb={item.value}
+                                angle={angle}
+                                radius={radius}
+                                key={`adverb-${i}`}
+                            />
+                        )
+                    }
+                    if (item.value instanceof Preposition) {
+                        return (
+                            <PrepositionCircle
+                                prep={item.value}
+                                angle={angle}
+                                radius={radius}
+                                key={`prep-${i}`}
+                            />
+                        )
+                    }
                 })}
 
                 {antiPhase.map((noun, i) => {
