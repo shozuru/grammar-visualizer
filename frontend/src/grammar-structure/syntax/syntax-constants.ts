@@ -122,7 +122,8 @@ export const conjunctions: string[] =
         "whether",
         "and",
         "or",
-        "while"
+        "while",
+        "because"
     ]
 
 export const ecmVerbs: string[] =
