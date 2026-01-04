@@ -1,7 +1,6 @@
 header h1 {
-    border: solid black 2px;
-    padding: 0 1rem;
-    border-radius: 25px;
+    border-bottom: solid black 2px;
+    padding: 1rem;
     max-width: 20rem;
     margin: 0 auto;
 }

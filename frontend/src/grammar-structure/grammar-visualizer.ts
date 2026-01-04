@@ -51,6 +51,14 @@ export class GrammarVisualizer {
 
 // [one of] the boys ate a sandwich
 
+// I knew (that) she quickly left
+// I told him (that) she quickly left
+// solution: we add the nouns as if they are part of the previous clause, but
+// if we get to a new verb that doesn't have any nouns, we move the last noun
+// of the previous clause to the new clause, and build the previous clause
+// we have to move any adverbs that were misplaced as well and probably 
+// prepositional phrases
+
 // -----------------------------------------------------------------------------
 
 // determining if intransitive verb is unaccusative or unergative might prove 
