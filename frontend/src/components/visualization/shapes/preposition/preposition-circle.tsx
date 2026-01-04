@@ -1,4 +1,5 @@
-import type { Preposition } from '../../../../grammar-structure/syntax/parts-of-speech/preposition'
+import type { Preposition }
+    from '../../../../grammar-structure/syntax/parts-of-speech/preposition'
 import './preposition-circle.css'
 
 

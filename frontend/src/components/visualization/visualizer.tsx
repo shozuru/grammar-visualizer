@@ -76,10 +76,7 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
                     nounList.push(object)
                 })
 
-                // preposition should be part of main clause, but there 
-
                 return (
-
                     <div
                         className='clause-container'
                         key={i}
