@@ -1,6 +1,6 @@
 import { ClauseBuilder } from "./builders/clause-builder";
 import type { Clause } from "./syntax/parts-of-speech/clause";
-import { ditransitiveList, PartsOfSpeech } from "./syntax/syntax-constants";
+import { conjunctions, ditransitiveList, PartsOfSpeech } from "./syntax/syntax-constants";
 import {
     isAdverb, isBeVerb, isNominal, isNoun, isVerb, passiveByPhraseIndex
 } from "./syntax/syntax-methods";
@@ -30,7 +30,6 @@ export class Parser {
     }
 
     public parse(wordList: Word[]): Clause[] {
-
         const fixedWords: Word[] = this.fixPartsOfSpeech(wordList)
 
         for (const word of fixedWords) {
@@ -77,6 +76,14 @@ export class Parser {
         this.handlePronouns(wordList, i)
         this.handleWHWords(wordList, i)
         this.handleModifyingNoun(wordList, i)
+        this.handleConjunctions(wordList, i)
+    }
+
+    private handleConjunctions(wordList: Word[], i: number): void {
+        const thisWord: Word = wordList[i]
+        if (!(thisWord.pos == PartsOfSpeech.IN)) return
+        if (!(conjunctions.includes(thisWord.name))) return
+        thisWord.pos = PartsOfSpeech.CONJUNCTION
     }
 
     private handleModifyingNoun(wordList: Word[], i: number): void {

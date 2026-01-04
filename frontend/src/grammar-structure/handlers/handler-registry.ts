@@ -8,6 +8,7 @@ import { PrepositionHandler } from "./word-handlers/preposition-handler"
 import { AdjectiveHandler } from "./word-handlers/adjective-handler"
 import { CausativeHandler } from "./word-handlers/causative-handler"
 import { RelativeHandler } from "./word-handlers/relative-handler"
+import { ConjunctionHandler } from "./word-handlers/conjunction-handler"
 
 export class HandlerRegistry {
 
@@ -65,6 +66,10 @@ export class HandlerRegistry {
                 PartsOfSpeech.WP,
                 PartsOfSpeech.WPQ
             ]
+        const conjTags: PartsOfSpeech[] =
+            [
+                PartsOfSpeech.CONJUNCTION
+            ]
 
         for (const tag of nounTags) {
             this.register(tag, new NounHandler())
@@ -86,6 +91,9 @@ export class HandlerRegistry {
         }
         for (const tag of relTags) {
             this.register(tag, new RelativeHandler())
+        }
+        for (const tag of conjTags) {
+            this.register(tag, new ConjunctionHandler())
         }
     }
 

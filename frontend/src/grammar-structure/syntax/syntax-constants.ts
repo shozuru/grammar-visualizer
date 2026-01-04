@@ -62,7 +62,8 @@ export enum PartsOfSpeech {
     WHAdverb,
     PRESENT,
     PAST,
-    AdjectivalNoun
+    AdjectivalNoun,
+    CONJUNCTION
 }
 
 export enum Case {
