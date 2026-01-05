@@ -18,7 +18,7 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
 
     console.log(clauseList)
 
-    const getAdverbs = (predicate: Predicate): Adverb[] => {
+    const getAdverbsFrom = (predicate: Predicate): Adverb[] => {
         const adjunctList: (Preposition | Adverb)[] =
             predicate.getAdjunctStack()
         let adverbList: Adverb[] = []
@@ -30,7 +30,7 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
         return adverbList
     }
 
-    const getPrepositions = (predicate: Predicate): Preposition[] => {
+    const getPrepositionsFrom = (predicate: Predicate): Preposition[] => {
         const adjunctList: (Preposition | Adverb)[] =
             predicate.getAdjunctStack()
         let prepList: Preposition[] = []
@@ -42,7 +42,7 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
         return prepList
     }
 
-    const getPrepObjs = (prepList: Preposition[]): Noun[] => {
+    const getPrepObjsFrom = (prepList: Preposition[]): Noun[] => {
         let nounList: Noun[] = []
         for (const prep of prepList) {
             const object: Noun | null = prep.getObject()
@@ -57,7 +57,7 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
         <div
             className='visual-container'
         >
-            {/* {clauseList.map((clause, i) => {
+            {clauseList.map((clause, i) => {
                 const pred: Predicate = clause.getPredicate()
                 // const copula: Verb | null = pred.getCopula()
                 const predPhrase: Phrase | null = pred.getSemanticContent()
@@ -68,30 +68,26 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
                 if (nounList.length < 1) {
                     throw Error("Clause has no nouns")
                 }
+                const adverbList: Adverb[] = getAdverbsFrom(pred)
+                const prepositionList: Preposition[] = getPrepositionsFrom(pred)
+                const prepObjects: Noun[] = getPrepObjsFrom(prepositionList)
 
-                const adverbList: Adverb[] = getAdverbs(pred)
-                const prepositionList: Preposition[] = getPrepositions(pred)
-                const prepObjects: Noun[] = getPrepObjs(prepositionList)
-                prepObjects.forEach((object) => {
-                    nounList.push(object)
-                })
+                const updatedNounList = [...nounList, ...prepObjects]
 
                 return (
-                    <>
-                    </>
-                    // <div
-                    //     className='clause-container'
-                    //     key={i}
-                    // >
-                    //     <ClauseCircle
-                    //         verb={predPhrase}
-                    //         nounList={nounList}
-                    //         adverbList={adverbList}
-                    //         prepList={prepositionList}
-                    //     />
-                    // </div>
+                    <div
+                        className='clause-container'
+                        key={i}
+                    >
+                        <ClauseCircle
+                            verb={predPhrase}
+                            nounList={updatedNounList}
+                            adverbList={adverbList}
+                            prepList={prepositionList}
+                        />
+                    </div>
                 )
-            })} */}
+            })}
         </div >
     )
 }
