@@ -52,7 +52,6 @@ const ClauseCircle: React.FC<ClauseProps> =
             return Array.from({ length: count }, (_, i) => start + i * step)
         }
 
-        const radius: number = 56
         const inPhase: CoupledElement[] = [
             ...nounList.slice(0, 1).map((noun) =>
                 ({ type: PartOfSpeech.NOUN, value: noun })),
@@ -61,20 +60,20 @@ const ClauseCircle: React.FC<ClauseProps> =
             ...prepList.map((prep) =>
                 ({ type: PartOfSpeech.PREPOSITION, value: prep }))
         ]
-
         const antiPhase: CoupledElement[] = [
             ...nounList.slice(1).map(noun => (
                 { type: PartOfSpeech.NOUN, value: noun }
             ))
         ]
 
+        const radius: number = 56
         const arcSpan: number = 45
         const minSeparation: number = 10
 
         let inPhaseAngles: number[] = distributeAngles(
             inPhase.length,
             arcSpan,
-            +minSeparation
+            0
         )
         let antiPhaseAngles: number[] = distributeAngles(
             antiPhase.length,
@@ -82,26 +81,23 @@ const ClauseCircle: React.FC<ClauseProps> =
             180
         )
 
-        const smallestIn: number =
-            Math.min(...inPhaseAngles.map(a => Math.abs(a)))
-        const smallestAnti: number =
-            Math.min(...antiPhaseAngles.map(a => Math.abs(a)))
-
-        if (smallestIn < minSeparation) {
-            const shift: number = smallestIn >= 0
-                ? minSeparation - smallestIn
-                : -(minSeparation - smallestIn)
-
-            inPhaseAngles = inPhaseAngles.map(a => a + shift)
+        const adjustSeparation = (
+            angles: number[],
+            minSeparation: number
+        ): number[] => {
+            const smallestAngle: number =
+                Math.min(...angles.map(a => Math.abs(a)))
+            if (smallestAngle < minSeparation) {
+                const shift = smallestAngle >= 0
+                    ? minSeparation - smallestAngle
+                    : -(minSeparation - smallestAngle)
+                return angles.map(a => a + shift)
+            }
+            return angles
         }
 
-        if (smallestAnti < minSeparation) {
-            const shift: number = smallestAnti >= 0
-                ? minSeparation - smallestAnti
-                : -(minSeparation - smallestAnti)
-
-            antiPhaseAngles = antiPhaseAngles.map(a => a + shift)
-        }
+        inPhaseAngles = adjustSeparation(inPhaseAngles, minSeparation)
+        antiPhaseAngles = adjustSeparation(antiPhaseAngles, minSeparation)
 
         return (
             <div

@@ -72,6 +72,8 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
                 const prepositionList: Preposition[] = getPrepositionsFrom(pred)
                 const prepObjects: Noun[] = getPrepObjsFrom(prepositionList)
 
+                // in react, make sure to create a new variable instead of 
+                // manipulating old data... react doesn't always handle it well
                 const updatedNounList = [...nounList, ...prepObjects]
 
                 return (
