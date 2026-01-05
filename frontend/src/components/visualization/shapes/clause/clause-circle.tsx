@@ -39,67 +39,69 @@ type CoupledElement = {
 const ClauseCircle: React.FC<ClauseProps> =
     ({ verb, nounList, adverbList, prepList }) => {
 
-        function distributeAngles(
-            count: number,
-            arcSpan: number,
-            centerOffset: number
-        ): number[] {
-            if (count === 1) return [centerOffset]
-            const step: number = arcSpan / (count - 1)
-            const start: number = centerOffset - arcSpan / 2
-            return Array.from({ length: count }, (_, i) => start + i * step)
-        }
+        console.log(nounList.length)
 
-        const radius: number = 56
-        const inPhase: CoupledElement[] = [
-            ...nounList.slice(0, 1).map((noun) =>
-                ({ type: PartOfSpeech.NOUN, value: noun })),
-            ...adverbList.map((adverb) =>
-                ({ type: PartOfSpeech.ADVERB, value: adverb })),
-            ...prepList.map((prep) =>
-                ({ type: PartOfSpeech.PREPOSITION, value: prep }))
-        ]
+        // function distributeAngles(
+        //     count: number,
+        //     arcSpan: number,
+        //     centerOffset: number
+        // ): number[] {
+        //     if (count === 1) return [centerOffset]
+        //     const step: number = arcSpan / (count - 1)
+        //     const start: number = centerOffset - arcSpan / 2
+        //     return Array.from({ length: count }, (_, i) => start + i * step)
+        // }
 
-        const antiPhase: CoupledElement[] = [
-            ...nounList.slice(1).map(noun => (
-                { type: PartOfSpeech.NOUN, value: noun }
-            ))
-        ]
+        // const radius: number = 56
+        // const inPhase: CoupledElement[] = [
+        //     ...nounList.slice(0, 1).map((noun) =>
+        //         ({ type: PartOfSpeech.NOUN, value: noun })),
+        //     ...adverbList.map((adverb) =>
+        //         ({ type: PartOfSpeech.ADVERB, value: adverb })),
+        //     ...prepList.map((prep) =>
+        //         ({ type: PartOfSpeech.PREPOSITION, value: prep }))
+        // ]
 
-        const arcSpan: number = 45
-        const minSeparation: number = 10
+        // const antiPhase: CoupledElement[] = [
+        //     ...nounList.slice(1).map(noun => (
+        //         { type: PartOfSpeech.NOUN, value: noun }
+        //     ))
+        // ]
 
-        let inPhaseAngles: number[] = distributeAngles(
-            inPhase.length,
-            arcSpan,
-            +minSeparation
-        )
-        let antiPhaseAngles: number[] = distributeAngles(
-            antiPhase.length,
-            arcSpan,
-            180
-        )
+        // const arcSpan: number = 45
+        // const minSeparation: number = 10
 
-        const smallestIn: number =
-            Math.min(...inPhaseAngles.map(a => Math.abs(a)))
-        const smallestAnti: number =
-            Math.min(...antiPhaseAngles.map(a => Math.abs(a)))
+        // let inPhaseAngles: number[] = distributeAngles(
+        //     inPhase.length,
+        //     arcSpan,
+        //     +minSeparation
+        // )
+        // let antiPhaseAngles: number[] = distributeAngles(
+        //     antiPhase.length,
+        //     arcSpan,
+        //     180
+        // )
 
-        if (smallestIn < minSeparation) {
-            const shift: number = smallestIn >= 0
-                ? minSeparation - smallestIn
-                : -(minSeparation - smallestIn)
+        // const smallestIn: number =
+        //     Math.min(...inPhaseAngles.map(a => Math.abs(a)))
+        // const smallestAnti: number =
+        //     Math.min(...antiPhaseAngles.map(a => Math.abs(a)))
 
-            inPhaseAngles = inPhaseAngles.map(a => a + shift)
-        }
+        // if (smallestIn < minSeparation) {
+        //     const shift: number = smallestIn >= 0
+        //         ? minSeparation - smallestIn
+        //         : -(minSeparation - smallestIn)
 
-        if (smallestAnti < minSeparation) {
-            const shift: number = smallestAnti >= 0
-                ? minSeparation - smallestAnti
-                : -(minSeparation - smallestAnti)
+        //     inPhaseAngles = inPhaseAngles.map(a => a + shift)
+        // }
 
-            antiPhaseAngles = antiPhaseAngles.map(a => a + shift)
-        }
+        // if (smallestAnti < minSeparation) {
+        //     const shift: number = smallestAnti >= 0
+        //         ? minSeparation - smallestAnti
+        //         : -(minSeparation - smallestAnti)
+
+        //     antiPhaseAngles = antiPhaseAngles.map(a => a + shift)
+        // }
 
         return (
             <div
@@ -109,7 +111,7 @@ const ClauseCircle: React.FC<ClauseProps> =
                     predicate={verb}
                 />
 
-                {inPhase.map((item, i) => {
+                {/* {inPhase.map((item, i) => {
                     if (!(item.value instanceof Adverb ||
                         item.value instanceof Noun ||
                         item.value instanceof Preposition
@@ -149,9 +151,9 @@ const ClauseCircle: React.FC<ClauseProps> =
                             />
                         )
                     }
-                })}
+                })} */}
 
-                {antiPhase.map((noun, i) => {
+                {/* {antiPhase.map((noun, i) => {
                     if (!(noun.value instanceof Noun)) {
                         throw Error("Antiphase item is not a noun")
                     }
@@ -165,7 +167,7 @@ const ClauseCircle: React.FC<ClauseProps> =
                             key={`noun-${i}`}
                         />
                     )
-                })}
+                })} */}
             </div>
         )
     }

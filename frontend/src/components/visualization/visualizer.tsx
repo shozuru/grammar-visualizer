@@ -57,7 +57,7 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
         <div
             className='visual-container'
         >
-            {clauseList.map((clause, i) => {
+            {/* {clauseList.map((clause, i) => {
                 const pred: Predicate = clause.getPredicate()
                 // const copula: Verb | null = pred.getCopula()
                 const predPhrase: Phrase | null = pred.getSemanticContent()
@@ -77,19 +77,21 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
                 })
 
                 return (
-                    <div
-                        className='clause-container'
-                        key={i}
-                    >
-                        <ClauseCircle
-                            verb={predPhrase}
-                            nounList={nounList}
-                            adverbList={adverbList}
-                            prepList={prepositionList}
-                        />
-                    </div>
+                    <>
+                    </>
+                    // <div
+                    //     className='clause-container'
+                    //     key={i}
+                    // >
+                    //     <ClauseCircle
+                    //         verb={predPhrase}
+                    //         nounList={nounList}
+                    //         adverbList={adverbList}
+                    //         prepList={prepositionList}
+                    //     />
+                    // </div>
                 )
-            })}
+            })} */}
         </div >
     )
 }
