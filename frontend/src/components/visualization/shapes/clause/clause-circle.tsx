@@ -39,6 +39,17 @@ type CoupledElement = {
 const ClauseCircle: React.FC<ClauseProps> =
     ({ verb, nounList, adverbList, prepList }) => {
 
+        function distributeAngles(
+            count: number,
+            arcSpan: number,
+            centerOffset: number
+        ): number[] {
+            if (count === 1) return [centerOffset]
+            const step: number = arcSpan / (count - 1)
+            const start: number = centerOffset - arcSpan / 2
+            return Array.from({ length: count }, (_, i) => start + i * step)
+        }
+
         const radius: number = 56
         const inPhase: CoupledElement[] = [
             ...nounList.slice(0, 1).map((noun) =>
@@ -56,20 +67,38 @@ const ClauseCircle: React.FC<ClauseProps> =
         ]
 
         const arcSpan: number = 45
-        const half: number = arcSpan / 2
-        let angles: number[] = inPhase.map((_, i) =>
-            -half + (i / (inPhase.length - 1 || 1)) * arcSpan
+        const minSeparation: number = 10
+
+        let inPhaseAngles: number[] = distributeAngles(
+            inPhase.length,
+            arcSpan,
+            +minSeparation
+        )
+        let antiPhaseAngles: number[] = distributeAngles(
+            antiPhase.length,
+            arcSpan,
+            180
         )
 
-        const minSeparation: number = 10
-        const smallest: number = Math.min(...angles.map(a => Math.abs(a)))
+        const smallestIn: number =
+            Math.min(...inPhaseAngles.map(a => Math.abs(a)))
+        const smallestAnti: number =
+            Math.min(...antiPhaseAngles.map(a => Math.abs(a)))
 
-        if (smallest < minSeparation) {
-            const shift: number = smallest >= 0
-                ? minSeparation - smallest
-                : -(minSeparation - smallest)
+        if (smallestIn < minSeparation) {
+            const shift: number = smallestIn >= 0
+                ? minSeparation - smallestIn
+                : -(minSeparation - smallestIn)
 
-            angles = angles.map(a => a + shift)
+            inPhaseAngles = inPhaseAngles.map(a => a + shift)
+        }
+
+        if (smallestAnti < minSeparation) {
+            const shift: number = smallestAnti >= 0
+                ? minSeparation - smallestAnti
+                : -(minSeparation - smallestAnti)
+
+            antiPhaseAngles = antiPhaseAngles.map(a => a + shift)
         }
 
         return (
@@ -88,7 +117,7 @@ const ClauseCircle: React.FC<ClauseProps> =
                         throw Error(`${item.type} is not a valid object.`)
                     }
 
-                    const angle: number = angles[i]
+                    const angle: number = inPhaseAngles[i]
                     if (item.value instanceof Noun) {
                         return (
                             <NounCirle
@@ -126,11 +155,12 @@ const ClauseCircle: React.FC<ClauseProps> =
                     if (!(noun.value instanceof Noun)) {
                         throw Error("Antiphase item is not a noun")
                     }
+                    const angle: number = antiPhaseAngles[i]
                     return (
                         <NounCirle
                             noun={noun.value}
                             coupling={Coupling.ANTIPHASE}
-                            angle={180}
+                            angle={angle}
                             radius={radius}
                             key={`noun-${i}`}
                         />

@@ -11,6 +11,7 @@ type NounProps = {
 }
 
 const NounCirle: React.FC<NounProps> = ({ noun, coupling, angle, radius }) => {
+
     const rad: number = angle * Math.PI / 180
     const x: number = Math.cos(rad) * radius
     const y: number = Math.sin(rad) * radius
