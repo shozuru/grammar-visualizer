@@ -1,5 +1,5 @@
 import type { Preposition }
-    from '../../../../grammar-structure/syntax/parts-of-speech/preposition'
+    from '../../../../../grammar-structure/syntax/parts-of-speech/preposition'
 import './preposition-circle.css'
 
 
@@ -22,7 +22,7 @@ const PrepositionCircle: React.FC<PrepositionProps> =
             <div
                 className='preposition-container'
             >
-                <span
+                <div
                     className='preposition-circle'
                     style={{
                         position: "absolute",

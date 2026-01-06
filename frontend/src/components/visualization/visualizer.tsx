@@ -70,11 +70,11 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
                 }
                 const adverbList: Adverb[] = getAdverbsFrom(pred)
                 const prepositionList: Preposition[] = getPrepositionsFrom(pred)
-                const prepObjects: Noun[] = getPrepObjsFrom(prepositionList)
+                // const prepObjects: Noun[] = getPrepObjsFrom(prepositionList)
 
                 // in react, make sure to create a new variable instead of 
                 // manipulating old data... react doesn't always handle it well
-                const updatedNounList = [...nounList, ...prepObjects]
+                // const updatedNounList = [...nounList, ...prepObjects]
 
                 return (
                     <div
@@ -83,7 +83,7 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
                     >
                         <ClauseCircle
                             verb={predPhrase}
-                            nounList={updatedNounList}
+                            nounList={nounList}
                             adverbList={adverbList}
                             prepList={prepositionList}
                         />
