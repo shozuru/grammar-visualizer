@@ -37,6 +37,7 @@ export class GrammarVisualizer {
 }
 
 // TODO: conjunctions, ambiguous sentences, visualization
+// sentence 'i know [what] to do'
 // I gave the kid cake. (ambiguous)
 // I gave the dog food (technically ambiguous)
 // I ate the birthday cake (not ambiguous)

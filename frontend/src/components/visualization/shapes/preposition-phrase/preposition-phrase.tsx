@@ -26,7 +26,7 @@ const PrepositionPhrase: React.FC<PrepPhraseProps> =
                     prep={preposition}
                     angle={0}
                     radius={radius}
-                    key={index}
+                    key={`prep-${index}`}
                 />
 
                 {object &&
@@ -35,7 +35,7 @@ const PrepositionPhrase: React.FC<PrepPhraseProps> =
                         coupling={Coupling.ANTIPHASE}
                         angle={180}
                         radius={radius}
-                        key={index}
+                        key={`noun-${index}`}
                     />
                 }
             </div>

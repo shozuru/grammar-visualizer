@@ -19,11 +19,9 @@ export class Parser {
     private currentBuilder: ClauseBuilder
     private clausesInProgress: ClauseBuilder[]
     private registry: HandlerRegistry
-    private builderStack: ClauseBuilder[]
 
     constructor() {
         this.clauses = []
-        this.builderStack = []
         this.currentBuilder = new ClauseBuilder()
         this.clausesInProgress = []
         this.registry = new HandlerRegistry()

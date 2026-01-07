@@ -313,6 +313,16 @@ export function isVerbMod(word: Word): boolean {
     )
 }
 
+export function isWHNounRel(word: Word): boolean {
+    return (
+        word.pos === PartsOfSpeech.WP
+        && (
+            word.name === "who"
+            || word.name === "what"
+        )
+    )
+}
+
 export function modStackContainsCaus(modStack: Mod[]): boolean {
     return (
         modStack.some(

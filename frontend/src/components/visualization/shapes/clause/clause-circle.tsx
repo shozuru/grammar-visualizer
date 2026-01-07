@@ -38,9 +38,6 @@ type CoupledElement = {
     value: Phrase
 }
 
-// today's goal:
-// 
-
 const ClauseCircle: React.FC<ClauseProps> =
     ({ verb, nounList, adverbList, prepList }) => {
 
@@ -170,12 +167,18 @@ const ClauseCircle: React.FC<ClauseProps> =
                     })}
                 </div >
 
-                {prepList.length > 0 &&
-                    prepList.map((prep, i) =>
-                        <PrepositionPhrase
-                            preposition={prep}
-                            index={i} />
-                    )}
+                <div
+                    className='preposition-phrase-container'
+                >
+                    {prepList.length > 0 &&
+                        prepList.map((prep, i) =>
+                            <PrepositionPhrase
+                                preposition={prep}
+                                index={i}
+                            />
+                        )
+                    }
+                </div>
             </>
         )
     }
