@@ -35,14 +35,7 @@ export class GrammarVisualizer {
         return this.clauses
     }
 }
-// this should probably be updated to have it connected to some 
-// rel system one of which couples to the main clause
-// the other couples to the subordinate clause
-
 // and then work on 'my house [was] haunted'
-
-
-
 
 
 // TODO: conjunctions, ambiguous sentences, visualization

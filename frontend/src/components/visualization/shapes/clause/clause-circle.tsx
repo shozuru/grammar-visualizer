@@ -175,30 +175,23 @@ const ClauseCircle: React.FC<ClauseProps> =
                     })}
                 </div >
 
-                <div
-                    className='preposition-phrase-container'
-                >
-                    {prepList.length > 0 &&
-                        prepList.map((prep, i) =>
-                            <PrepositionPhrase
-                                preposition={prep}
-                                index={i}
-                            />
-                        )
-                    }
-                </div>
 
-                <div
-                    className='relativize-container'
-                >
-                    {relativizerList.length > 0 &&
-                        relativizerList.map((noun, i) =>
-                            <RelativePhrase
-                                noun={noun}
-                                index={i}
-                            />
-                        )}
-                </div>
+                {prepList.length > 0 &&
+                    prepList.map((prep, i) =>
+                        <PrepositionPhrase
+                            preposition={prep}
+                            index={i}
+                        />
+                    )
+                }
+
+                {relativizerList.length > 0 &&
+                    relativizerList.map((noun, i) =>
+                        <RelativePhrase
+                            noun={noun}
+                            index={i}
+                        />
+                    )}
             </>
         )
     }

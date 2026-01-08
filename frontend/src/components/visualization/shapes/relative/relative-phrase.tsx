@@ -1,4 +1,5 @@
-import type { Noun } from '../../../../grammar-structure/syntax/parts-of-speech/noun'
+import type { Noun }
+    from '../../../../grammar-structure/syntax/parts-of-speech/noun'
 import { Coupling } from '../clause/clause-circle'
 import NounCirle from '../noun/noun-circle'
 import './relative-phrase.css'
