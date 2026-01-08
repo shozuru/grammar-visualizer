@@ -263,7 +263,7 @@ export class ClauseBuilder {
         return this.subject
     }
 
-    public yieldObjectRel(): Noun {
+    public yieldObjectRel(): Noun | null {
         if (this.nounStack.length > 0) {
             return this.nounStack[0]
         }
@@ -278,19 +278,15 @@ export class ClauseBuilder {
                 return object
             }
         }
-        if (!pred) throw Error("No object available to yield to rel clause")
+        if (!pred) return null
 
         const predAdjuncts = pred.getAdjunctStack()
         const lastAdjunct = predAdjuncts.at(-1)
 
-        if (!(lastAdjunct instanceof Preposition)) {
-            throw Error("No object available to yield to rel clause")
-        }
+        if (!(lastAdjunct instanceof Preposition)) return null
 
         const adjunctOb = lastAdjunct.getObject()
-        if (!adjunctOb) {
-            throw Error("No object available to yield to rel clause")
-        }
+        if (!adjunctOb) return null
         return adjunctOb
     }
 

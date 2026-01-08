@@ -7,6 +7,7 @@ import { Clause } from "../../syntax/parts-of-speech/clause"
 import type { HandlerMethods } from "../../parser"
 import { isAdjunctRel, isWHNounRel } from "../../syntax/syntax-methods"
 import type { PrepBuilder } from "../../builders/preposition-builder"
+import { Adverb } from "../../syntax/parts-of-speech/adverb"
 
 export class RelativeHandler implements WordHandler {
 
@@ -15,7 +16,9 @@ export class RelativeHandler implements WordHandler {
         cBuilder: ClauseBuilder,
         ctx: HandlerMethods
     ): ClauseBuilder | void {
-        if (isAdjunctRel(relWord)) return this.handleAdjunctRel(cBuilder, ctx)
+        if (isAdjunctRel(relWord)) {
+            return this.handleAdjunctRel(cBuilder, relWord, ctx)
+        }
         if (isWHNounRel(relWord)) {
             return this.handleWHNounRel(relWord, cBuilder, ctx)
         }
@@ -32,7 +35,10 @@ export class RelativeHandler implements WordHandler {
         // this is the person [that] knew my name
         // this is the person [that] I knew
         // technically ambiguous with adjuncts that follow
-        const relNoun: Noun = cBuilder.yieldObjectRel()
+        const relNoun: Noun | null = cBuilder.yieldObjectRel()
+        if (!relNoun) {
+            throw Error("Error trying to obtain object relative noun")
+        }
 
         const mtxClause: Clause = cBuilder.build()
         ctx.add(mtxClause)
@@ -56,81 +62,56 @@ export class RelativeHandler implements WordHandler {
     }
 
     private handleAdjunctRel(
-        builder: ClauseBuilder,
+        cBuilder: ClauseBuilder,
+        relWord: Word,
         ctx: HandlerMethods
     ): ClauseBuilder {
-        // This is the place [where] I slept
-        const adjunctNoun: Noun = builder.yieldObjectRel()
-        const prep: PrepBuilder | undefined = builder.getUnfinishedPrep()
-        const mtxClause: Clause = builder.build()
-        ctx.add(mtxClause)
-        const relClause: ClauseBuilder = new ClauseBuilder()
+        const adjunctNoun: Noun | null = cBuilder.yieldObjectRel()
+        if (adjunctNoun) {
+            // This is the place [where] I slept
+            const prep: PrepBuilder | undefined = cBuilder.getUnfinishedPrep()
+            const mtxClause: Clause = cBuilder.build()
+            ctx.add(mtxClause)
+            const relClause: ClauseBuilder = new ClauseBuilder()
 
-        if (prep) relClause.receiveRelPrep(adjunctNoun, prep)
-        else relClause.receiveRelAdjunct(adjunctNoun)
-        return relClause
+            if (prep) relClause.receiveRelPrep(adjunctNoun, prep)
+            else relClause.receiveRelAdjunct(adjunctNoun)
+            return relClause
+        } else {
+            // this is [where] to sleep
+            const relative: Noun = new Noun('REL')
+            cBuilder.receiveRelNoun(relative)
+            const whNoun: Noun = new Noun(relWord.name)
+            ctx.push(cBuilder)
+            const subClauseBuilder: ClauseBuilder = new ClauseBuilder()
+            subClauseBuilder.receiveRelNoun(whNoun)
+            return subClauseBuilder
+        }
     }
 
     private handleWHNounRel(
         relWord: Word,
-        cbuilder: ClauseBuilder,
+        cBuilder: ClauseBuilder,
         ctx: HandlerMethods
     ): ClauseBuilder | void {
         // I know [what] to [do about the keys]
-
         // I know | [who] left
-        // I know [who] | (I) to leave (who)
+        // I know [who] | to leave
+        // I know [who] I should see
 
         // I know [the thing] to say
         // I know [the place] to be at
-        // this is [where] to sleep
-
-        // I know [who] I should see
 
         // this should probably be updated to have it connected to some 
         // rel system one of which couples to the main clause
         // the other couples to the subordinate clause
 
-        // make the relWord a Noun
         const relative: Noun = new Noun('REL')
-        // add the current word to the current clause
-        cbuilder.receiveRelNoun(relative)
-
+        cBuilder.receiveRelNoun(relative)
         const whNoun: Noun = new Noun(relWord.name)
-        // add matrix clause to clause builder and deal with it later
-        ctx.push(cbuilder)
-
-        // build the current clause
-        // const matrixClause: Clause = cbuilder.build()
-        // add the current clause to the clause list
-        // ctx.add(matrixClause)
-        // start a new clausebuilder
+        ctx.push(cBuilder)
         const subClauseBuilder: ClauseBuilder = new ClauseBuilder()
-
-        // if the next word is 'to':
-        // the issue is I don't know how to access this next word...
-        // use the pendingNoun property of clauseBuilder to put the noun
-        // and then deal with it when you are processing the infinitive
-        // agreement element...
-        // this is clunky but it will probably work 
-
-        // okay maybe we won't build the matrix clause just yet, but put it
-        // on the stack, we will bring the relative clause to the new clause
-        // then when we process the 'to' we will bring the matrix clause
-        // subject if needed, build the clause either way, add it to the 
-        // finished list... and handle the imported subject as necessary
-        // or we could just always have the subject be imported, but then 
-        // if we don't actually need it, we change the object to be the subject
-
-        // add the current word as the object of the new clause
-        // add the subject of the last clause as the subject of this clause
-
-        // else:
-        // add the current word as the subject of the new clause
-        // subClauseBuilder.receiveSubject(whNoun)
         subClauseBuilder.receiveRelNoun(whNoun)
-
-        // return the new clauseBuilder
         return subClauseBuilder
     }
 }
