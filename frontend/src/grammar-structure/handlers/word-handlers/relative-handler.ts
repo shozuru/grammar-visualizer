@@ -7,7 +7,6 @@ import { Clause } from "../../syntax/parts-of-speech/clause"
 import type { HandlerMethods } from "../../parser"
 import { isAdjunctRel, isWHNounRel } from "../../syntax/syntax-methods"
 import type { PrepBuilder } from "../../builders/preposition-builder"
-import { Adverb } from "../../syntax/parts-of-speech/adverb"
 
 export class RelativeHandler implements WordHandler {
 
@@ -101,14 +100,9 @@ export class RelativeHandler implements WordHandler {
 
         // I know [the thing] to say
         // I know [the place] to be at
-
-        // this should probably be updated to have it connected to some 
-        // rel system one of which couples to the main clause
-        // the other couples to the subordinate clause
-
-        const relative: Noun = new Noun('REL')
-        cBuilder.receiveRelNoun(relative)
         const whNoun: Noun = new Noun(relWord.name)
+        const relative: Noun = whNoun.connectAndReturnRelNoun()
+        cBuilder.receiveRelNoun(relative)
         ctx.push(cBuilder)
         const subClauseBuilder: ClauseBuilder = new ClauseBuilder()
         subClauseBuilder.receiveRelNoun(whNoun)

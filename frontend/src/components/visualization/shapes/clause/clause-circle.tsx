@@ -13,6 +13,7 @@ import { Preposition }
 import PrepositionCircle
     from '../preposition-phrase/preposition/preposition-circle'
 import PrepositionPhrase from '../preposition-phrase/preposition-phrase'
+import RelativePhrase from '../relative/relative-phrase'
 
 enum PartOfSpeech {
     NOUN,
@@ -40,6 +41,13 @@ type CoupledElement = {
 
 const ClauseCircle: React.FC<ClauseProps> =
     ({ verb, nounList, adverbList, prepList }) => {
+
+        const relativizerList: Noun[] = []
+        for (const noun of nounList) {
+            if (noun.getRelativizer()) {
+                relativizerList.push(noun)
+            }
+        }
 
         function distributeAngles(
             count: number,
@@ -178,6 +186,18 @@ const ClauseCircle: React.FC<ClauseProps> =
                             />
                         )
                     }
+                </div>
+
+                <div
+                    className='relativize-container'
+                >
+                    {relativizerList.length > 0 &&
+                        relativizerList.map((noun, i) =>
+                            <RelativePhrase
+                                noun={noun}
+                                index={i}
+                            />
+                        )}
                 </div>
             </>
         )

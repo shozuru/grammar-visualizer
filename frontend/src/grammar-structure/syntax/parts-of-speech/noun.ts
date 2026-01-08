@@ -1,21 +1,20 @@
 import { Mod } from "../mod"
 import type { Phrase } from "./phrase"
 import type { Word } from "../../types/word"
-// import type { Relativize } from "../Relativize"
 // import type { Case } from "../SyntaxConstants"
 
 export class Noun implements Phrase {
 
     // private case: Case | null
     private modifiers: Mod[]
-    // private relativizer: Relativize | null
+    private relativizer: Noun | null
     private name: string
 
     constructor(name: string) {
         this.name = name
         // this.case = null
         this.modifiers = []
-        // this.relativizer = null
+        this.relativizer = null
     }
 
     public getName(): string {
@@ -47,12 +46,13 @@ export class Noun implements Phrase {
         this.modifiers.push(causeMod)
     }
 
-    // public getRelativizer(): Relativize | null {
-    //     return this.relativizer
-    // }
+    public connectAndReturnRelNoun(): Noun {
+        const relative: Noun = new Noun('REL')
+        this.relativizer = relative
+        return relative
+    }
 
-    // public setRelativizer(rel: Relativize): void {
-    //     this.relativizer = rel
-    // }
-
+    public getRelativizer(): Noun | null {
+        return this.relativizer
+    }
 }
