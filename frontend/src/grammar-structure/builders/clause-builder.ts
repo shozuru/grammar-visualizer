@@ -1,7 +1,7 @@
 import {
     getBy,
     getVerbFromTense,
-    isAdjectiveAgr, isAdjectiveMod, isNounMod, isVerbAgr, isVerbMod,
+    isAdjectiveAgr, isAdjectiveMod, isInfAgr, isNounMod, isVerbAgr, isVerbMod,
     isWHWord
 } from "../syntax/syntax-methods"
 import { Adverb } from "../syntax/parts-of-speech/adverb"
@@ -139,20 +139,23 @@ export class ClauseBuilder {
     }
 
     public buildPredicate(predWord: Word): void {
+        // debugger
         // when you deal with tense in general, you can deal with 
         // inf, since you don't deal with tense in the main clause
 
-        this.makePendingNounSubject()
         const predBuilder: PredicateBuilder =
             this.getOrCreateBuilder(PredicateBuilder)
 
         if (isVerbAgr(predWord)) {
             predBuilder.createAndAddAgr(predWord)
+            this.handleWHRelWord(predWord)
         } else if (isVerbMod(predWord)) {
             predBuilder.createAndAddMod(predWord)
         } else {
             this.createPred(predBuilder, predWord)
         }
+
+        this.makePendingNounSubject()
     }
 
     public buildPreposition(prepWord: Word): void {
@@ -165,6 +168,10 @@ export class ClauseBuilder {
 
     public getNounStack(): Noun[] {
         return this.nounStack
+    }
+
+    public getPendingNoun(): Noun | null {
+        return this.pendingNoun
     }
 
     public getPredicate(): Predicate | null {
@@ -444,6 +451,14 @@ export class ClauseBuilder {
         const pBuilder: PrepBuilder | undefined = this.getUnfinishedPrep()
         if (pBuilder) {
             this.resolvePrep(pBuilder)
+        }
+    }
+
+    private handleWHRelWord(predWord: Word): void {
+        if (!this.pendingNoun) return
+        const nounName: string = this.pendingNoun.getName()
+        if (isInfAgr(predWord) && isWHWord(nounName)) {
+            throw Error("I made it here so far")
         }
     }
 

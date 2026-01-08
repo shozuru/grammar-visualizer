@@ -1,7 +1,7 @@
 import type { WordHandler } from "./word-handler"
 import type { Word } from "../../types/word"
 import { ClauseBuilder } from "../../builders/clause-builder"
-import { isECMPred, isObjectControlPred, isRaisingPred }
+import { isECMPred, isInfAgr, isObjectControlPred, isRaisingPred, isWHNounRel, isWHWord }
     from "../../syntax/syntax-methods"
 import { Predicate } from "../../syntax/predicate"
 import type { Noun } from "../../syntax/parts-of-speech/noun"
@@ -34,6 +34,24 @@ export class VerbHandler implements WordHandler {
         } else if (currentPred) {
             return this.handleNonfinite(
                 verbalWord, currentPred, cBuilder, ctx.add)
+
+            // I know [what [[to] do]]
+        } else if (this.isNonfiniteRelConj(verbalWord, cBuilder, ctx)) {
+            const mCBuilder: ClauseBuilder = ctx.pop()
+            // get the subject from the matrix clause
+            const matrixSubject: Noun | null = mCBuilder.getSubject()
+            if (!matrixSubject) {
+                throw Error("Matrix clause does not have a subject")
+            }
+            // build the matrix clause
+            const matrixClause: Clause = mCBuilder.build()
+            // add the matrix clause to the finished clause list
+            ctx.add(matrixClause)
+            // set the matrix subject as the current clause's subject
+            cBuilder.receiveSubject(matrixSubject)
+            // make sure the the wh word becomes the object of this clause
+            // if the word is 'to' and we have the thing do the thing:
+            // maybe do stuff here
 
         } else {
             cBuilder.buildPredicate(verbalWord)
@@ -96,5 +114,20 @@ export class VerbHandler implements WordHandler {
         const matrix: ClauseBuilder = ctx.pop()
         matrix.buildPredicate(vWord)
         return matrix
+    }
+
+    private isNonfiniteRelConj(
+        verbalWord: Word,
+        cBuilder: ClauseBuilder,
+        ctx: HandlerMethods
+    ): boolean {
+        const pendingNoun: Noun | null = cBuilder.getPendingNoun()
+        if (!pendingNoun) return false
+        return (
+            isInfAgr(verbalWord)
+            && !!ctx.peak()
+            && !cBuilder.getSubject()
+            && isWHWord(pendingNoun.getName())
+        )
     }
 }

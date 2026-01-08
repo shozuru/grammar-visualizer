@@ -79,6 +79,10 @@ export function getBy(bList: WordBuilder[], stack: Noun[]): void {
 //         )
 // }
 
+export function isInfAgr(predWord: Word): boolean {
+    return predWord.pos === PartsOfSpeech.InfAgr
+}
+
 export function isAdjunctRel(word: Word): boolean {
     return (
         word.pos === PartsOfSpeech.WR ||

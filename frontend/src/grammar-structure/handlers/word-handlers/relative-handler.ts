@@ -60,7 +60,6 @@ export class RelativeHandler implements WordHandler {
         ctx: HandlerMethods
     ): ClauseBuilder {
         // This is the place [where] I slept
-
         const adjunctNoun: Noun = builder.yieldObjectRel()
         const prep: PrepBuilder | undefined = builder.getUnfinishedPrep()
         const mtxClause: Clause = builder.build()
@@ -78,30 +77,58 @@ export class RelativeHandler implements WordHandler {
         ctx: HandlerMethods
     ): ClauseBuilder | void {
         // I know [what] to [do about the keys]
-        // I know [who] left
+
+        // I know | [who] left
+        // I know [who] | (I) to leave (who)
+
+        // I know [the thing] to say
+        // I know [the place] to be at
+        // this is [where] to sleep
+
+        // I know [who] I should see
 
         // this should probably be updated to have it connected to some 
         // rel system one of which couples to the main clause
         // the other couples to the subordinate clause
 
         // make the relWord a Noun
-        const relNoun: Noun = new Noun(relWord.name)
+        const relative: Noun = new Noun('REL')
         // add the current word to the current clause
-        cbuilder.receiveRelNoun(relNoun)
+        cbuilder.receiveRelNoun(relative)
+
+        const whNoun: Noun = new Noun(relWord.name)
+        // add matrix clause to clause builder and deal with it later
+        ctx.push(cbuilder)
+
         // build the current clause
-        const matrixClause: Clause = cbuilder.build()
+        // const matrixClause: Clause = cbuilder.build()
         // add the current clause to the clause list
-        ctx.add(matrixClause)
+        // ctx.add(matrixClause)
         // start a new clausebuilder
         const subClauseBuilder: ClauseBuilder = new ClauseBuilder()
 
         // if the next word is 'to':
+        // the issue is I don't know how to access this next word...
+        // use the pendingNoun property of clauseBuilder to put the noun
+        // and then deal with it when you are processing the infinitive
+        // agreement element...
+        // this is clunky but it will probably work 
+
+        // okay maybe we won't build the matrix clause just yet, but put it
+        // on the stack, we will bring the relative clause to the new clause
+        // then when we process the 'to' we will bring the matrix clause
+        // subject if needed, build the clause either way, add it to the 
+        // finished list... and handle the imported subject as necessary
+        // or we could just always have the subject be imported, but then 
+        // if we don't actually need it, we change the object to be the subject
+
         // add the current word as the object of the new clause
         // add the subject of the last clause as the subject of this clause
 
         // else:
         // add the current word as the subject of the new clause
-        subClauseBuilder.receiveRelNoun(relNoun)
+        // subClauseBuilder.receiveSubject(whNoun)
+        subClauseBuilder.receiveRelNoun(whNoun)
 
         // return the new clauseBuilder
         return subClauseBuilder

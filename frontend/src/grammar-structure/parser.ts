@@ -52,7 +52,15 @@ export class Parser {
 
         const clause: Clause = this.currentBuilder.build()
         this.addCompleteClause(clause)
+        this.buildAndAddUnfinishedClauses()
         return this.clauses
+    }
+
+    private buildAndAddUnfinishedClauses(): void {
+        for (const cBuilder of this.clausesInProgress) {
+            const finished: Clause = cBuilder.build()
+            this.clauses.push(finished)
+        }
     }
 
     private fixPartsOfSpeech(wordList: Word[]): Word[] {
