@@ -2,7 +2,7 @@ import type { Noun }
     from '../../../../grammar-structure/syntax/parts-of-speech/noun'
 import type { Preposition }
     from '../../../../grammar-structure/syntax/parts-of-speech/preposition'
-import { Coupling } from '../clause/clause-circle'
+import { Coupling } from '../utils/coupling'
 import NounCirle from '../noun/noun-circle'
 import './preposition-phrase.css'
 import PrepositionCircle from './preposition/preposition-circle'

@@ -14,17 +14,13 @@ import PrepositionCircle
     from '../preposition-phrase/preposition/preposition-circle'
 import PrepositionPhrase from '../preposition-phrase/preposition-phrase'
 import RelativePhrase from '../relative/relative-phrase'
+import { Coupling } from '../utils/coupling'
 
 enum PartOfSpeech {
     NOUN,
     VERB,
     ADVERB,
     PREPOSITION
-}
-
-export enum Coupling {
-    INPHASE,
-    ANTIPHASE
 }
 
 type ClauseProps = {

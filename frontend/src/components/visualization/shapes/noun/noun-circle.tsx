@@ -1,6 +1,6 @@
 import type { Noun }
     from '../../../../grammar-structure/syntax/parts-of-speech/noun'
-import { Coupling } from '../clause/clause-circle'
+import { Coupling } from '../utils/coupling'
 import './noun-circle.css'
 
 type NounProps = {
