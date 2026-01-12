@@ -3,13 +3,15 @@ import type { Word } from "../../types/word"
 import { ClauseBuilder } from "../../builders/clause-builder"
 import {
     isECMPred, isInfAgr, isObjectControlPred, isRaisingPred,
-    isTensedVerb, isWHWord
+    isVerb, isWHWord
 }
     from "../../syntax/syntax-methods"
 import { Predicate } from "../../syntax/predicate"
 import type { Noun } from "../../syntax/parts-of-speech/noun"
 import type { Clause } from "../../syntax/parts-of-speech/clause"
 import type { HandlerMethods } from "../../parser"
+import type { Agr } from "../../syntax/agr"
+import { PartsOfSpeech } from "../../syntax/syntax-constants"
 
 enum PredType {
     ECM,
@@ -34,11 +36,13 @@ export class VerbHandler implements WordHandler {
             this.shipRelClause(cBuilder, ctx)
             return this.returnToMatrix(verbalWord, ctx)
 
-        } else if (currentPred && isTensedVerb(verbalWord)) {
+        } else if (currentPred
+            && !(this.checkPredAgrStack(currentPred, PartsOfSpeech.InfAgr))
+            && isVerb(verbalWord)) {
             // I know | he [left]
-            // this will not work for something like [I know | I [leave]]
+            // I know | we [leave] 
+            currentPred.getAgrStack()
             const lastNoun: Noun = cBuilder.yieldLastNoun()
-            console.log(`'${lastNoun.getName()}' is the last noun`)
             const matrix: Clause = cBuilder.build()
             ctx.add(matrix)
             const subCBuilder: ClauseBuilder = new ClauseBuilder()
@@ -84,6 +88,7 @@ export class VerbHandler implements WordHandler {
         if (predType === PredType.ECM) {
             subClause.buildPredicate(vWord)
         }
+        subClause.buildPredicate(vWord)
         return subClause
     }
 
@@ -137,5 +142,12 @@ export class VerbHandler implements WordHandler {
             && !cBuilder.getSubject()
             && isWHWord(pendingNoun.getName())
         )
+    }
+
+    private checkPredAgrStack(pred: Predicate, pos: number): boolean {
+        const agrStack: Agr[] = pred.getAgrStack()
+        return agrStack.some((agr) => {
+            agr.getPos() === pos
+        })
     }
 }
