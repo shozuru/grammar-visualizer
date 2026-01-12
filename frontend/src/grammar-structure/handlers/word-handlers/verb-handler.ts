@@ -1,7 +1,10 @@
 import type { WordHandler } from "./word-handler"
 import type { Word } from "../../types/word"
 import { ClauseBuilder } from "../../builders/clause-builder"
-import { isECMPred, isInfAgr, isObjectControlPred, isRaisingPred, isWHWord }
+import {
+    isECMPred, isInfAgr, isObjectControlPred, isRaisingPred,
+    isTensedVerb, isWHWord
+}
     from "../../syntax/syntax-methods"
 import { Predicate } from "../../syntax/predicate"
 import type { Noun } from "../../syntax/parts-of-speech/noun"
@@ -30,6 +33,18 @@ export class VerbHandler implements WordHandler {
             // the boy went to the school that is blue
             this.shipRelClause(cBuilder, ctx)
             return this.returnToMatrix(verbalWord, ctx)
+
+        } else if (currentPred && isTensedVerb(verbalWord)) {
+            // I know | he [left]
+            // this will not work for something like [I know | I [leave]]
+            const lastNoun: Noun = cBuilder.yieldLastNoun()
+            console.log(`'${lastNoun.getName()}' is the last noun`)
+            const matrix: Clause = cBuilder.build()
+            ctx.add(matrix)
+            const subCBuilder: ClauseBuilder = new ClauseBuilder()
+            subCBuilder.receiveSubject(lastNoun)
+            subCBuilder.buildPredicate(verbalWord)
+            return subCBuilder
 
         } else if (currentPred) {
             return this.handleNonfinite(

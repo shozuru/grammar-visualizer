@@ -286,6 +286,15 @@ export function isRelative(word: Word): boolean {
     )
 }
 
+export function isTensedVerb(word: Word): boolean {
+    if (!isVerb(word)) return false
+    const pos: number = word.pos
+    return (
+        pos === PartsOfSpeech.VBD
+        || pos === PartsOfSpeech.VBZ
+    )
+}
+
 export function isVerb(word: Word): boolean {
     return (
         word.pos === PartsOfSpeech.VB ||

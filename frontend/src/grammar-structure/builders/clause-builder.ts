@@ -253,6 +253,14 @@ export class ClauseBuilder {
         return ecmSubject
     }
 
+    public yieldLastNoun(): Noun {
+        const lastNoun: Noun | undefined = this.nounStack.pop()
+        if (!lastNoun) {
+            throw Error("Only noun to yeild seems to be the subject")
+        }
+        return lastNoun
+    }
+
     public yieldOControlNoun(): Noun {
         if (this.nounStack.length > 0) {
             return this.nounStack[0]
