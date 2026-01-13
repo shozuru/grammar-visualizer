@@ -37,6 +37,11 @@ export class GrammarVisualizer {
 }
 // and then work on 'my house [was] haunted'
 
+// she dreamed about going to the park
+// is 'going to the park' a nominalized phrase or does 'about' not have an 
+// object?
+// I knew about John going to the park
+
 
 // TODO: conjunctions, ambiguous sentences, visualization
 // sentence 'i know [what] to do'

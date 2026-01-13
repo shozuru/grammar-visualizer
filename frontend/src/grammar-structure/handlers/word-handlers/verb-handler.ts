@@ -2,7 +2,7 @@ import type { WordHandler } from "./word-handler"
 import type { Word } from "../../types/word"
 import { ClauseBuilder } from "../../builders/clause-builder"
 import {
-    isECMPred, isInfAgr, isObjectControlPred, isRaisingPred,
+    isECMPred, isInfAgr, isIngVerb, isObjectControlPred, isRaisingPred,
     isVerb, isWHWord
 }
     from "../../syntax/syntax-methods"
@@ -50,12 +50,18 @@ export class VerbHandler implements WordHandler {
             subCBuilder.buildPredicate(verbalWord)
             return subCBuilder
 
+        } else if (
+            isIngVerb(verbalWord)
+            && cBuilder.hasPrepWithObject()
+        ) {
+            // throw Error("i made it here")
+            return this.handleIngSubordinate(verbalWord, cBuilder, ctx)
+
         } else if (currentPred) {
             return this.handleNonfinite(
                 verbalWord, currentPred, cBuilder, ctx.add)
 
         } else if (this.isNonfiniteRelConj(verbalWord, cBuilder, ctx)) {
-            // I know [what [[to] do]]
             const mCBuilder: ClauseBuilder = ctx.pop()
             const matrixSubject: Noun | null = mCBuilder.getSubject()
             if (!matrixSubject) {
@@ -76,6 +82,8 @@ export class VerbHandler implements WordHandler {
         cBuilder: ClauseBuilder,
         addClause: (c: Clause) => void
     ): ClauseBuilder {
+        // handles nonfinite verbs when verb appears with 'to' or bare
+        // eg: ECM, Control, Raising
         const predType: PredType = this.getPredType(pred)
         const subSubject: Noun = this.getYieldMethod(predType, cBuilder)()
 
@@ -149,5 +157,22 @@ export class VerbHandler implements WordHandler {
         return agrStack.some((agr) => {
             agr.getPos() === pos
         })
+    }
+
+    private handleIngSubordinate(
+        verbalWord: Word,
+        cBuilder: ClauseBuilder,
+        ctx: HandlerMethods
+    ): ClauseBuilder {
+        // I (scarely) knew about John (quickly) [going] to the park
+        // need to also bring adverbs...
+
+        const subject: Noun = cBuilder.yieldLastPrepObject()
+        const matrix: Clause = cBuilder.build()
+        ctx.add(matrix)
+        const subordinate: ClauseBuilder = new ClauseBuilder()
+        subordinate.receiveSubject(subject)
+        subordinate.buildPredicate(verbalWord)
+        return subordinate
     }
 }

@@ -197,6 +197,22 @@ export class ClauseBuilder {
         return prep
     }
 
+    public hasPrepWithObject(): boolean {
+        const predicate: Predicate | null = this.predicate
+        if (!predicate) return false
+
+        const adjunctStack: (Preposition | Adverb)[] =
+            predicate.getAdjunctStack()
+
+        for (const adjunct of adjunctStack) {
+            if (
+                adjunct instanceof Preposition
+                && adjunct.hasObject()
+            ) return true
+        }
+        return false
+    }
+
     public hasUnfinishedPredicate(): boolean {
         return this.getUnfinishedPredBuilder() !== undefined
     }
@@ -259,6 +275,28 @@ export class ClauseBuilder {
             throw Error("Only noun to yeild seems to be the subject")
         }
         return lastNoun
+    }
+
+    public yieldLastPrepObject(): Noun {
+        const predicate: Predicate | null = this.predicate
+        if (!predicate) {
+            throw Error(
+                "unable to get preposition because there is no predicate"
+            )
+        }
+
+        const adjunctStack: (Adverb | Preposition)[] =
+            predicate.getAdjunctStack()
+
+        for (let i = adjunctStack.length - 1; i >= 0; i--) {
+            const adjunct: Preposition | Adverb = adjunctStack[i]
+            if (!(adjunct instanceof Preposition)) continue
+            const object: Noun | null = adjunct.getObject()
+            if (!object) continue
+            adjunct.clearObject()
+            return object
+        }
+        throw Error("No prepositions with objects in adjunct stack")
     }
 
     public yieldOControlNoun(): Noun {

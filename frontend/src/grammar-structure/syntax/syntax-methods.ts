@@ -179,6 +179,10 @@ export function isFocusElement(word: Word): boolean {
     )
 }
 
+export function isIngVerb(word: Word): boolean {
+    return word.pos === PartsOfSpeech.VBG
+}
+
 export function isNominal(word: Word): boolean {
     return isNoun(word) || isNounMod(word)
 }

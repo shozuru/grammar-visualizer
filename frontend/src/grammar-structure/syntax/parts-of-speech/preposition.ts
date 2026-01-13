@@ -37,4 +37,8 @@ export class Preposition implements Phrase {
     public addAdjunct(mod: Adverb): void {
         this.adjunctList.push(mod)
     }
+
+    public clearObject(): void {
+        this.object = null
+    }
 }
