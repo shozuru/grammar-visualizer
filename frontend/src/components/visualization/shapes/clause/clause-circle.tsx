@@ -45,6 +45,12 @@ const ClauseCircle: React.FC<ClauseProps> =
             }
         }
 
+        const prepsWithObjects: Preposition[] = []
+        for (const prep of prepList) {
+            if (!prep.hasObject()) continue
+            prepsWithObjects.push(prep)
+        }
+
         function distributeAngles(
             count: number,
             arcSpan: number,
@@ -172,7 +178,7 @@ const ClauseCircle: React.FC<ClauseProps> =
                 </div >
 
 
-                {prepList.length > 0 &&
+                {prepsWithObjects.length > 0 &&
                     prepList.map((prep, i) =>
                         <PrepositionPhrase
                             preposition={prep}
