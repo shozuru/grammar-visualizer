@@ -164,14 +164,21 @@ export class VerbHandler implements WordHandler {
         cBuilder: ClauseBuilder,
         ctx: HandlerMethods
     ): ClauseBuilder {
-        // I (scarely) knew about John (quickly) [going] to the park
-        // need to also bring adverbs...
+        // I (hardly) knew about John (quickly) [going] to the park
+
+        // I knew about John quickly going to the park
+        // I quickly knew about John going to the park
+
+        // if the adverb comes after the main predicate, they could be either
+        // if another verb comes up, greedily move them to the next verb
 
         const subject: Noun = cBuilder.yieldLastPrepObject()
+        const adverbList = cBuilder.yieldAmbiguousAdverbs()
         const matrix: Clause = cBuilder.build()
         ctx.add(matrix)
         const subordinate: ClauseBuilder = new ClauseBuilder()
         subordinate.receiveSubject(subject)
+        subordinate.receiveAmbiguousAdverbs(adverbList)
         subordinate.buildPredicate(verbalWord)
         return subordinate
     }

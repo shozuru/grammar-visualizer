@@ -29,6 +29,7 @@ export class ClauseBuilder {
     private unfinishedBuilderList: WordBuilder[]
     private pendingAdverb: Adverb | null
     private pendingNoun: Noun | null
+    private ambiguousAdverbs: Adverb[]
 
     constructor() {
         this.predicate = null
@@ -38,6 +39,7 @@ export class ClauseBuilder {
         this.unfinishedBuilderList = []
         this.pendingAdverb = null
         this.pendingNoun = null
+        this.ambiguousAdverbs = []
     }
 
     // public API
@@ -110,13 +112,24 @@ export class ClauseBuilder {
         const adverbBuilder: AdverbBuilder =
             this.getOrCreateBuilder(AdverbBuilder)
         this.removeFromBuilderList(adverbBuilder)
-
         adverbBuilder.createAndSetAdverb(adverbWord)
-        if (this.pendingAdverb) {
-            this.placeAdverbIn(adverbBuilder)
+
+        const predicate: Predicate | null = this.getPredicate()
+        if (
+            predicate
+            && !!predicate.getSemanticContent()
+        ) {
+            const adverb: Adverb = adverbBuilder.build()
+            this.ambiguousAdverbs.push(adverb)
+
+        } else {
+            if (this.pendingAdverb) {
+                this.placeAdverbIn(adverbBuilder)
+            }
+
+            const adverb: Adverb = adverbBuilder.build()
+            this.pendingAdverb = adverb
         }
-        const adverb: Adverb = adverbBuilder.build()
-        this.pendingAdverb = adverb
     }
 
     public buildCausative(causeWord: Word): void {
@@ -237,6 +250,12 @@ export class ClauseBuilder {
         this.addPhrase(adjunctPhrase)
     }
 
+    public receiveAmbiguousAdverbs(adverbList: Adverb[]): void {
+        for (const adverb of adverbList) {
+            this.adjunctStack.push(adverb)
+        }
+    }
+
     public receiveRelNoun(relNoun: Noun): void {
         this.pendingNoun = relNoun
     }
@@ -257,6 +276,10 @@ export class ClauseBuilder {
         return this.unfinishedBuilderList.some(
             builder => builder instanceof PredicateBuilder
         )
+    }
+
+    public yieldAmbiguousAdverbs(): Adverb[] {
+        return this.ambiguousAdverbs
     }
 
     public yieldEcmNoun(): Noun {
