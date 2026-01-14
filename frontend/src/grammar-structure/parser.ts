@@ -1,6 +1,7 @@
 import { ClauseBuilder } from "./builders/clause-builder";
 import type { Clause } from "./syntax/parts-of-speech/clause";
-import { conjunctions, ditransitiveList, PartsOfSpeech } from "./syntax/syntax-constants";
+import { conjunctions, ditransitiveList, PartsOfSpeech }
+    from "./syntax/syntax-constants";
 import {
     isAdverb, isBeVerb, isNominal, isNoun, isVerb, passiveByPhraseIndex
 } from "./syntax/syntax-methods";
@@ -39,7 +40,7 @@ export class Parser {
 
         for (const word of fixedWords) {
             console.log(word)
-            // debugger
+            debugger
 
             const handler = this.registry.getHandler(word)
             const newCB: ClauseBuilder | void =

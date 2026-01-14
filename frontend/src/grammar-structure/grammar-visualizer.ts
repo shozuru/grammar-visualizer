@@ -37,7 +37,8 @@ export class GrammarVisualizer {
 }
 // and then work on 'my house [was] haunted'
 // He was who needed to go
-// yesterday was when we got the news
+// I don't know how to make this better
+// I don't know how to make it
 
 
 // TODO: conjunctions, ambiguous sentences, visualization
