@@ -75,6 +75,7 @@ export class ClauseBuilder {
         this.addPredicateTo(clause)
         this.addAdjunctsTo(clause)
         this.addPendingAdverbTo(clause)
+        this.addPendingNounTo(clause)
         return clause
     }
 
@@ -392,7 +393,6 @@ export class ClauseBuilder {
         return this.subject
     }
 
-
     // private helper methods
     private addAdjunctsTo(clause: Clause): void {
         const pred = clause.getPredicate()
@@ -402,10 +402,28 @@ export class ClauseBuilder {
     }
 
     private addNounsTo(clause: Clause): void {
-        if (this.pendingNoun) {
+        if (!this.predicate && this.pendingNoun) {
+            // Today is when we got the news
+            // She is who won
+            const predBuilder: PredicateBuilder | undefined =
+                this.getUnfinishedPredBuilder()
+            if (!predBuilder) {
+                throw Error(
+                    "Clause has no predicate and no unfinished ones either"
+                )
+            }
+            if (!(predBuilder.hasCopula())) {
+                throw Error("predicate is not the right shape for this")
+            }
+            predBuilder.setSemanticContent(this.pendingNoun)
+            const predicate: Predicate = predBuilder.build()
+            this.predicate = predicate
+
+        } else if (this.pendingNoun) {
             this.nounStack.push(this.pendingNoun)
-            this.pendingNoun = null
         }
+        this.pendingNoun = null
+
         for (const noun of this.nounStack) {
             clause.addNoun(noun)
         }
@@ -416,6 +434,11 @@ export class ClauseBuilder {
         if (this.pendingAdverb) {
             pred.addAdjunctPhrase(this.pendingAdverb)
         }
+    }
+
+    private addPendingNounTo(clause: Clause): void {
+        if (!this.pendingNoun) return
+        clause.addNoun(this.pendingNoun)
     }
 
     private addPredicateTo(clause: Clause): void {

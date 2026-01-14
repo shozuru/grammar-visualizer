@@ -30,18 +30,18 @@ export class Parser {
     public parse(wordList: Word[]): Clause[] {
         const fixedWords: Word[] = this.fixPartsOfSpeech(wordList)
 
+        const ctx: HandlerMethods = {
+            add: this.addCompleteClause.bind(this),
+            push: this.pushClauseBuilder.bind(this),
+            pop: this.popClauseBuilder.bind(this),
+            peak: this.peakClauseBuilders.bind(this)
+        }
+
         for (const word of fixedWords) {
             console.log(word)
             // debugger
+
             const handler = this.registry.getHandler(word)
-
-            const ctx: HandlerMethods = {
-                add: this.addCompleteClause.bind(this),
-                push: this.pushClauseBuilder.bind(this),
-                pop: this.popClauseBuilder.bind(this),
-                peak: this.peakClauseBuilders.bind(this)
-            }
-
             const newCB: ClauseBuilder | void =
                 handler.handle(word, this.currentBuilder, ctx)
 
@@ -49,11 +49,7 @@ export class Parser {
                 this.currentBuilder = newCB
             }
         }
-
-        const clause: Clause = this.currentBuilder.build()
-        this.addCompleteClause(clause)
-        this.buildAndAddUnfinishedClauses()
-        return this.clauses
+        return this.wrapLooseEnds()
     }
 
     private buildAndAddUnfinishedClauses(): void {
@@ -61,6 +57,13 @@ export class Parser {
             const finished: Clause = cBuilder.build()
             this.clauses.push(finished)
         }
+    }
+
+    private wrapLooseEnds(): Clause[] {
+        const clause: Clause = this.currentBuilder.build()
+        this.addCompleteClause(clause)
+        this.buildAndAddUnfinishedClauses()
+        return this.clauses
     }
 
     private fixPartsOfSpeech(wordList: Word[]): Word[] {

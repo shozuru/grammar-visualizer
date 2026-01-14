@@ -36,15 +36,11 @@ export class GrammarVisualizer {
     }
 }
 // and then work on 'my house [was] haunted'
-
-// she dreamed about going to the park
-// is 'going to the park' a nominalized phrase or does 'about' not have an 
-// object?
-// I knew about John going to the park
+// He was who needed to go
+// yesterday was when we got the news
 
 
 // TODO: conjunctions, ambiguous sentences, visualization
-// sentence 'i know [what] to do'
 // I gave the kid cake. (ambiguous)
 // I gave the dog food (technically ambiguous)
 // I ate the birthday cake (not ambiguous)
