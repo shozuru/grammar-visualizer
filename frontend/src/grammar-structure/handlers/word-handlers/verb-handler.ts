@@ -54,8 +54,13 @@ export class VerbHandler implements WordHandler {
             isIngVerb(verbalWord)
             && cBuilder.hasPrepWithObject()
         ) {
-            // throw Error("i made it here")
-            return this.handleIngSubordinate(verbalWord, cBuilder, ctx)
+            return this.handleIngSubordinate(verbalWord, cBuilder, ctx, true)
+
+        } else if (
+            isIngVerb(verbalWord)
+            && cBuilder.hasUnfinishedPrep()
+        ) {
+            return this.handleIngSubordinate(verbalWord, cBuilder, ctx, false)
 
         } else if (currentPred) {
             return this.handleNonfinite(
@@ -162,17 +167,25 @@ export class VerbHandler implements WordHandler {
     private handleIngSubordinate(
         verbalWord: Word,
         cBuilder: ClauseBuilder,
-        ctx: HandlerMethods
+        ctx: HandlerMethods,
+        hasObject: boolean
     ): ClauseBuilder {
         // I (hardly) knew about John (quickly) [going] to the park
-
         // I knew about John quickly going to the park
         // I quickly knew about John going to the park
+        // I knew about [going] to the park
 
-        // if the adverb comes after the main predicate, they could be either
-        // if another verb comes up, greedily move them to the next verb
+        let subject: Noun | null = null
+        if (hasObject) {
+            subject = cBuilder.yieldLastPrepObject()
+        } else {
+            subject = cBuilder.getSubject()
+            cBuilder.buildPrepWithoutObject()
+        }
+        if (!subject) {
+            throw Error("Tried to get subject from sentence lacking one")
+        }
 
-        const subject: Noun = cBuilder.yieldLastPrepObject()
         const adverbList = cBuilder.yieldAmbiguousAdverbs()
         const matrix: Clause = cBuilder.build()
         ctx.add(matrix)

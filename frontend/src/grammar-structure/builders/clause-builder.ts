@@ -179,6 +179,14 @@ export class ClauseBuilder {
         }
     }
 
+    public buildPrepWithoutObject(): void {
+        const pBuilder: PrepBuilder | undefined = this.getUnfinishedPrep()
+        if (!pBuilder) {
+            throw Error("trid to build prep but none are unfinished")
+        }
+        this.addPhrase(pBuilder)
+    }
+
     public getNounStack(): Noun[] {
         return this.nounStack
     }
@@ -562,8 +570,8 @@ export class ClauseBuilder {
 
     private pushAdjunctToClause(phrase: Phrase): void {
         if (!(
-            phrase instanceof Adverb ||
-            phrase instanceof Preposition
+            phrase instanceof Adverb
+            || phrase instanceof Preposition
         )) {
             throw Error("Tried to push adjunct that is not an adjunct phrase")
         }
