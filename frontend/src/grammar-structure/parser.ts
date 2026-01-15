@@ -29,7 +29,7 @@ export class Parser {
     }
 
     public parse(wordList: Word[]): Clause[] {
-        const fixedWords: Word[] = this.fixPartsOfSpeech(wordList)
+        const fixedWords = this.fixPartsOfSpeech(wordList)
 
         const ctx: HandlerMethods = {
             add: this.addCompleteClause.bind(this),
@@ -43,8 +43,7 @@ export class Parser {
             // debugger
 
             const handler = this.registry.getHandler(word)
-            const newCB: ClauseBuilder | void =
-                handler.handle(word, this.currentBuilder, ctx)
+            const newCB = handler.handle(word, this.currentBuilder, ctx)
 
             if (newCB) {
                 this.currentBuilder = newCB
@@ -55,13 +54,13 @@ export class Parser {
 
     private buildAndAddUnfinishedClauses(): void {
         for (const cBuilder of this.clausesInProgress) {
-            const finished: Clause = cBuilder.build()
+            const finished = cBuilder.build()
             this.clauses.push(finished)
         }
     }
 
     private wrapLooseEnds(): Clause[] {
-        const clause: Clause = this.currentBuilder.build()
+        const clause = this.currentBuilder.build()
         this.addCompleteClause(clause)
         this.buildAndAddUnfinishedClauses()
         return this.clauses
@@ -90,7 +89,7 @@ export class Parser {
     }
 
     private handleConjunctions(wordList: Word[], i: number): void {
-        const thisWord: Word = wordList[i]
+        const thisWord = wordList[i]
         if (!(thisWord.pos == PartsOfSpeech.IN)) return
         if (!(conjunctions.includes(thisWord.name))) return
         thisWord.pos = PartsOfSpeech.CONJUNCTION
@@ -101,21 +100,20 @@ export class Parser {
         // They (are) at [the [school] I] went to.
         // They are the band friends I know.
 
-        const current: Word = wordList[i]
+        const current = wordList[i]
         if (!this.isAmbiguousVerb(current)) return
 
-        const firstIndex: number = this.getNextNounIndex(wordList, i)
+        const firstIndex = this.getNextNounIndex(wordList, i)
         if (firstIndex === -1) return
         if (firstIndex + 1 >= wordList.length) return
 
         const nextWord = wordList[firstIndex + 1]
         if (!isNominal(nextWord)) return
 
-        const secondIndex: number =
-            this.getNextNounIndex(wordList, firstIndex + 1)
+        const secondIndex = this.getNextNounIndex(wordList, firstIndex + 1)
         if (secondIndex === -1) return
 
-        const verbIndex: number = secondIndex + 1
+        const verbIndex = secondIndex + 1
 
         if (
             verbIndex >= wordList.length ||
@@ -139,8 +137,8 @@ export class Parser {
 
     private handleWHWords(wordList: Word[], i: number): void {
         if (i !== 0) return
-        const current: Word = wordList[i]
-        const pos: number = current.pos
+        const current = wordList[i]
+        const pos = current.pos
         if (pos === PartsOfSpeech.WP) {
             current.pos = PartsOfSpeech.WHNoun
         } else if (pos === PartsOfSpeech.WR) {
@@ -152,8 +150,8 @@ export class Parser {
     private handleTensePromotion(wordList: Word[], i: number): void {
         if (i + 3 > wordList.length) return
 
-        const secondWord: Word = wordList[i + 1]
-        const thirdWord: Word = wordList[i + 2]
+        const secondWord = wordList[i + 1]
+        const thirdWord = wordList[i + 2]
 
         if (!isNominal(thirdWord)) return
         if (secondWord.name === 'do') {
@@ -176,7 +174,7 @@ export class Parser {
     }
 
     private popClauseBuilder(): ClauseBuilder {
-        const cBuilder: ClauseBuilder | undefined = this.clausesInProgress.pop()
+        const cBuilder = this.clausesInProgress.pop()
         if (!cBuilder) {
             throw ("Tried to pop clause builder that does not exist.")
         }
@@ -191,15 +189,14 @@ export class Parser {
         // if we also see a by phrase, then we change it to agr
 
         if (isBeVerb(wordList[i].name)) {
-            let j: number = i + 1
+            let j = i + 1
             if (wordList[j].pos === PartsOfSpeech.RB) {
                 j += 1
             }
             if (wordList[j] && wordList[j].pos === PartsOfSpeech.VBN) {
                 wordList[i].pos = PartsOfSpeech.IMPERSONAL
 
-                const index: number =
-                    passiveByPhraseIndex(wordList.slice(j))
+                const index = passiveByPhraseIndex(wordList.slice(j))
 
                 if (index >= 0) {
                     wordList[j + index].pos = PartsOfSpeech.PASSIVE
@@ -210,11 +207,9 @@ export class Parser {
     }
 
     private handleContractions(wordList: Word[], i: number): void {
-        const current: Word = wordList[i]
+        const current = wordList[i]
 
-        const negDO: string[] = [
-            "don't", "doesn't", "didn't"
-        ]
+        const negDO = ["don't", "doesn't", "didn't"]
 
         if (
             negDO.includes(current.name) &&
@@ -224,11 +219,11 @@ export class Parser {
             return
         }
 
-        const presDO: string[] = ["do", "does", "did"]
-        const neg: string[] = ["n't", "not"]
+        const presDO = ["do", "does", "did"]
+        const neg = ["n't", "not"]
         if (!wordList[i + 1]) return
 
-        const next: Word = wordList[i + 1]
+        const next = wordList[i + 1]
         if (!(presDO.includes(current.name) &&
             neg.includes(next.name)
         )) return
@@ -240,8 +235,8 @@ export class Parser {
     }
 
     private handlePerfect(wordList: Word[], i: number): void {
-        const current: Word = wordList[i]
-        const perfectList: string[] = ["have", "has", "had"]
+        const current = wordList[i]
+        const perfectList = ["have", "has", "had"]
         if (!(
             perfectList.includes(current.name) &&
             wordList[i + 1]
@@ -259,9 +254,9 @@ export class Parser {
         if (i !== 0) return
         if (!wordList[i + 1]) return
 
-        const current: Word = wordList[i]
-        const next: Word = wordList[i + 1]
-        const tenseList: number[] = [
+        const current = wordList[i]
+        const next = wordList[i + 1]
+        const tenseList = [
             PartsOfSpeech.VBD, PartsOfSpeech.VBZ, PartsOfSpeech.VBP,
             PartsOfSpeech.MD, PartsOfSpeech.TENSE
         ]
@@ -295,7 +290,7 @@ export class Parser {
     }
 
     private handleCausative(wordList: Word[], i: number): void {
-        const causList: string[] = ["make", "made", "let"]
+        const causList = ["make", "made", "let"]
         const current = wordList[i]
 
         if (causList.includes(current.name) &&
@@ -310,10 +305,10 @@ export class Parser {
     private handleSuperlative(wordList: Word[], i: number): void {
         if (!wordList[i + 1]) return
 
-        const superList: number[] = [PartsOfSpeech.RBS, PartsOfSpeech.JJS]
+        const superList = [PartsOfSpeech.RBS, PartsOfSpeech.JJS]
 
-        const current: Word = wordList[i]
-        const next: Word = wordList[i + 1]
+        const current = wordList[i]
+        const next = wordList[i + 1]
 
         if (current.pos === PartsOfSpeech.DT && superList.includes(next.pos)) {
             current.pos = PartsOfSpeech.AdvAgr
@@ -329,7 +324,7 @@ export class Parser {
     }
 
     private handleNonFinite(wordList: Word[], i: number): void {
-        const current: Word = wordList[i]
+        const current = wordList[i]
         if (!(current.pos === PartsOfSpeech.TO &&
             current.name === "to"
         )) return
@@ -337,7 +332,7 @@ export class Parser {
     }
 
     private handleNegation(wordList: Word[], i: number): void {
-        const current: Word = wordList[i]
+        const current = wordList[i]
         if (!(
             current.pos === PartsOfSpeech.RB &&
             current.name === "not"
@@ -347,8 +342,8 @@ export class Parser {
 
     private handlePronouns(wordList: Word[], i: number): void {
         if (!wordList[i + 1]) return
-        const current: Word = wordList[i]
-        const next: Word = wordList[i + 1]
+        const current = wordList[i]
+        const next = wordList[i + 1]
 
         if (!(
             current.pos === PartsOfSpeech.DT &&

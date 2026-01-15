@@ -1,5 +1,3 @@
-import type { Noun }
-    from '../../../../grammar-structure/syntax/parts-of-speech/noun'
 import type { Preposition }
     from '../../../../grammar-structure/syntax/parts-of-speech/preposition'
 import { Coupling } from '../utils/coupling'
@@ -15,8 +13,8 @@ type PrepPhraseProps = {
 const PrepositionPhrase: React.FC<PrepPhraseProps> =
     ({ preposition, index }) => {
 
-        const object: Noun | undefined = preposition.getObject()
-        const radius: number = 32
+        const object = preposition.getObject()
+        const radius = 32
 
         return (
             <div

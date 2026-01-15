@@ -45,7 +45,7 @@ const UserInput: React.FC = () => {
                 const structure: GrammarVisualizer =
                     new GrammarVisualizer(sentInfo)
 
-                const clauses: Clause[] = structure.getClauses()
+                const clauses = structure.getClauses()
                 setClauses(clauses)
             })
     }

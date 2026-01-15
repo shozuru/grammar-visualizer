@@ -28,7 +28,7 @@ const VerbCircle: React.FC<PredProp> = ({ predicate }) => {
         return phrase.getName()
     }
 
-    const predName: string = getPredName(predicate)
+    const predName = getPredName(predicate)
 
     return (
         <div

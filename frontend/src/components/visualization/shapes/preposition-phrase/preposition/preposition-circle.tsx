@@ -11,12 +11,12 @@ type PrepositionProps = {
 
 const PrepositionCircle: React.FC<PrepositionProps> =
     ({ prep, angle, radius }) => {
-        const rad: number = angle * Math.PI / 180
-        const x: number = Math.cos(rad) * radius
-        const y: number = Math.sin(rad) * radius
+        const rad = angle * Math.PI / 180
+        const x = Math.cos(rad) * radius
+        const y = Math.sin(rad) * radius
 
-        const prepName: string = prep.getName()
-        const circleSize: number = 1.2 * 16
+        const prepName = prep.getName()
+        const circleSize = 1.2 * 16
 
         return (
             <div

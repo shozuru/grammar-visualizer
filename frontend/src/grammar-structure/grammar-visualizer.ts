@@ -8,7 +8,7 @@ export class GrammarVisualizer {
     private clauses: Clause[]
 
     constructor(inputSentence: SentenceInfo) {
-        const sentence: Word[] = this.createZippedWords(
+        const sentence = this.createZippedWords(
             inputSentence.posList,
             inputSentence.wordList
         )
@@ -20,9 +20,9 @@ export class GrammarVisualizer {
         listOfPos: number[],
         listOfWords: string[]
     ): Word[] {
-        const zipped: Word[] = []
+        const zipped = []
         for (let i = 0; i < listOfPos.length; i++) {
-            const Word: Word = {
+            const Word = {
                 pos: listOfPos[i],
                 name: listOfWords[i].toLowerCase().replace(/[^\w\s]|_/g, '')
             }

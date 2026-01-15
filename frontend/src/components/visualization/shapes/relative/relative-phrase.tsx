@@ -10,8 +10,8 @@ type relativeProps = {
 }
 
 const RelativePhrase: React.FC<relativeProps> = ({ noun, index }) => {
-    const radius: number = 32
-    const relativizer: Noun | null = noun.getRelativizer()
+    const radius = 32
+    const relativizer = noun.getRelativizer()
     if (!relativizer) {
         throw Error("noun is not associated with relative clause")
     }

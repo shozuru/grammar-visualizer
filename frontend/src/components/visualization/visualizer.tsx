@@ -1,8 +1,6 @@
 import { Clause } from '../../grammar-structure/syntax/parts-of-speech/clause'
 import './visualizer.css'
 import type { Predicate } from '../../grammar-structure/syntax/predicate.ts'
-import type { Phrase }
-    from '../../grammar-structure/syntax/parts-of-speech/phrase.ts'
 import { Noun } from '../../grammar-structure/syntax/parts-of-speech/noun.ts'
 import { Preposition }
     from '../../grammar-structure/syntax/parts-of-speech/preposition.ts'
@@ -19,8 +17,7 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
     console.log(clauseList)
 
     const getAdverbsFrom = (predicate: Predicate): Adverb[] => {
-        const adjunctList: (Preposition | Adverb)[] =
-            predicate.getAdjunctStack()
+        const adjunctList = predicate.getAdjunctStack()
         let adverbList: Adverb[] = []
         for (const adverb of adjunctList) {
             if (adverb instanceof Adverb) {
@@ -31,8 +28,7 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
     }
 
     const getPrepositionsFrom = (predicate: Predicate): Preposition[] => {
-        const adjunctList: (Preposition | Adverb)[] =
-            predicate.getAdjunctStack()
+        const adjunctList = predicate.getAdjunctStack()
         let prepList: Preposition[] = []
         for (const prep of adjunctList) {
             if (prep instanceof Preposition) {
@@ -45,7 +41,7 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
     const getPrepObjsFrom = (prepList: Preposition[]): Noun[] => {
         let nounList: Noun[] = []
         for (const prep of prepList) {
-            const object: Noun | undefined = prep.getObject()
+            const object = prep.getObject()
             if (object) {
                 nounList.push(object)
             }
@@ -58,18 +54,18 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
             className='visual-container'
         >
             {clauseList.map((clause, i) => {
-                const pred: Predicate = clause.getPredicate()
+                const pred = clause.getPredicate()
                 // const copula: Verb | undefined = pred.getCopula()
-                const predPhrase: Phrase | undefined = pred.getSemanticContent()
+                const predPhrase = pred.getSemanticContent()
                 if (!predPhrase) {
                     throw Error("Clause does not have a predicate")
                 }
-                const nounList: Noun[] = clause.getNouns()
+                const nounList = clause.getNouns()
                 // if (nounList.length < 1) {
                 //     throw Error("Clause has no nouns")
                 // }
-                const adverbList: Adverb[] = getAdverbsFrom(pred)
-                const prepositionList: Preposition[] = getPrepositionsFrom(pred)
+                const adverbList = getAdverbsFrom(pred)
+                const prepositionList = getPrepositionsFrom(pred)
                 // const prepObjects: Noun[] = getPrepObjsFrom(prepositionList)
 
                 // in react, make sure to create a new variable instead of 

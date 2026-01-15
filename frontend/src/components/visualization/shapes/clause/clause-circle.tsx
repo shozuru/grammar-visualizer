@@ -57,8 +57,8 @@ const ClauseCircle: React.FC<ClauseProps> =
             centerOffset: number
         ): number[] {
             if (count === 1) return [centerOffset]
-            const step: number = arcSpan / (count - 1)
-            const start: number = centerOffset - arcSpan / 2
+            const step = arcSpan / (count - 1)
+            const start = centerOffset - arcSpan / 2
             return Array.from({ length: count }, (_, i) => start + i * step)
         }
 
@@ -76,16 +76,16 @@ const ClauseCircle: React.FC<ClauseProps> =
             ))
         ]
 
-        const radius: number = 56
-        const arcSpan: number = 45
-        const minSeparation: number = 10
+        const radius = 56
+        const arcSpan = 45
+        const minSeparation = 10
 
-        let inPhaseAngles: number[] = distributeAngles(
+        let inPhaseAngles = distributeAngles(
             inPhase.length,
             arcSpan,
             0
         )
-        let antiPhaseAngles: number[] = distributeAngles(
+        let antiPhaseAngles = distributeAngles(
             antiPhase.length,
             arcSpan,
             180
@@ -95,8 +95,7 @@ const ClauseCircle: React.FC<ClauseProps> =
             angles: number[],
             minSeparation: number
         ): number[] => {
-            const smallestAngle: number =
-                Math.min(...angles.map(a => Math.abs(a)))
+            const smallestAngle = Math.min(...angles.map(a => Math.abs(a)))
             if (smallestAngle < minSeparation) {
                 const shift = smallestAngle >= 0
                     ? minSeparation - smallestAngle
