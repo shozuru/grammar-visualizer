@@ -369,14 +369,7 @@ export class ClauseBuilder {
     }
 
     public yieldRaisingNoun(): Noun | undefined {
-        const subSubject: Noun | undefined = this.nounStack.pop()
-        if (subSubject) {
-            return subSubject
-        }
-        if (!this.subject) {
-            throw Error("Sentence does not seem to have a subject.")
-        }
-        return this.subject
+        return this.nounStack.pop()
     }
 
     public yieldSControlNoun(): Noun {
