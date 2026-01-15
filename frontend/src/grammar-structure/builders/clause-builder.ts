@@ -372,11 +372,8 @@ export class ClauseBuilder {
         return this.nounStack.pop()
     }
 
-    public yieldSControlNoun(): Noun {
-        if (!this.subject) {
-            throw Error("Sentence does not seem to have a subject.")
-        }
-        return this.subject
+    public yieldSControlNoun(): undefined {
+        return undefined
     }
 
     public yieldSubjectRel(): Noun {
