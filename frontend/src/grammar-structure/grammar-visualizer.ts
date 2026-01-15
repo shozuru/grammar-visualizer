@@ -40,6 +40,11 @@ export class GrammarVisualizer {
 // I don't know how to make this better
 // I don't know how to make it
 
+// in "I want to swim"
+// it should be I want | to swim (agr)
+// no underlying subordinate subject... 
+// this is a big change from what I did before...
+
 
 // TODO: conjunctions, ambiguous sentences, visualization
 // I gave the kid cake. (ambiguous)
