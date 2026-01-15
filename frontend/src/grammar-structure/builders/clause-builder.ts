@@ -323,16 +323,6 @@ export class ClauseBuilder {
         throw Error("No prepositions with objects in adjunct stack")
     }
 
-    public yieldOControlNoun(): Noun {
-        if (this.nounStack.length > 0) {
-            return this.nounStack[0]
-        }
-        if (!this.subject) {
-            throw Error("Sentence does not seem to have a subject.")
-        }
-        return this.subject
-    }
-
     public yieldObjectRel(): Noun | undefined {
         if (this.nounStack.length > 0) {
             return this.nounStack[0]

@@ -113,9 +113,8 @@ export class VerbHandler implements WordHandler {
         cBuilder: ClauseBuilder
     ): Noun | undefined {
         if (pType === PredType.ECM) return cBuilder.yieldEcmNoun()
-        if (pType === PredType.OCONTROL) return cBuilder.yieldOControlNoun()
         if (pType === PredType.RAISING) return cBuilder.yieldRaisingNoun()
-        return undefined        // yieldSControlNoun
+        return undefined   // .yieldSControlNoun() and .yieldOControlNoun()
     }
 
     private shipRelClause(cBuilder: ClauseBuilder, ctx: HandlerMethods): void {

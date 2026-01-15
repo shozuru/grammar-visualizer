@@ -14,8 +14,6 @@ type VisualProps = {
 
 const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
 
-    console.log(clauseList)
-
     const getAdverbsFrom = (predicate: Predicate): Adverb[] => {
         const adjunctList = predicate.getAdjunctStack()
         let adverbList: Adverb[] = []
