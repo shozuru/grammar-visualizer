@@ -1,10 +1,8 @@
 import type { WordHandler } from "./word-handler"
 import type { Word } from "../../types/word"
 import { ClauseBuilder } from "../../builders/clause-builder"
-import type { Noun } from "../../syntax/parts-of-speech/noun"
 import type { HandlerMethods } from "../../parser"
 import type { Predicate } from "../../syntax/predicate"
-import type { Phrase } from "../../syntax/parts-of-speech/phrase"
 import {
     isDitransitive, isNounPred,
     isPassive,
@@ -47,7 +45,7 @@ export class NounHandler implements WordHandler {
     }
 
     private subRelWOutThat(cBuilder: ClauseBuilder): boolean {
-        const subject: Noun | null = cBuilder.getSubject()
+        const subject = cBuilder.getSubject()
         return (
             !!subject &&
             !cBuilder.getPredicate() &&
@@ -60,9 +58,9 @@ export class NounHandler implements WordHandler {
         ctx: HandlerMethods,
         noun: Word
     ): void | ClauseBuilder {
-        const relNoun: Noun = builder.yieldSubjectRel()
+        const relNoun = builder.yieldSubjectRel()
         ctx.push(builder)
-        const relClause: ClauseBuilder = new ClauseBuilder()
+        const relClause = new ClauseBuilder()
         relClause.buildNominal(noun)
         relClause.receiveRelNoun(relNoun)
         return relClause
@@ -73,18 +71,20 @@ export class NounHandler implements WordHandler {
         ctx: HandlerMethods,
         noun: Word
     ): void | ClauseBuilder {
-        const relNoun: Noun = builder.yieldObjectRel()
-        const mtxClause: Clause = builder.build()
+        const relNoun = builder.yieldObjectRel()
+        const mtxClause = builder.build()
         ctx.add(mtxClause)
-        const relClause: ClauseBuilder = new ClauseBuilder()
-        relClause.receiveRelNoun(relNoun)
+        const relClause = new ClauseBuilder()
+        if (relNoun) {
+            relClause.receiveRelNoun(relNoun)
+        }
         relClause.buildNominal(noun)
         return relClause
     }
 
     private obRelWOutThat(cBuilder: ClauseBuilder): boolean {
         // They are at the school [I] went to
-        const pred: Predicate | null = cBuilder.getPredicate()
+        const pred = cBuilder.getPredicate()
         if (!pred) return false
 
         return (
@@ -103,13 +103,13 @@ export class NounHandler implements WordHandler {
     }
 
     private hasAdjRelClause(cBuilder: ClauseBuilder): boolean {
-        const pred: Predicate | null = cBuilder.getPredicate()
+        const pred = cBuilder.getPredicate()
         if (!pred) return false
 
-        const content: Phrase | null = pred.getSemanticContent()
+        const content = pred.getSemanticContent()
         if (!content) return false
 
-        const subject: Noun | null = cBuilder.getSubject()
+        const subject = cBuilder.getSubject()
         return !subject
     }
 }

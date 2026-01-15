@@ -372,10 +372,6 @@ export class ClauseBuilder {
         return this.nounStack.pop()
     }
 
-    public yieldSControlNoun(): undefined {
-        return undefined
-    }
-
     public yieldSubjectRel(): Noun {
         if (!this.subject) {
             throw Error("no subject available to yield to rel clause")

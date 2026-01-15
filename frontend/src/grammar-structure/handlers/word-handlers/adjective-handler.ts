@@ -1,7 +1,6 @@
 import type { WordHandler } from "./word-handler"
 import type { Word } from "../../types/word"
 import type { ClauseBuilder } from "../../builders/clause-builder"
-import type { Predicate } from "../../syntax/predicate"
 import type { HandlerMethods } from "../../parser"
 
 export class AdjectiveHandler implements WordHandler {
@@ -25,7 +24,7 @@ export class AdjectiveHandler implements WordHandler {
 
     private isPredicateAdj(cBuilder: ClauseBuilder): boolean {
         if (cBuilder.isLastBuilderNoun()) return false
-        const pred: Predicate | null = cBuilder.getUnfinishedPredicate()
+        const pred = cBuilder.getUnfinishedPredicate()
         return pred ? !pred.getSemanticContent() : false
     }
 }

@@ -10,7 +10,6 @@ import { Predicate } from "../../syntax/predicate"
 import type { Noun } from "../../syntax/parts-of-speech/noun"
 import type { Clause } from "../../syntax/parts-of-speech/clause"
 import type { HandlerMethods } from "../../parser"
-import type { Agr } from "../../syntax/agr"
 import { PartsOfSpeech } from "../../syntax/syntax-constants"
 
 enum PredType {
@@ -89,13 +88,13 @@ export class VerbHandler implements WordHandler {
     ): ClauseBuilder {
         // handles nonfinite verbs when verb appears with 'to' or bare
         // eg: ECM, Control, Raising
-        const subClause: ClauseBuilder = new ClauseBuilder()
-        const predType: PredType = this.getPredType(pred)
+        const subClause = new ClauseBuilder()
+        const predType = this.getPredType(pred)
 
-        const subSubject: Noun | undefined = this.yieldSubject(predType, cBuilder)
+        const subSubject = this.yieldSubject(predType, cBuilder)
         if (subSubject) subClause.receiveSubject(subSubject)
 
-        const mtxClause: Clause = cBuilder.build()
+        const mtxClause = cBuilder.build()
         addClause(mtxClause)
 
         subClause.buildPredicate(vWord)
@@ -116,16 +115,16 @@ export class VerbHandler implements WordHandler {
         if (pType === PredType.ECM) return cBuilder.yieldEcmNoun()
         if (pType === PredType.OCONTROL) return cBuilder.yieldOControlNoun()
         if (pType === PredType.RAISING) return cBuilder.yieldRaisingNoun()
-        return cBuilder.yieldSControlNoun()
+        return undefined        // yieldSControlNoun
     }
 
     private shipRelClause(cBuilder: ClauseBuilder, ctx: HandlerMethods): void {
-        const rClause: Clause = cBuilder.build()
+        const rClause = cBuilder.build()
         ctx.add(rClause)
     }
 
     private returnToMatrix(vWord: Word, ctx: HandlerMethods): ClauseBuilder {
-        const matrix: ClauseBuilder = ctx.pop()
+        const matrix = ctx.pop()
         matrix.buildPredicate(vWord)
         return matrix
     }
@@ -135,7 +134,7 @@ export class VerbHandler implements WordHandler {
         cBuilder: ClauseBuilder,
         ctx: HandlerMethods
     ): boolean {
-        const pendingNoun: Noun | undefined = cBuilder.getPendingNoun()
+        const pendingNoun = cBuilder.getPendingNoun()
         if (!pendingNoun) return false
         return (
             isInfAgr(verbalWord)
@@ -146,7 +145,7 @@ export class VerbHandler implements WordHandler {
     }
 
     private checkPredAgrStack(pred: Predicate, pos: number): boolean {
-        const agrStack: Agr[] = pred.getAgrStack()
+        const agrStack = pred.getAgrStack()
         return agrStack.some((agr) => {
             agr.getPos() === pos
         })
@@ -163,7 +162,7 @@ export class VerbHandler implements WordHandler {
         // I quickly knew about John going to the park
         // I knew about [going] to the park
 
-        let subject: Noun | undefined = undefined
+        let subject = undefined
         if (hasObject) {
             subject = cBuilder.yieldLastPrepObject()
         } else {
@@ -175,9 +174,9 @@ export class VerbHandler implements WordHandler {
         }
 
         const adverbList = cBuilder.yieldAmbiguousAdverbs()
-        const matrix: Clause = cBuilder.build()
+        const matrix = cBuilder.build()
         ctx.add(matrix)
-        const subordinate: ClauseBuilder = new ClauseBuilder()
+        const subordinate = new ClauseBuilder()
         subordinate.receiveSubject(subject)
         subordinate.receiveAmbiguousAdverbs(adverbList)
         subordinate.buildPredicate(verbalWord)
