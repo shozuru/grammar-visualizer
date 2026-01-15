@@ -41,10 +41,10 @@ export class VerbHandler implements WordHandler {
             // I know | he [left]
             // I know | we [leave] 
             currentPred.getAgrStack()
-            const lastNoun: Noun = cBuilder.yieldLastNoun()
-            const matrix: Clause = cBuilder.build()
+            const lastNoun = cBuilder.yieldLastNoun()
+            const matrix = cBuilder.build()
             ctx.add(matrix)
-            const subCBuilder: ClauseBuilder = new ClauseBuilder()
+            const subCBuilder = new ClauseBuilder()
             subCBuilder.receiveSubject(lastNoun)
             subCBuilder.buildPredicate(verbalWord)
             return subCBuilder
@@ -66,12 +66,12 @@ export class VerbHandler implements WordHandler {
                 verbalWord, currentPred, cBuilder, ctx.add)
 
         } else if (this.isNonfiniteRelConj(verbalWord, cBuilder, ctx)) {
-            const mCBuilder: ClauseBuilder = ctx.pop()
-            const matrixSubject: Noun | undefined = mCBuilder.getSubject()
+            const mCBuilder = ctx.pop()
+            const matrixSubject = mCBuilder.getSubject()
             if (!matrixSubject) {
                 throw Error("Matrix clause does not have a subject")
             }
-            const matrixClause: Clause = mCBuilder.build()
+            const matrixClause = mCBuilder.build()
             ctx.add(matrixClause)
             cBuilder.receiveSubject(matrixSubject)
 

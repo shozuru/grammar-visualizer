@@ -13,7 +13,7 @@ export class PredicateBuilder extends WordBuilder {
     }
 
     public setVerb(verb: Verb): void {
-        const pred: Predicate = new Predicate(verb)
+        const pred = new Predicate(verb)
         this.predicate = pred
     }
 

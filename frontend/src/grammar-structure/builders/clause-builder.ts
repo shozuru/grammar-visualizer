@@ -69,7 +69,7 @@ export class ClauseBuilder {
     public build(): Clause {
         this.handleStrandedPreps()
 
-        const clause: Clause = new Clause()
+        const clause = new Clause()
         this.addSubjectTo(clause)
         this.addNounsTo(clause)
         this.addPredicateTo(clause)
@@ -80,8 +80,7 @@ export class ClauseBuilder {
     }
 
     public buildAdjective(adjWord: Word): void {
-        const adjBuilder: AdjectiveBuilder =
-            this.getOrCreateBuilder(AdjectiveBuilder)
+        const adjBuilder = this.getOrCreateBuilder(AdjectiveBuilder)
         if (isAdjectiveMod(adjWord)) {
             adjBuilder.createAndAddMod(adjWord)
         } else if (isAdjectiveAgr(adjWord)) {
@@ -97,12 +96,11 @@ export class ClauseBuilder {
     }
 
     public buildAdjRelClause(adjWord: Word): ClauseBuilder {
-        const pred: Predicate = this.buildAdjPred(adjWord)
-        const relClause: ClauseBuilder = new ClauseBuilder()
+        const pred = this.buildAdjPred(adjWord)
+        const relClause = new ClauseBuilder()
         relClause.predicate = pred
 
-        const lastBuilder: WordBuilder | undefined =
-            this.unfinishedBuilderList.at(-1)
+        const lastBuilder = this.unfinishedBuilderList.at(-1)
         if (lastBuilder instanceof NounBuilder) {
             relClause.unfinishedBuilderList.push(lastBuilder)
         }
@@ -110,17 +108,16 @@ export class ClauseBuilder {
     }
 
     public buildAdverb(adverbWord: Word): void {
-        const adverbBuilder: AdverbBuilder =
-            this.getOrCreateBuilder(AdverbBuilder)
+        const adverbBuilder = this.getOrCreateBuilder(AdverbBuilder)
         this.removeFromBuilderList(adverbBuilder)
         adverbBuilder.createAndSetAdverb(adverbWord)
 
-        const predicate: Predicate | undefined = this.getPredicate()
+        const predicate = this.getPredicate()
         if (
             predicate
             && !!predicate.getSemanticContent()
         ) {
-            const adverb: Adverb = adverbBuilder.build()
+            const adverb = adverbBuilder.build()
             this.ambiguousAdverbs.push(adverb)
 
         } else {
@@ -128,7 +125,7 @@ export class ClauseBuilder {
                 this.placeAdverbIn(adverbBuilder)
             }
 
-            const adverb: Adverb = adverbBuilder.build()
+            const adverb = adverbBuilder.build()
             this.pendingAdverb = adverb
         }
     }
@@ -142,7 +139,7 @@ export class ClauseBuilder {
     }
 
     public buildNominal(nomWord: Word): void {
-        const nounBuilder: NounBuilder = this.getOrCreateBuilder(NounBuilder)
+        const nounBuilder = this.getOrCreateBuilder(NounBuilder)
         if (isNounMod(nomWord)) {
             nounBuilder.createAndAddMod(nomWord)
         } else {
@@ -157,8 +154,7 @@ export class ClauseBuilder {
         // when you deal with tense in general, you can deal with 
         // inf, since you don't deal with tense in the main clause
 
-        const predBuilder: PredicateBuilder =
-            this.getOrCreateBuilder(PredicateBuilder)
+        const predBuilder = this.getOrCreateBuilder(PredicateBuilder)
 
         if (isVerbAgr(predWord)) {
             predBuilder.createAndAddAgr(predWord)
@@ -173,7 +169,7 @@ export class ClauseBuilder {
     }
 
     public buildPreposition(prepWord: Word): void {
-        const prepBuilder: PrepBuilder = this.getOrCreateBuilder(PrepBuilder)
+        const prepBuilder = this.getOrCreateBuilder(PrepBuilder)
         prepBuilder.setPreposition(prepWord)
         if (this.pendingAdverb) {
             this.placeAdverbIn(prepBuilder)
@@ -181,7 +177,7 @@ export class ClauseBuilder {
     }
 
     public buildPrepWithoutObject(): void {
-        const pBuilder: PrepBuilder | undefined = this.getUnfinishedPrep()
+        const pBuilder = this.getUnfinishedPrep()
         if (!pBuilder) {
             throw Error("trid to build prep but none are unfinished")
         }
@@ -205,14 +201,13 @@ export class ClauseBuilder {
     }
 
     public getUnfinishedPredicate(): Predicate | undefined {
-        const pBuilder: PredicateBuilder | undefined =
-            this.getUnfinishedPredBuilder()
+        const pBuilder = this.getUnfinishedPredBuilder()
         if (!pBuilder) return undefined
         return pBuilder.getPred()
     }
 
     public getUnfinishedPrep(): PrepBuilder | undefined {
-        const prep: PrepBuilder | undefined = this.unfinishedBuilderList.find(
+        const prep = this.unfinishedBuilderList.find(
             builder => builder instanceof PrepBuilder
         )
         if (prep) this.removeFromBuilderList(prep)
@@ -220,11 +215,10 @@ export class ClauseBuilder {
     }
 
     public hasPrepWithObject(): boolean {
-        const predicate: Predicate | undefined = this.predicate
+        const predicate = this.predicate
         if (!predicate) return false
 
-        const adjunctStack: (Preposition | Adverb)[] =
-            predicate.getAdjunctStack()
+        const adjunctStack = predicate.getAdjunctStack()
 
         for (const adjunct of adjunctStack) {
             if (
@@ -240,15 +234,14 @@ export class ClauseBuilder {
     }
 
     public hasUnfinishedPrep(): boolean {
-        const builder: PrepBuilder | undefined =
-            this.unfinishedBuilderList.find(
-                builder => builder instanceof PrepBuilder
-            )
+        const builder = this.unfinishedBuilderList.find(
+            builder => builder instanceof PrepBuilder
+        )
         return !!builder
     }
 
     public isLastBuilderNoun(): boolean {
-        const bList: WordBuilder[] = this.unfinishedBuilderList
+        const bList = this.unfinishedBuilderList
         return bList.at(-1) instanceof NounBuilder
     }
 
@@ -292,7 +285,7 @@ export class ClauseBuilder {
     }
 
     public yieldEcmNoun(): Noun {
-        const ecmSubject: Noun | undefined = this.nounStack.shift()
+        const ecmSubject = this.nounStack.shift()
         if (!ecmSubject) {
             throw Error(
                 "Tried to extract subordinate Subject that does not exist."
@@ -302,7 +295,7 @@ export class ClauseBuilder {
     }
 
     public yieldLastNoun(): Noun {
-        const lastNoun: Noun | undefined = this.nounStack.pop()
+        const lastNoun = this.nounStack.pop()
         if (!lastNoun) {
             throw Error("Only noun to yeild seems to be the subject")
         }
@@ -310,20 +303,19 @@ export class ClauseBuilder {
     }
 
     public yieldLastPrepObject(): Noun {
-        const predicate: Predicate | undefined = this.predicate
+        const predicate = this.predicate
         if (!predicate) {
             throw Error(
                 "unable to get preposition because there is no predicate"
             )
         }
 
-        const adjunctStack: (Adverb | Preposition)[] =
-            predicate.getAdjunctStack()
+        const adjunctStack = predicate.getAdjunctStack()
 
         for (let i = adjunctStack.length - 1; i >= 0; i--) {
-            const adjunct: Preposition | Adverb = adjunctStack[i]
+            const adjunct = adjunctStack[i]
             if (!(adjunct instanceof Preposition)) continue
-            const object: Noun | undefined = adjunct.getObject()
+            const object = adjunct.getObject()
             if (!object) continue
             adjunct.clearObject()
             return object
@@ -346,8 +338,8 @@ export class ClauseBuilder {
             return this.nounStack[0]
         }
 
-        const pred: Predicate | undefined = this.predicate
-        const content: Phrase | undefined = pred && pred.getSemanticContent()
+        const pred = this.predicate
+        const content = pred && pred.getSemanticContent()
 
         if (content instanceof Noun) return content
         if (content instanceof Preposition) {
@@ -391,8 +383,7 @@ export class ClauseBuilder {
         if (!this.predicate && this.pendingNoun) {
             // Today is when we got the news
             // She is who won
-            const predBuilder: PredicateBuilder | undefined =
-                this.getUnfinishedPredBuilder()
+            const predBuilder = this.getUnfinishedPredBuilder()
             if (!predBuilder) {
                 throw Error(
                     "Clause has no predicate and no unfinished ones either"
@@ -402,7 +393,7 @@ export class ClauseBuilder {
                 throw Error("predicate is not the right shape for this")
             }
             predBuilder.setSemanticContent(this.pendingNoun)
-            const predicate: Predicate = predBuilder.build()
+            const predicate = predBuilder.build()
             this.predicate = predicate
 
         } else if (this.pendingNoun) {
@@ -433,9 +424,8 @@ export class ClauseBuilder {
             return
         }
 
-        const unfinishedPred: PredicateBuilder | undefined =
-            this.unfinishedBuilderList.find(builder =>
-                builder instanceof PredicateBuilder)
+        const unfinishedPred = this.unfinishedBuilderList.find(
+            builder => builder instanceof PredicateBuilder)
         const pending = this.pendingAdverb
         if (unfinishedPred && pending) {
             this.pendingAdverb = undefined
@@ -450,7 +440,7 @@ export class ClauseBuilder {
     }
 
     private addSubjectTo(clause: Clause): void {
-        const subject: Noun | undefined = this.subject
+        const subject = this.subject
         if (!subject) return
         clause.addNoun(subject)
     }
@@ -458,7 +448,7 @@ export class ClauseBuilder {
     private buildAdjPred(adjWord: Word): Predicate {
         const verb = new Verb('be')
         const pred = new Predicate(verb)
-        const adj: Adjective = new Adjective(adjWord.name)
+        const adj = new Adjective(adjWord.name)
         pred.setSemanticElement(adj)
         if (this.pendingAdverb) {
             pred.addAdjunctPhrase(this.pendingAdverb)
@@ -468,14 +458,14 @@ export class ClauseBuilder {
     }
 
     private createPred(pBuilder: PredicateBuilder, pWord: Word): void {
-        const verb: Verb = new Verb(pWord.name)
+        const verb = new Verb(pWord.name)
         pBuilder.setVerb(verb)
         if (pBuilder.hasSemanticContent()) {
             if (this.pendingAdverb) {
                 this.placeAdverbIn(pBuilder)
             }
             this.removeFromBuilderList(pBuilder)
-            const predicate: Predicate = pBuilder.build()
+            const predicate = pBuilder.build()
             this.predicate = predicate
         }
     }
@@ -484,10 +474,9 @@ export class ClauseBuilder {
         buildType: new () => T
     ): T {
 
-        let builder: T | undefined =
-            this.unfinishedBuilderList.find(
-                build => build instanceof buildType
-            ) as T | undefined
+        let builder = this.unfinishedBuilderList.find(
+            build => build instanceof buildType
+        ) as T | undefined
 
         if (!builder) {
             builder = new buildType()
@@ -497,10 +486,9 @@ export class ClauseBuilder {
     }
 
     private getUnfinishedPredBuilder(): PredicateBuilder | undefined {
-        const builder: PredicateBuilder | undefined =
-            this.unfinishedBuilderList.find(
-                builder => builder instanceof PredicateBuilder
-            )
+        const builder = this.unfinishedBuilderList.find(
+            builder => builder instanceof PredicateBuilder
+        )
         return builder
     }
 
@@ -508,10 +496,8 @@ export class ClauseBuilder {
         clause: Clause,
         pBuilder: PredicateBuilder
     ): void {
-        const whWord: Noun | undefined = clause.getNouns().find(
-            noun => isWHWord(noun.getName())
-        )
-        const verb: Verb | undefined = getVerbFromTense(pBuilder)
+        const whWord = clause.getNouns().find(noun => isWHWord(noun.getName()))
+        const verb = getVerbFromTense(pBuilder)
 
         if (whWord && verb) {
             pBuilder.setVerb(verb)
@@ -520,15 +506,15 @@ export class ClauseBuilder {
     }
 
     private handleStrandedBy(bList: WordBuilder[]): void {
-        const nounStack: Noun[] = this.nounStack
+        const nounStack = this.nounStack
         getBy(bList, nounStack)
     }
 
     private handleStrandedPreps(): void {
-        const unfinished: WordBuilder[] = this.unfinishedBuilderList
+        const unfinished = this.unfinishedBuilderList
         this.handleStrandedBy(unfinished)
 
-        const pBuilder: PrepBuilder | undefined = this.getUnfinishedPrep()
+        const pBuilder = this.getUnfinishedPrep()
         if (pBuilder) {
             this.resolvePrep(pBuilder)
         }
@@ -536,7 +522,7 @@ export class ClauseBuilder {
 
     private handleWHRelWord(predWord: Word): void {
         if (!this.pendingNoun) return
-        const nounName: string = this.pendingNoun.getName()
+        const nounName = this.pendingNoun.getName()
         if (isInfAgr(predWord) && isWHWord(nounName)) {
             throw Error("I made it here so far")
         }
@@ -553,7 +539,7 @@ export class ClauseBuilder {
         const predBuilder =
             this.unfinishedBuilderList.splice(-1, 1)[0] as PredicateBuilder
         predBuilder.setSemanticContent(phrase)
-        const predPhrase: Predicate = predBuilder.build()
+        const predPhrase = predBuilder.build()
         this.predicate = predPhrase
     }
 
@@ -589,7 +575,7 @@ export class ClauseBuilder {
         if (
             this.unfinishedBuilderList.at(-1) instanceof PrepBuilder
         ) {
-            const prepBuilder: PrepBuilder =
+            const prepBuilder =
                 this.unfinishedBuilderList.splice(-1, 1)[0] as PrepBuilder
             prepBuilder.setObject(nPhrase)
             this.addPhrase(prepBuilder)
@@ -618,7 +604,7 @@ export class ClauseBuilder {
             builder.setObject(this.subject)
         }
 
-        const pPhrase: Preposition = builder.build()
+        const pPhrase = builder.build()
         this.adjunctStack.push(pPhrase)
     }
 

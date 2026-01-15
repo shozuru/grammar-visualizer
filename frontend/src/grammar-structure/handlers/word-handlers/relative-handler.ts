@@ -2,11 +2,8 @@ import { ClauseBuilder } from "../../builders/clause-builder"
 import type { Word } from "../../types/word"
 import type { WordHandler } from "./word-handler"
 import { Noun } from "../../syntax/parts-of-speech/noun"
-import type { Predicate } from "../../syntax/predicate"
-import { Clause } from "../../syntax/parts-of-speech/clause"
 import type { HandlerMethods } from "../../parser"
 import { isAdjunctRel, isWHNounRel } from "../../syntax/syntax-methods"
-import type { PrepBuilder } from "../../builders/preposition-builder"
 
 export class RelativeHandler implements WordHandler {
 
@@ -21,7 +18,7 @@ export class RelativeHandler implements WordHandler {
         if (isWHNounRel(relWord)) {
             return this.handleWHNounRel(relWord, cBuilder, ctx)
         }
-        const mPred: Predicate | null = cBuilder.getPredicate()
+        const mPred = cBuilder.getPredicate()
         if (mPred) return this.handleObjectRel(cBuilder, ctx)
 
         return this.handleSubjectRel(cBuilder, ctx)
@@ -34,15 +31,15 @@ export class RelativeHandler implements WordHandler {
         // this is the person [that] knew my name
         // this is the person [that] I knew
         // technically ambiguous with adjuncts that follow
-        const relNoun: Noun | null = cBuilder.yieldObjectRel()
+        const relNoun = cBuilder.yieldObjectRel()
         if (!relNoun) {
             throw Error("Error trying to obtain object relative noun")
         }
 
-        const mtxClause: Clause = cBuilder.build()
+        const mtxClause = cBuilder.build()
         ctx.add(mtxClause)
 
-        const relClause: ClauseBuilder = new ClauseBuilder()
+        const relClause = new ClauseBuilder()
         relClause.receiveRelNoun(relNoun)
         return relClause
     }
@@ -65,24 +62,24 @@ export class RelativeHandler implements WordHandler {
         relWord: Word,
         ctx: HandlerMethods
     ): ClauseBuilder {
-        const adjunctNoun: Noun | null = cBuilder.yieldObjectRel()
+        const adjunctNoun = cBuilder.yieldObjectRel()
         if (adjunctNoun) {
             // This is the place [where] I slept
-            const prep: PrepBuilder | undefined = cBuilder.getUnfinishedPrep()
-            const mtxClause: Clause = cBuilder.build()
+            const prep = cBuilder.getUnfinishedPrep()
+            const mtxClause = cBuilder.build()
             ctx.add(mtxClause)
-            const relClause: ClauseBuilder = new ClauseBuilder()
+            const relClause = new ClauseBuilder()
 
             if (prep) relClause.receiveRelPrep(adjunctNoun, prep)
             else relClause.receiveRelAdjunct(adjunctNoun)
             return relClause
         } else {
             // this is [where] to sleep
-            const relative: Noun = new Noun('REL')
+            const relative = new Noun('REL')
             cBuilder.receiveRelNoun(relative)
-            const whNoun: Noun = new Noun(relWord.name)
+            const whNoun = new Noun(relWord.name)
             ctx.push(cBuilder)
-            const subClauseBuilder: ClauseBuilder = new ClauseBuilder()
+            const subClauseBuilder = new ClauseBuilder()
             subClauseBuilder.receiveRelNoun(whNoun)
             return subClauseBuilder
         }
@@ -100,11 +97,11 @@ export class RelativeHandler implements WordHandler {
 
         // I know [the thing] to say
         // I know [the place] to be at
-        const whNoun: Noun = new Noun(relWord.name)
-        const relative: Noun = whNoun.connectAndReturnRelNoun()
+        const whNoun = new Noun(relWord.name)
+        const relative = whNoun.connectAndReturnRelNoun()
         cBuilder.receiveRelNoun(relative)
         ctx.push(cBuilder)
-        const subClauseBuilder: ClauseBuilder = new ClauseBuilder()
+        const subClauseBuilder = new ClauseBuilder()
         subClauseBuilder.receiveRelNoun(whNoun)
         return subClauseBuilder
     }

@@ -4,19 +4,19 @@ import { WordBuilder } from "./word-builder"
 
 export class NounBuilder extends WordBuilder {
 
-    private noun: Noun | null
+    private noun: Noun | undefined
 
     constructor() {
         super()
-        this.noun = null
+        this.noun = undefined
     }
 
     public createAndSetNoun(word: Word): void {
-        const noun: Noun = new Noun(word.name)
+        const noun = new Noun(word.name)
         this.noun = noun
     }
 
-    public getNoun(): Noun | null {
+    public getNoun(): Noun | undefined {
         return this.noun
     }
 

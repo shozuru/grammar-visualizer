@@ -4,15 +4,15 @@ import type { Word } from "../types/word";
 
 export class AdverbBuilder extends WordBuilder {
 
-    private adverb: Adverb | null
+    private adverb: Adverb | undefined
 
     constructor() {
         super()
-        this.adverb = null
+        this.adverb = undefined
     }
 
     public createAndSetAdverb(adverbWord: Word): void {
-        const adverb: Adverb = new Adverb(adverbWord.name)
+        const adverb = new Adverb(adverbWord.name)
         this.adverb = adverb
     }
 

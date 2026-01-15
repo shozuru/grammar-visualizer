@@ -42,12 +42,12 @@ export class Noun implements Phrase {
     }
 
     public addCausative(causeWord: Word): void {
-        const causeMod: Mod = new Mod(causeWord)
+        const causeMod = new Mod(causeWord)
         this.modifiers.push(causeMod)
     }
 
     public connectAndReturnRelNoun(): Noun {
-        const relative: Noun = new Noun('REL')
+        const relative = new Noun('REL')
         this.relativizer = relative
         return relative
     }

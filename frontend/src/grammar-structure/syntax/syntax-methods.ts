@@ -8,7 +8,6 @@ import {
 } from "./syntax-constants"
 import { Mod } from "./mod"
 import { Predicate } from "./predicate"
-import type { Phrase } from "./parts-of-speech/phrase"
 import type { WordBuilder } from "../builders/word-builder"
 import type { PredicateBuilder } from "../builders/predicate-builder"
 import { Preposition } from "./parts-of-speech/preposition"
@@ -17,7 +16,7 @@ import { Preposition } from "./parts-of-speech/preposition"
 export function getLexicalizedMod(adjWord: Word): Mod | undefined {
     if (adjWord.pos === PartsOfSpeech.JJS) {
 
-        const superlative: Mod = new Mod(
+        const superlative = new Mod(
             {
                 name: "superlative",
                 pos: PartsOfSpeech.SUPERLATIVE
@@ -27,7 +26,7 @@ export function getLexicalizedMod(adjWord: Word): Mod | undefined {
 
     } else if (adjWord.pos === PartsOfSpeech.JJR) {
 
-        const comparative: Mod = new Mod(
+        const comparative = new Mod(
             {
                 name: "comparative",
                 pos: PartsOfSpeech.COMPARATIVE
@@ -39,10 +38,10 @@ export function getLexicalizedMod(adjWord: Word): Mod | undefined {
 }
 
 export function addStrandedPassive(wordList: Word[], nounStack: Noun[]): void {
-    const passiveWord: Word = wordList.shift() as Word
-    const passiveMod: Mod = new Mod(passiveWord)
+    const passiveWord = wordList.shift() as Word
+    const passiveMod = new Mod(passiveWord)
 
-    const relNoun: Noun | undefined = nounStack.find(
+    const relNoun = nounStack.find(
         noun => noun.getName() === "that"
     )
 
@@ -52,21 +51,21 @@ export function addStrandedPassive(wordList: Word[], nounStack: Noun[]): void {
 }
 
 export function getBy(bList: WordBuilder[], stack: Noun[]): void {
-    const index: number = bList
+    const index = bList
         .findIndex(builder => builder.getModStack()
             .some(mod => mod.getName() === "by")
         )
     if (index === -1) return
 
-    const builder: WordBuilder = bList[index]
-    const mod: Mod | undefined = builder.getModStack().find(
+    const builder = bList[index]
+    const mod = builder.getModStack().find(
         mod => mod.getName() === "by"
     )
     if (!mod) return
 
     bList = bList.splice(index, 1)
 
-    const nPhrase: Noun = stack[0]
+    const nPhrase = stack[0]
     nPhrase.addModifier(mod)
 }
 
@@ -140,7 +139,7 @@ export function isCausative(word: Word): boolean {
 }
 
 export function isConjunction(word: Word): boolean {
-    const currentPOS: number = word.pos
+    const currentPOS = word.pos
     // const currentWord: string = word.name
 
     return (
@@ -155,14 +154,14 @@ export function isConjunction(word: Word): boolean {
 }
 
 export function isDitransitive(predicate: Predicate): boolean {
-    const verb: Phrase | undefined = predicate.getSemanticContent()
+    const verb = predicate.getSemanticContent()
     if (!(verb instanceof Verb)) return false
-    const name: string = verb.getName()
+    const name = verb.getName()
     return ditransitiveList.includes(name)
 }
 
 export function isECMPred(pred: Predicate): boolean {
-    const sCont: Phrase | undefined = pred.getSemanticContent()
+    const sCont = pred.getSemanticContent()
     if (!(sCont instanceof Verb)) return false
     return (
         ecmVerbs.some(
@@ -188,7 +187,7 @@ export function isNominal(word: Word): boolean {
 }
 
 export function isNoun(word: Word): boolean {
-    const currentPOS: number = word.pos
+    const currentPOS = word.pos
     return (currentPOS === PartsOfSpeech.NN ||
         currentPOS === PartsOfSpeech.NNS ||
         currentPOS === PartsOfSpeech.NNP ||
@@ -202,7 +201,7 @@ export function isNounMod(
     word: Word,
     // restOfSent: Word[]
 ): boolean {
-    const currentPOS: number = word.pos
+    const currentPOS = word.pos
     return (
         currentPOS === PartsOfSpeech.DT ||
         currentPOS === PartsOfSpeech.PRPQ ||
@@ -226,7 +225,7 @@ export function isPrepPred(pred: Predicate): boolean {
 }
 
 export function isObjectControlPred(pred: Predicate): boolean {
-    const sCont: Phrase | undefined = pred.getSemanticContent()
+    const sCont = pred.getSemanticContent()
     if (!(sCont instanceof Verb)) return false
     return (
         objectControlVerbs.some(
@@ -245,7 +244,7 @@ export function isPassive(word: Word): boolean {
 
 export function isPredicate(word: Word, restOfSent: Word[]): boolean {
 
-    const currentPOS: number = word.pos
+    const currentPOS = word.pos
     return (
         currentPOS === PartsOfSpeech.VB ||
         currentPOS === PartsOfSpeech.VBD ||
@@ -271,7 +270,7 @@ export function isPreposition(word: Word): boolean {
 }
 
 export function isRaisingPred(pred: Predicate): boolean {
-    const sCont: Phrase | undefined = pred.getSemanticContent()
+    const sCont = pred.getSemanticContent()
     if (!(sCont instanceof Verb)) return false
     return (
         raisingVerbs.some(
@@ -292,7 +291,7 @@ export function isRelative(word: Word): boolean {
 
 export function isTensedVerb(word: Word): boolean {
     if (!isVerb(word)) return false
-    const pos: number = word.pos
+    const pos = word.pos
     return (
         pos === PartsOfSpeech.VBD
         || pos === PartsOfSpeech.VBZ
@@ -349,7 +348,7 @@ export function modStackContainsCaus(modStack: Mod[]): boolean {
 }
 
 export function passiveByPhraseIndex(wordList: Word[]): number {
-    let index: number = wordList.length - 1
+    let index = wordList.length - 1
     while (index >= 0) {
         if (wordList[index].name === "by") {
             return index
@@ -382,7 +381,7 @@ export function uncontractVerbalModifiers(modifier: Mod): Mod[] {
 }
 
 export function getVerbFromTense(pBuilder: PredicateBuilder): Verb | undefined {
-    const tMod: Mod | undefined = pBuilder.getModStack().find(
+    const tMod = pBuilder.getModStack().find(
         mod => (
             mod.getName() === "do" ||
             mod.getName() === "did"
@@ -391,12 +390,12 @@ export function getVerbFromTense(pBuilder: PredicateBuilder): Verb | undefined {
     if (!tMod) return undefined
 
     pBuilder.removeMod(tMod)
-    const verb: Verb = new Verb(tMod.getName())
+    const verb = new Verb(tMod.getName())
     return verb
 }
 
 export function isWHWord(name: string): boolean {
-    const whWords: string[] = [
+    const whWords = [
         "who",
         "what",
         "where",

@@ -7,15 +7,15 @@ import { PartsOfSpeech } from "../syntax/syntax-constants";
 
 export class PrepBuilder extends WordBuilder {
 
-    private preposition: Preposition | null
+    private preposition: Preposition | undefined
 
     constructor() {
         super()
-        this.preposition = null
+        this.preposition = undefined
     }
 
     public setPreposition(prepWord: Word): void {
-        const prep: Preposition = new Preposition(prepWord.name)
+        const prep = new Preposition(prepWord.name)
         this.preposition = prep
     }
 

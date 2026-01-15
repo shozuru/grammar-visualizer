@@ -19,7 +19,7 @@ export abstract class WordBuilder {
     abstract build(): Phrase
 
     public createAndAddMod(word: Word): void {
-        const mod: Mod = new Mod(word)
+        const mod = new Mod(word)
         this.modStack.push(mod)
     }
 
@@ -37,7 +37,7 @@ export abstract class WordBuilder {
     }
 
     public createAndAddAgr(word: Word): void {
-        const agr: Agr = new Agr(word)
+        const agr = new Agr(word)
         this.agrStack.push(agr)
     }
 

@@ -1,4 +1,3 @@
-import type { Mod } from "../syntax/mod"
 import { Adjective } from "../syntax/parts-of-speech/adjectives"
 import { Adverb } from "../syntax/parts-of-speech/adverb"
 import { getLexicalizedMod } from "../syntax/syntax-methods"
@@ -7,18 +6,18 @@ import { WordBuilder } from "./word-builder"
 
 export class AdjectiveBuilder extends WordBuilder {
 
-    private adjective: Adjective | null
+    private adjective: Adjective | undefined
 
     constructor() {
         super()
-        this.adjective = null
+        this.adjective = undefined
     }
 
     public createAndSetAdjective(adjWord: Word): void {
-        const adj: Adjective = new Adjective(adjWord.name)
+        const adj = new Adjective(adjWord.name)
         this.adjective = adj
 
-        const lexMod: Mod | null = getLexicalizedMod(adjWord)
+        const lexMod = getLexicalizedMod(adjWord)
         if (lexMod) {
             super.addMod(lexMod)
         }
