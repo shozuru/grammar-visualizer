@@ -29,7 +29,7 @@ export class VerbHandler implements WordHandler {
     ): ClauseBuilder | void {
         // debugger
         const unfinishedClause: ClauseBuilder | undefined = ctx.peak()
-        const currentPred: Predicate | null = cBuilder.getPredicate()
+        const currentPred: Predicate | undefined = cBuilder.getPredicate()
         // the person that knew me is here
         if (unfinishedClause && currentPred) {
             // the boy went to the school that is blue
@@ -68,7 +68,7 @@ export class VerbHandler implements WordHandler {
 
         } else if (this.isNonfiniteRelConj(verbalWord, cBuilder, ctx)) {
             const mCBuilder: ClauseBuilder = ctx.pop()
-            const matrixSubject: Noun | null = mCBuilder.getSubject()
+            const matrixSubject: Noun | undefined = mCBuilder.getSubject()
             if (!matrixSubject) {
                 throw Error("Matrix clause does not have a subject")
             }
@@ -89,18 +89,15 @@ export class VerbHandler implements WordHandler {
     ): ClauseBuilder {
         // handles nonfinite verbs when verb appears with 'to' or bare
         // eg: ECM, Control, Raising
+        const subClause: ClauseBuilder = new ClauseBuilder()
         const predType: PredType = this.getPredType(pred)
-        const subSubject: Noun = this.getYieldMethod(predType, cBuilder)()
+
+        const subSubject: Noun | undefined = this.yieldSubject(predType, cBuilder)
+        if (subSubject) subClause.receiveSubject(subSubject)
 
         const mtxClause: Clause = cBuilder.build()
         addClause(mtxClause)
 
-        const subClause: ClauseBuilder = new ClauseBuilder()
-        subClause.receiveSubject(subSubject)
-
-        if (predType === PredType.ECM) {
-            subClause.buildPredicate(vWord)
-        }
         subClause.buildPredicate(vWord)
         return subClause
     }
@@ -109,26 +106,17 @@ export class VerbHandler implements WordHandler {
         if (isECMPred(pred)) return PredType.ECM
         if (isObjectControlPred(pred)) return PredType.OCONTROL
         if (isRaisingPred(pred)) return PredType.RAISING
-        else return PredType.SCONTROL
+        return PredType.SCONTROL
     }
 
-    private getYieldMethod(
+    private yieldSubject(
         pType: PredType,
         cBuilder: ClauseBuilder
-    ): () => Noun {
-
-        const yieldMap: Map<PredType, () => Noun> = new Map([
-            [PredType.ECM, () => cBuilder.yieldEcmNoun()],
-            [PredType.OCONTROL, () => cBuilder.yieldOControlNoun()],
-            [PredType.RAISING, () => cBuilder.yieldRaisingNoun()],
-            [PredType.SCONTROL, () => cBuilder.yieldSControlNoun()]
-        ])
-
-        const yieldMethod = yieldMap.get(pType)
-        if (!yieldMethod) {
-            throw Error("Unable to get proper yield method for main verb.")
-        }
-        return yieldMethod
+    ): Noun | undefined {
+        if (pType === PredType.ECM) return cBuilder.yieldEcmNoun()
+        if (pType === PredType.OCONTROL) return cBuilder.yieldOControlNoun()
+        if (pType === PredType.RAISING) return cBuilder.yieldRaisingNoun()
+        return cBuilder.yieldSControlNoun()
     }
 
     private shipRelClause(cBuilder: ClauseBuilder, ctx: HandlerMethods): void {
@@ -147,7 +135,7 @@ export class VerbHandler implements WordHandler {
         cBuilder: ClauseBuilder,
         ctx: HandlerMethods
     ): boolean {
-        const pendingNoun: Noun | null = cBuilder.getPendingNoun()
+        const pendingNoun: Noun | undefined = cBuilder.getPendingNoun()
         if (!pendingNoun) return false
         return (
             isInfAgr(verbalWord)
@@ -175,7 +163,7 @@ export class VerbHandler implements WordHandler {
         // I quickly knew about John going to the park
         // I knew about [going] to the park
 
-        let subject: Noun | null = null
+        let subject: Noun | undefined = undefined
         if (hasObject) {
             subject = cBuilder.yieldLastPrepObject()
         } else {

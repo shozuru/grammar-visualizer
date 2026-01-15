@@ -5,13 +5,13 @@ import type { Phrase } from "./phrase"
 export class Preposition implements Phrase {
 
     private adjunctList: Adverb[]
-    private object: Noun | null
+    private object: Noun | undefined
     private name: string
 
     constructor(name: string) {
         this.name = name
         this.adjunctList = []
-        this.object = null
+        this.object = undefined
     }
 
     public getName(): string {
@@ -22,7 +22,7 @@ export class Preposition implements Phrase {
         return this.object instanceof Noun
     }
 
-    public getObject(): Noun | null {
+    public getObject(): Noun | undefined {
         return this.object
     }
 
@@ -39,6 +39,6 @@ export class Preposition implements Phrase {
     }
 
     public clearObject(): void {
-        this.object = null
+        this.object = undefined
     }
 }

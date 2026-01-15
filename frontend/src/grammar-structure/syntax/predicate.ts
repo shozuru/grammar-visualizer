@@ -8,8 +8,8 @@ import { uncontractVerbalModifiers } from "./syntax-methods";
 
 export class Predicate implements Phrase {
 
-    private copula: Verb | null
-    private semanticElement: Phrase | null
+    private copula: Verb | undefined
+    private semanticElement: Phrase | undefined
 
     private modStack: Mod[]
     private agrStack: Agr[]
@@ -18,21 +18,21 @@ export class Predicate implements Phrase {
     constructor(verb: Verb) {
         if (this.isBeVerb(verb)) {
             this.copula = verb
-            this.semanticElement = null
+            this.semanticElement = undefined
         } else {
             this.semanticElement = verb
-            this.copula = null
+            this.copula = undefined
         }
         this.modStack = []
         this.agrStack = []
         this.adjunctStack = []
     }
 
-    public getCopula(): Verb | null {
+    public getCopula(): Verb | undefined {
         return this.copula
     }
 
-    public getSemanticContent(): Phrase | null {
+    public getSemanticContent(): Phrase | undefined {
         return this.semanticElement
     }
 

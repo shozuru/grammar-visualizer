@@ -14,7 +14,7 @@ import type { PredicateBuilder } from "../builders/predicate-builder"
 import { Preposition } from "./parts-of-speech/preposition"
 
 
-export function getLexicalizedMod(adjWord: Word): Mod | null {
+export function getLexicalizedMod(adjWord: Word): Mod | undefined {
     if (adjWord.pos === PartsOfSpeech.JJS) {
 
         const superlative: Mod = new Mod(
@@ -35,7 +35,7 @@ export function getLexicalizedMod(adjWord: Word): Mod | null {
         )
         return comparative
     }
-    return null
+    return undefined
 }
 
 export function addStrandedPassive(wordList: Word[], nounStack: Noun[]): void {
@@ -155,14 +155,14 @@ export function isConjunction(word: Word): boolean {
 }
 
 export function isDitransitive(predicate: Predicate): boolean {
-    const verb: Phrase | null = predicate.getSemanticContent()
+    const verb: Phrase | undefined = predicate.getSemanticContent()
     if (!(verb instanceof Verb)) return false
     const name: string = verb.getName()
     return ditransitiveList.includes(name)
 }
 
 export function isECMPred(pred: Predicate): boolean {
-    const sCont: Phrase | null = pred.getSemanticContent()
+    const sCont: Phrase | undefined = pred.getSemanticContent()
     if (!(sCont instanceof Verb)) return false
     return (
         ecmVerbs.some(
@@ -226,7 +226,7 @@ export function isPrepPred(pred: Predicate): boolean {
 }
 
 export function isObjectControlPred(pred: Predicate): boolean {
-    const sCont: Phrase | null = pred.getSemanticContent()
+    const sCont: Phrase | undefined = pred.getSemanticContent()
     if (!(sCont instanceof Verb)) return false
     return (
         objectControlVerbs.some(
@@ -271,7 +271,7 @@ export function isPreposition(word: Word): boolean {
 }
 
 export function isRaisingPred(pred: Predicate): boolean {
-    const sCont: Phrase | null = pred.getSemanticContent()
+    const sCont: Phrase | undefined = pred.getSemanticContent()
     if (!(sCont instanceof Verb)) return false
     return (
         raisingVerbs.some(

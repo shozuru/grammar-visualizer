@@ -5,11 +5,11 @@ import type { Phrase } from "../syntax/parts-of-speech/phrase"
 
 export class PredicateBuilder extends WordBuilder {
 
-    private predicate: Predicate | null
+    private predicate: Predicate | undefined
 
     constructor() {
         super()
-        this.predicate = null
+        this.predicate = undefined
     }
 
     public setVerb(verb: Verb): void {
@@ -17,7 +17,7 @@ export class PredicateBuilder extends WordBuilder {
         this.predicate = pred
     }
 
-    public getPred(): Predicate | null {
+    public getPred(): Predicate | undefined {
         return this.predicate
     }
 
@@ -41,7 +41,7 @@ export class PredicateBuilder extends WordBuilder {
         if (!this.predicate) {
             throw Error("predicate Builder does not have a predicate")
         }
-        return this.predicate.getSemanticContent() !== null
+        return this.predicate.getSemanticContent() !== undefined
     }
 
     public setSemanticContent(content: Phrase): void {
@@ -55,6 +55,6 @@ export class PredicateBuilder extends WordBuilder {
         if (!this.predicate) {
             return false
         }
-        return (this.predicate.getCopula() !== null)
+        return (this.predicate.getCopula() !== undefined)
     }
 }

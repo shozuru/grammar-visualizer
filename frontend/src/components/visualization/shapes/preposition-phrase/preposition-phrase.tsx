@@ -15,7 +15,7 @@ type PrepPhraseProps = {
 const PrepositionPhrase: React.FC<PrepPhraseProps> =
     ({ preposition, index }) => {
 
-        const object: Noun | null = preposition.getObject()
+        const object: Noun | undefined = preposition.getObject()
         const radius: number = 32
 
         return (

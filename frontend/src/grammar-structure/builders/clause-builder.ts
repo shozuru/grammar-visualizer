@@ -22,23 +22,23 @@ import { Adjective } from "../syntax/parts-of-speech/adjectives"
 
 export class ClauseBuilder {
 
-    private predicate: Predicate | null
-    private subject: Noun | null
+    private predicate: Predicate | undefined
+    private subject: Noun | undefined
     private nounStack: Noun[]
     private adjunctStack: (Preposition | Adverb)[]
     private unfinishedBuilderList: WordBuilder[]
-    private pendingAdverb: Adverb | null
-    private pendingNoun: Noun | null
+    private pendingAdverb: Adverb | undefined
+    private pendingNoun: Noun | undefined
     private ambiguousAdverbs: Adverb[]
 
     constructor() {
-        this.predicate = null
-        this.subject = null
+        this.predicate = undefined
+        this.subject = undefined
         this.nounStack = []
         this.adjunctStack = []
         this.unfinishedBuilderList = []
-        this.pendingAdverb = null
-        this.pendingNoun = null
+        this.pendingAdverb = undefined
+        this.pendingNoun = undefined
         this.ambiguousAdverbs = []
     }
 
@@ -115,7 +115,7 @@ export class ClauseBuilder {
         this.removeFromBuilderList(adverbBuilder)
         adverbBuilder.createAndSetAdverb(adverbWord)
 
-        const predicate: Predicate | null = this.getPredicate()
+        const predicate: Predicate | undefined = this.getPredicate()
         if (
             predicate
             && !!predicate.getSemanticContent()
@@ -168,7 +168,7 @@ export class ClauseBuilder {
         } else {
             this.createPred(predBuilder, predWord)
         }
-
+        // if it is not a non-finite clause without dependent case
         this.makePendingNounSubject()
     }
 
@@ -192,22 +192,22 @@ export class ClauseBuilder {
         return this.nounStack
     }
 
-    public getPendingNoun(): Noun | null {
+    public getPendingNoun(): Noun | undefined {
         return this.pendingNoun
     }
 
-    public getPredicate(): Predicate | null {
+    public getPredicate(): Predicate | undefined {
         return this.predicate
     }
 
-    public getSubject(): Noun | null {
+    public getSubject(): Noun | undefined {
         return this.subject
     }
 
-    public getUnfinishedPredicate(): Predicate | null {
+    public getUnfinishedPredicate(): Predicate | undefined {
         const pBuilder: PredicateBuilder | undefined =
             this.getUnfinishedPredBuilder()
-        if (!pBuilder) return null
+        if (!pBuilder) return undefined
         return pBuilder.getPred()
     }
 
@@ -220,7 +220,7 @@ export class ClauseBuilder {
     }
 
     public hasPrepWithObject(): boolean {
-        const predicate: Predicate | null = this.predicate
+        const predicate: Predicate | undefined = this.predicate
         if (!predicate) return false
 
         const adjunctStack: (Preposition | Adverb)[] =
@@ -310,7 +310,7 @@ export class ClauseBuilder {
     }
 
     public yieldLastPrepObject(): Noun {
-        const predicate: Predicate | null = this.predicate
+        const predicate: Predicate | undefined = this.predicate
         if (!predicate) {
             throw Error(
                 "unable to get preposition because there is no predicate"
@@ -323,7 +323,7 @@ export class ClauseBuilder {
         for (let i = adjunctStack.length - 1; i >= 0; i--) {
             const adjunct: Preposition | Adverb = adjunctStack[i]
             if (!(adjunct instanceof Preposition)) continue
-            const object: Noun | null = adjunct.getObject()
+            const object: Noun | undefined = adjunct.getObject()
             if (!object) continue
             adjunct.clearObject()
             return object
@@ -341,13 +341,13 @@ export class ClauseBuilder {
         return this.subject
     }
 
-    public yieldObjectRel(): Noun | null {
+    public yieldObjectRel(): Noun | undefined {
         if (this.nounStack.length > 0) {
             return this.nounStack[0]
         }
 
-        const pred: Predicate | null = this.predicate
-        const content: Phrase | null = pred && pred.getSemanticContent()
+        const pred: Predicate | undefined = this.predicate
+        const content: Phrase | undefined = pred && pred.getSemanticContent()
 
         if (content instanceof Noun) return content
         if (content instanceof Preposition) {
@@ -356,20 +356,20 @@ export class ClauseBuilder {
                 return object
             }
         }
-        if (!pred) return null
+        if (!pred) return undefined
 
         const predAdjuncts = pred.getAdjunctStack()
         const lastAdjunct = predAdjuncts.at(-1)
 
-        if (!(lastAdjunct instanceof Preposition)) return null
+        if (!(lastAdjunct instanceof Preposition)) return undefined
 
         const adjunctOb = lastAdjunct.getObject()
-        if (!adjunctOb) return null
+        if (!adjunctOb) return undefined
         return adjunctOb
     }
 
-    public yieldRaisingNoun(): Noun {
-        const subSubject: Noun | undefined = this.nounStack.shift()
+    public yieldRaisingNoun(): Noun | undefined {
+        const subSubject: Noun | undefined = this.nounStack.pop()
         if (subSubject) {
             return subSubject
         }
@@ -422,7 +422,7 @@ export class ClauseBuilder {
         } else if (this.pendingNoun) {
             this.nounStack.push(this.pendingNoun)
         }
-        this.pendingNoun = null
+        this.pendingNoun = undefined
 
         for (const noun of this.nounStack) {
             clause.addNoun(noun)
@@ -452,7 +452,7 @@ export class ClauseBuilder {
                 builder instanceof PredicateBuilder)
         const pending = this.pendingAdverb
         if (unfinishedPred && pending) {
-            this.pendingAdverb = null
+            this.pendingAdverb = undefined
             unfinishedPred.setSemanticContent(pending)
             clause.setPredicate(unfinishedPred.build())
             return
@@ -464,10 +464,8 @@ export class ClauseBuilder {
     }
 
     private addSubjectTo(clause: Clause): void {
-        const subject: Noun | null = this.subject
-        if (!subject) {
-            throw Error("Tried to build clause without a subject.")
-        }
+        const subject: Noun | undefined = this.subject
+        if (!subject) return
         clause.addNoun(subject)
     }
 
@@ -478,7 +476,7 @@ export class ClauseBuilder {
         pred.setSemanticElement(adj)
         if (this.pendingAdverb) {
             pred.addAdjunctPhrase(this.pendingAdverb)
-            this.pendingAdverb = null
+            this.pendingAdverb = undefined
         }
         return pred
     }
@@ -492,7 +490,7 @@ export class ClauseBuilder {
             }
             this.removeFromBuilderList(pBuilder)
             const predicate: Predicate = pBuilder.build()
-            this.pushPredToClause(predicate)
+            this.predicate = predicate
         }
     }
 
@@ -579,7 +577,7 @@ export class ClauseBuilder {
         }
         if (!this.subject) {
             this.subject = this.pendingNoun
-            this.pendingNoun = null
+            this.pendingNoun = undefined
         }
     }
 
@@ -588,7 +586,7 @@ export class ClauseBuilder {
             throw Error("Tried to set adverb that does not exist.")
         }
         builder.addAdjunct(this.pendingAdverb)
-        this.pendingAdverb = null
+        this.pendingAdverb = undefined
     }
 
     private pushAdjunctToClause(phrase: Phrase): void {
@@ -617,10 +615,6 @@ export class ClauseBuilder {
         }
     }
 
-    private pushPredToClause(pred: Predicate): void {
-        this.predicate = pred
-    }
-
     private removeFromBuilderList(WordBuilder: WordBuilder) {
         this.unfinishedBuilderList = this.unfinishedBuilderList.filter(
             builder => builder !== WordBuilder
@@ -632,7 +626,7 @@ export class ClauseBuilder {
         if (this.pendingNoun) {
             // They are at the school that I went [to]
             builder.setObject(this.pendingNoun)
-            this.pendingNoun = null
+            this.pendingNoun = undefined
 
         } else if (this.subject) {
             builder.setObject(this.subject)

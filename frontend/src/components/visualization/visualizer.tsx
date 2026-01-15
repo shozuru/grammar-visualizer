@@ -45,7 +45,7 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
     const getPrepObjsFrom = (prepList: Preposition[]): Noun[] => {
         let nounList: Noun[] = []
         for (const prep of prepList) {
-            const object: Noun | null = prep.getObject()
+            const object: Noun | undefined = prep.getObject()
             if (object) {
                 nounList.push(object)
             }
@@ -59,15 +59,15 @@ const Visualizer: React.FC<VisualProps> = ({ clauseList }) => {
         >
             {clauseList.map((clause, i) => {
                 const pred: Predicate = clause.getPredicate()
-                // const copula: Verb | null = pred.getCopula()
-                const predPhrase: Phrase | null = pred.getSemanticContent()
+                // const copula: Verb | undefined = pred.getCopula()
+                const predPhrase: Phrase | undefined = pred.getSemanticContent()
                 if (!predPhrase) {
                     throw Error("Clause does not have a predicate")
                 }
                 const nounList: Noun[] = clause.getNouns()
-                if (nounList.length < 1) {
-                    throw Error("Clause has no nouns")
-                }
+                // if (nounList.length < 1) {
+                //     throw Error("Clause has no nouns")
+                // }
                 const adverbList: Adverb[] = getAdverbsFrom(pred)
                 const prepositionList: Preposition[] = getPrepositionsFrom(pred)
                 // const prepObjects: Noun[] = getPrepObjsFrom(prepositionList)
