@@ -78,11 +78,12 @@ const UserInput: React.FC = () => {
                     >
                         <input
                             type='text'
-                            placeholder='This is a sample sentence'
+                            // placeholder='This is a sample sentence'
                             value={inputSentence}
                             onChange={handleInputChange}
                         />
                         <input
+                            className="submit-button"
                             type='submit'
                             value='Submit'
                         />

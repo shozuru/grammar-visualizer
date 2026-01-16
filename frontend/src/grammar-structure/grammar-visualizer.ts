@@ -39,6 +39,7 @@ export class GrammarVisualizer {
 // He was who needed to go
 // I don't know how to make this better
 // I don't know how to make it
+// I challenged him to win the game
 
 // in "I want to swim"
 // it should be I want | to swim (agr)
