@@ -350,8 +350,29 @@ export class ClauseBuilder {
         return adjunctOb
     }
 
-    public yieldRaisingNoun(): Noun | undefined {
-        return this.nounStack.pop()
+    public yieldOControlNoun(): Noun {
+        const lastObject = this.nounStack.at(-1)
+        if (lastObject) return lastObject
+        if (!this.subject) {
+            throw Error("matrix clause does not have any nouns to yield")
+        }
+        return this.subject
+    }
+
+    public yieldRaisingNoun(): Noun {
+        const lastObject = this.nounStack.pop()
+        if (lastObject) return lastObject
+        if (!this.subject) {
+            throw Error("no noun to yield from raising predicate")
+        }
+        return this.subject
+    }
+
+    public yieldSControlNoun(): Noun {
+        if (!this.subject) {
+            throw Error("matrix clause doesn't have subject to yeild")
+        }
+        return this.subject
     }
 
     public yieldSubjectRel(): Noun {
@@ -431,7 +452,9 @@ export class ClauseBuilder {
 
     private addSubjectTo(clause: Clause): void {
         const subject = this.subject
-        if (!subject) return
+        if (!subject) {
+            throw Error("Tried to build clause with no subject.")
+        }
         clause.addNoun(subject)
     }
 

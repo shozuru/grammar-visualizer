@@ -92,7 +92,7 @@ export class VerbHandler implements WordHandler {
         const predType = this.getPredType(pred)
 
         const subSubject = this.yieldSubject(predType, cBuilder)
-        if (subSubject) subClause.receiveSubject(subSubject)
+        subClause.receiveSubject(subSubject)
 
         const mtxClause = cBuilder.build()
         addClause(mtxClause)
@@ -111,10 +111,11 @@ export class VerbHandler implements WordHandler {
     private yieldSubject(
         pType: PredType,
         cBuilder: ClauseBuilder
-    ): Noun | undefined {
+    ): Noun {
         if (pType === PredType.ECM) return cBuilder.yieldEcmNoun()
         if (pType === PredType.RAISING) return cBuilder.yieldRaisingNoun()
-        return undefined   // .yieldSControlNoun() and .yieldOControlNoun()
+        if (pType === PredType.OCONTROL) return cBuilder.yieldOControlNoun()
+        return cBuilder.yieldSControlNoun()
     }
 
     private shipRelClause(cBuilder: ClauseBuilder, ctx: HandlerMethods): void {
