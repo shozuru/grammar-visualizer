@@ -2,46 +2,63 @@ import type { WordHandler } from "./word-handler"
 import type { Word } from "../../types/word"
 import { ClauseBuilder } from "../../builders/clause-builder"
 import type { HandlerMethods } from "../../parser"
-import type { Predicate } from "../../syntax/predicate"
+import { Predicate } from "../../syntax/predicate"
 import {
+    isCausativeString,
     isDitransitive, isNounPred,
     isPassive,
     isPrepPred
 } from "../../syntax/syntax-methods"
 import type { Clause } from "../../syntax/parts-of-speech/clause"
+import { Verb } from "../../syntax/parts-of-speech/verb"
+import { PredicateBuilder } from "../../builders/predicate-builder"
 
 export class NounHandler implements WordHandler {
 
     public handle(
         nominalWord: Word,
-        builder: ClauseBuilder,
+        cBuilder: ClauseBuilder,
         ctx: HandlerMethods
     ): void | ClauseBuilder {
-        if (this.hasAdjRelClause(builder)) {
-            builder.buildNominal(nominalWord)
-            const relClause: Clause = builder.build()
-            ctx.add(relClause)
-            const mBuilder: ClauseBuilder = ctx.pop()
-            mBuilder.buildNominal(nominalWord)
-            return mBuilder
-
-        } else if (this.subRelWOutThat(builder)) {
+        if (this.isMakeWithEllipsedVP(cBuilder)) {
+            // I like the idea to make it [a square]
+            return this.handleEllipsedVP(cBuilder, ctx, nominalWord)
+        }
+        if (this.hasAdjRelClause(cBuilder)) {
+            return this.handleAdjRelClause(cBuilder, ctx, nominalWord)
+        }
+        if (this.subRelWOutThat(cBuilder)) {
             // The store I went to is here
             // The store *(that) was there is old
-            return this.handleSubjectRel(builder, ctx, nominalWord)
-
-        } else if (
-            !isPassive(nominalWord) &&
-            this.obRelWOutThat(builder)
-        ) {
+            return this.handleSubjectRel(cBuilder, ctx, nominalWord)
+        }
+        if (this.isObjectRel(nominalWord, cBuilder)) {
             // This is the person [I] know
             // This is the person [it] was done by.
             // I met the person [it] was written by.
-            return this.handleObjectRel(builder, ctx, nominalWord)
-
-        } else {
-            builder.buildNominal(nominalWord)
+            return this.handleObjectRel(cBuilder, ctx, nominalWord)
         }
+        cBuilder.buildNominal(nominalWord)
+    }
+
+    private handleAdjRelClause(
+        cBuilder: ClauseBuilder,
+        ctx: HandlerMethods,
+        nominalWord: Word
+    ): ClauseBuilder {
+        cBuilder.buildNominal(nominalWord)
+        const relClause: Clause = cBuilder.build()
+        ctx.add(relClause)
+        const mBuilder: ClauseBuilder = ctx.pop()
+        mBuilder.buildNominal(nominalWord)
+        return mBuilder
+    }
+
+    private isObjectRel(nominalWord: Word, cBuilder: ClauseBuilder): boolean {
+        return (
+            !isPassive(nominalWord)
+            && this.obRelWOutThat(cBuilder)
+        )
     }
 
     private subRelWOutThat(cBuilder: ClauseBuilder): boolean {
@@ -111,5 +128,44 @@ export class NounHandler implements WordHandler {
 
         const subject = cBuilder.getSubject()
         return !subject
+    }
+
+    private isMakeWithEllipsedVP(cBuilder: ClauseBuilder): boolean {
+        const predicate = cBuilder.getPredicate()
+        if (!predicate) return false
+
+        const semantics = predicate.getSemanticContent()
+        if (!(semantics instanceof Verb)) return false
+        const verbName = semantics.getName()
+
+        return (
+            cBuilder.hasObject()
+            && isCausativeString(verbName)
+        )
+    }
+
+    private handleEllipsedVP(
+        cBuilder: ClauseBuilder,
+        ctx: HandlerMethods,
+        nWord: Word
+    ): ClauseBuilder {
+        // I made it [[a] cat]
+        const lastNoun = cBuilder.yieldLastNoun()
+        const matrix = cBuilder.build()
+        ctx.add(matrix)
+
+        const subordinate = new ClauseBuilder()
+        subordinate.receiveSubject(lastNoun)
+
+        const copula = new Verb('be')
+        const predBuilder = new PredicateBuilder()
+        predBuilder.setVerb(copula)
+
+        subordinate.receivePredBuilder(predBuilder)
+        subordinate.buildNominal(nWord)
+        return subordinate
+
+        // have to do this with adjectives as well, making current adjective the
+        // content: I made it red
     }
 }

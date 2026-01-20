@@ -138,6 +138,11 @@ export function isCausative(word: Word): boolean {
     )
 }
 
+export function isCausativeString(wordName: string): boolean {
+    const causativeWords = ["make", "made", "let"]
+    return causativeWords.includes(wordName)
+}
+
 export function isConjunction(word: Word): boolean {
     const currentPOS = word.pos
     // const currentWord: string = word.name

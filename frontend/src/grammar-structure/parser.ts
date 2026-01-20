@@ -106,6 +106,7 @@ export class Parser {
         const firstIndex = this.getNextNounIndex(wordList, i)
         if (firstIndex === -1) return
         if (firstIndex + 1 >= wordList.length) return
+        if (wordList[firstIndex].pos === PartsOfSpeech.PRP) return
 
         const nextWord = wordList[firstIndex + 1]
         if (!isNominal(nextWord)) return

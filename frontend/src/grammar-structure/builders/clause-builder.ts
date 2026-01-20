@@ -229,6 +229,10 @@ export class ClauseBuilder {
         return false
     }
 
+    public hasObject(): boolean {
+        return this.nounStack.length > 0
+    }
+
     public hasUnfinishedPredicate(): boolean {
         return this.getUnfinishedPredBuilder() !== undefined
     }
@@ -272,6 +276,13 @@ export class ClauseBuilder {
             throw Error("clause already has subject")
         }
         this.subject = subject
+    }
+
+    public receivePredBuilder(predBuilder: PredicateBuilder): void {
+        if (this.predicate) {
+            throw Error("clause already has a predicate")
+        }
+        this.unfinishedBuilderList.push(predBuilder)
     }
 
     public verbInProgress(): boolean {

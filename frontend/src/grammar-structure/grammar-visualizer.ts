@@ -40,10 +40,6 @@ export class GrammarVisualizer {
 
 
 // I don't know how to make this better
-// I like the idea to make it a square
-
-// it looks like you can have a nonfinite clause after a noun in English
-// 四角にするというアイデアが好き -- I guess it also works in Japanese?
 
 // TODO: conjunctions, ambiguous sentences, visualization
 // I gave the kid cake. (ambiguous)
