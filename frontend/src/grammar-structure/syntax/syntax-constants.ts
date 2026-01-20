@@ -167,7 +167,8 @@ export const objectControlVerbs: string[] =
         "motion",
         "encourage",
         "pay",
-        "paid"
+        "paid",
+        "challenge"
     ]
 
 export const raisingVerbs: string[] =

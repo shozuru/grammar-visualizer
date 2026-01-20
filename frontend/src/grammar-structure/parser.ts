@@ -78,7 +78,7 @@ export class Parser {
         this.handlePerfect(wordList, i)
         this.handlePassive(wordList, i)
         this.handleQTense(wordList, i)
-        this.handleCausative(wordList, i)
+        // this.handleCausative(wordList, i)
         this.handleSuperlative(wordList, i)
         this.handleNonFinite(wordList, i)
         this.handleNegation(wordList, i)
@@ -289,18 +289,18 @@ export class Parser {
         )
     }
 
-    private handleCausative(wordList: Word[], i: number): void {
-        const causList = ["make", "made", "let"]
-        const current = wordList[i]
+    // private handleCausative(wordList: Word[], i: number): void {
+    //     const causList = ["make", "made", "let"]
+    //     const current = wordList[i]
 
-        if (causList.includes(current.name) &&
-            wordList
-                .slice(i)
-                .some(word => word.pos === PartsOfSpeech.VB)
-        ) {
-            current.pos = PartsOfSpeech.CAUSATIVE
-        }
-    }
+    //     if (causList.includes(current.name) &&
+    //         wordList
+    //             .slice(i)
+    //             .some(word => word.pos === PartsOfSpeech.VB)
+    //     ) {
+    //         current.pos = PartsOfSpeech.CAUSATIVE
+    //     }
+    // }
 
     private handleSuperlative(wordList: Word[], i: number): void {
         if (!wordList[i + 1]) return

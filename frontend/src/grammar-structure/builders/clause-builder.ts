@@ -130,13 +130,13 @@ export class ClauseBuilder {
         }
     }
 
-    public buildCausative(causeWord: Word): void {
-        if (!this.subject) {
-            throw Error("Causative sentence does not have Effector.")
-        }
-        this.subject.addCausative(causeWord)
-        this.buildPredicate(causeWord)
-    }
+    // public buildCausative(causeWord: Word): void {
+    //     if (!this.subject) {
+    //         throw Error("Causative sentence does not have Effector.")
+    //     }
+    //     this.subject.addCausative(causeWord)
+    //     this.buildPredicate(causeWord)
+    // }
 
     public buildNominal(nomWord: Word): void {
         const nounBuilder = this.getOrCreateBuilder(NounBuilder)
@@ -391,9 +391,11 @@ export class ClauseBuilder {
     }
 
     private addNounsTo(clause: Clause): void {
+        // debugger
         if (!this.predicate && this.pendingNoun) {
             // Today is when we got the news
             // She is who won
+            // I know where to make it
             const predBuilder = this.getUnfinishedPredBuilder()
             if (!predBuilder) {
                 throw Error(
@@ -401,7 +403,7 @@ export class ClauseBuilder {
                 )
             }
             if (!(predBuilder.hasCopula())) {
-                throw Error("predicate is not the right shape for this")
+                throw Error("the predicate is not the right shape for this")
             }
             predBuilder.setSemanticContent(this.pendingNoun)
             const predicate = predBuilder.build()

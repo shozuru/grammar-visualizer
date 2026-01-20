@@ -1,7 +1,5 @@
 import { Mod } from "../mod"
 import type { Phrase } from "./phrase"
-import type { Word } from "../../types/word"
-// import type { Case } from "../SyntaxConstants"
 
 export class Noun implements Phrase {
 
@@ -41,10 +39,10 @@ export class Noun implements Phrase {
         this.modifiers.push(mod)
     }
 
-    public addCausative(causeWord: Word): void {
-        const causeMod = new Mod(causeWord)
-        this.modifiers.push(causeMod)
-    }
+    // public addCausative(causeWord: Word): void {
+    //     const causeMod = new Mod(causeWord)
+    //     this.modifiers.push(causeMod)
+    // }
 
     public connectAndReturnRelNoun(): Noun {
         const relative = new Noun('REL')

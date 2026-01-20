@@ -10,6 +10,7 @@ export class ConjunctionHandler implements WordHandler {
         cBuilder: ClauseBuilder,
         ctx: HandlerMethods
     ): ClauseBuilder | void {
+        console.log(`Hi, I'm ${conjunction.name}`)
         const completedClause = cBuilder.build()
         ctx.add(completedClause)
         const newClauseBuilder = new ClauseBuilder()

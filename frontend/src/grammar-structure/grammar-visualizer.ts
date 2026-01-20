@@ -37,15 +37,13 @@ export class GrammarVisualizer {
 }
 // and then work on 'my house [was] haunted'
 // He was who needed to go
+
+
 // I don't know how to make this better
-// I don't know how to make it
-// I challenged him to win the game
+// I like the idea to make it a square
 
-// in "I want to swim"
-// it should be I want | to swim (agr)
-// no underlying subordinate subject... 
-// this is a big change from what I did before...
-
+// it looks like you can have a nonfinite clause after a noun in English
+// 四角にするというアイデアが好き -- I guess it also works in Japanese?
 
 // TODO: conjunctions, ambiguous sentences, visualization
 // I gave the kid cake. (ambiguous)
