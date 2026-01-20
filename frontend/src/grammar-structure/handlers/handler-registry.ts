@@ -6,7 +6,6 @@ import { VerbHandler } from "./word-handlers/verb-handler"
 import { AdverbHandler } from "./word-handlers/adverb-handler"
 import { PrepositionHandler } from "./word-handlers/preposition-handler"
 import { AdjectiveHandler } from "./word-handlers/adjective-handler"
-// import { CausativeHandler } from "./word-handlers/causative-handler"
 import { RelativeHandler } from "./word-handlers/relative-handler"
 import { ConjunctionHandler } from "./word-handlers/conjunction-handler"
 
@@ -55,10 +54,6 @@ export class HandlerRegistry {
             [
                 PartsOfSpeech.IN
             ]
-        // const causTags: PartsOfSpeech[] =
-        //     [
-        //         PartsOfSpeech.CAUSATIVE
-        //     ]
         const relTags: PartsOfSpeech[] =
             [
                 PartsOfSpeech.WDT,
@@ -86,9 +81,6 @@ export class HandlerRegistry {
         for (const tag of prepTags) {
             this.register(tag, new PrepositionHandler())
         }
-        // for (const tag of causTags) {
-        //     this.register(tag, new CausativeHandler())
-        // }
         for (const tag of relTags) {
             this.register(tag, new RelativeHandler())
         }

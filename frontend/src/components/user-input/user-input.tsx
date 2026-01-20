@@ -46,6 +46,7 @@ const UserInput: React.FC = () => {
                     new GrammarVisualizer(sentInfo)
 
                 const clauses = structure.getClauses()
+                console.log(clauses)
                 setClauses(clauses)
             })
     }
@@ -78,7 +79,6 @@ const UserInput: React.FC = () => {
                     >
                         <input
                             type='text'
-                            // placeholder='This is a sample sentence'
                             value={inputSentence}
                             onChange={handleInputChange}
                         />

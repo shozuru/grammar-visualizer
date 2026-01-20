@@ -34,8 +34,8 @@ export class VerbHandler implements WordHandler {
             // the boy went to the school that is blue
             this.shipRelClause(cBuilder, ctx)
             return this.returnToMatrix(verbalWord, ctx)
-
-        } else if (currentPred
+        }
+        if (currentPred
             && !(this.checkPredAgrStack(currentPred, PartsOfSpeech.InfAgr))
             && isVerb(verbalWord)) {
             // I know | he [left]
@@ -48,24 +48,25 @@ export class VerbHandler implements WordHandler {
             subCBuilder.receiveSubject(lastNoun)
             subCBuilder.buildPredicate(verbalWord)
             return subCBuilder
-
-        } else if (
+        }
+        if (
             isIngVerb(verbalWord)
             && cBuilder.hasPrepWithObject()
         ) {
             return this.handleIngSubordinate(verbalWord, cBuilder, ctx, true)
-
-        } else if (
+        }
+        if (
             isIngVerb(verbalWord)
             && cBuilder.hasUnfinishedPrep()
         ) {
             return this.handleIngSubordinate(verbalWord, cBuilder, ctx, false)
-
-        } else if (currentPred) {
+        }
+        if (currentPred) {
             return this.handleNonfinite(
-                verbalWord, currentPred, cBuilder, ctx.add)
-
-        } else if (this.isNonfiniteRelConj(verbalWord, cBuilder, ctx)) {
+                verbalWord, currentPred, cBuilder, ctx.add
+            )
+        }
+        if (this.isNonfiniteRelConj(verbalWord, cBuilder, ctx)) {
             const mCBuilder = ctx.pop()
             const matrixSubject = mCBuilder.getSubject()
             if (!matrixSubject) {
@@ -74,10 +75,9 @@ export class VerbHandler implements WordHandler {
             const matrixClause = mCBuilder.build()
             ctx.add(matrixClause)
             cBuilder.receiveSubject(matrixSubject)
-
-        } else {
-            cBuilder.buildPredicate(verbalWord)
+            return
         }
+        cBuilder.buildPredicate(verbalWord)
     }
 
     private handleNonfinite(
@@ -161,7 +161,6 @@ export class VerbHandler implements WordHandler {
         // I knew about John quickly going to the park
         // I quickly knew about John going to the park
         // I knew about [going] to the park
-
         let subject = undefined
         if (hasObject) {
             subject = cBuilder.yieldLastPrepObject()

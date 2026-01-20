@@ -4,14 +4,11 @@ import { ClauseBuilder } from "../../builders/clause-builder"
 import type { HandlerMethods } from "../../parser"
 import { Predicate } from "../../syntax/predicate"
 import {
-    isCausativeString,
-    isDitransitive, isNounPred,
+    isDitransitive, isMakeWithEllipsedVP, isNounPred,
     isPassive,
     isPrepPred
 } from "../../syntax/syntax-methods"
 import type { Clause } from "../../syntax/parts-of-speech/clause"
-import { Verb } from "../../syntax/parts-of-speech/verb"
-import { PredicateBuilder } from "../../builders/predicate-builder"
 
 export class NounHandler implements WordHandler {
 
@@ -20,7 +17,7 @@ export class NounHandler implements WordHandler {
         cBuilder: ClauseBuilder,
         ctx: HandlerMethods
     ): void | ClauseBuilder {
-        if (this.isMakeWithEllipsedVP(cBuilder)) {
+        if (isMakeWithEllipsedVP(cBuilder)) {
             // I like the idea to make it [a square]
             return this.handleEllipsedVP(cBuilder, ctx, nominalWord)
         }
@@ -130,20 +127,6 @@ export class NounHandler implements WordHandler {
         return !subject
     }
 
-    private isMakeWithEllipsedVP(cBuilder: ClauseBuilder): boolean {
-        const predicate = cBuilder.getPredicate()
-        if (!predicate) return false
-
-        const semantics = predicate.getSemanticContent()
-        if (!(semantics instanceof Verb)) return false
-        const verbName = semantics.getName()
-
-        return (
-            cBuilder.hasObject()
-            && isCausativeString(verbName)
-        )
-    }
-
     private handleEllipsedVP(
         cBuilder: ClauseBuilder,
         ctx: HandlerMethods,
@@ -156,16 +139,8 @@ export class NounHandler implements WordHandler {
 
         const subordinate = new ClauseBuilder()
         subordinate.receiveSubject(lastNoun)
+        subordinate.buildNounPred(nWord)
 
-        const copula = new Verb('be')
-        const predBuilder = new PredicateBuilder()
-        predBuilder.setVerb(copula)
-
-        subordinate.receivePredBuilder(predBuilder)
-        subordinate.buildNominal(nWord)
         return subordinate
-
-        // have to do this with adjectives as well, making current adjective the
-        // content: I made it red
     }
 }

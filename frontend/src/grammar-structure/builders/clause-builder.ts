@@ -95,6 +95,31 @@ export class ClauseBuilder {
         }
     }
 
+    public buildAdjPredicate(adjWord: Word, advStack: Adverb[]): void {
+        if (this.predicate) {
+            throw Error("clause already has predicate")
+        }
+        const copula = new Verb('be')
+        const pred = new Predicate(copula)
+        const adj = new Adjective(adjWord.name)
+        for (const adverb of advStack) {
+            pred.addAdjunctPhrase(adverb)
+        }
+        pred.setSemanticElement(adj)
+        this.predicate = pred
+    }
+
+    public buildNounPred(nounWord: Word): void {
+        if (this.predicate) {
+            throw Error("clause already has a predicate")
+        }
+        const copula = new Verb('be')
+        const predBuilder = new PredicateBuilder()
+        predBuilder.setVerb(copula)
+        this.unfinishedBuilderList.push(predBuilder)
+        this.buildNominal(nounWord)
+    }
+
     public buildAdjRelClause(adjWord: Word): ClauseBuilder {
         const pred = this.buildAdjPred(adjWord)
         const relClause = new ClauseBuilder()
@@ -276,13 +301,6 @@ export class ClauseBuilder {
             throw Error("clause already has subject")
         }
         this.subject = subject
-    }
-
-    public receivePredBuilder(predBuilder: PredicateBuilder): void {
-        if (this.predicate) {
-            throw Error("clause already has a predicate")
-        }
-        this.unfinishedBuilderList.push(predBuilder)
     }
 
     public verbInProgress(): boolean {

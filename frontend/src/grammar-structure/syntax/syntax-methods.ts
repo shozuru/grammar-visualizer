@@ -11,6 +11,7 @@ import { Predicate } from "./predicate"
 import type { WordBuilder } from "../builders/word-builder"
 import type { PredicateBuilder } from "../builders/predicate-builder"
 import { Preposition } from "./parts-of-speech/preposition"
+import type { ClauseBuilder } from "../builders/clause-builder"
 
 
 export function getLexicalizedMod(adjWord: Word): Mod | undefined {
@@ -185,6 +186,19 @@ export function isFocusElement(word: Word): boolean {
 
 export function isIngVerb(word: Word): boolean {
     return word.pos === PartsOfSpeech.VBG
+}
+
+export function isMakeWithEllipsedVP(cBuilder: ClauseBuilder): boolean {
+    const predicate = cBuilder.getPredicate()
+    if (!predicate) return false
+
+    const semantics = predicate.getSemanticContent()
+    if (!(semantics instanceof Verb)) return false
+    const verbName = semantics.getName()
+    return (
+        cBuilder.hasObject()
+        && isCausativeString(verbName)
+    )
 }
 
 export function isNominal(word: Word): boolean {
