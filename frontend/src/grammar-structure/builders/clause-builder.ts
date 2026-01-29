@@ -1,7 +1,8 @@
 import {
     getBy,
     getVerbFromTense,
-    isAdjectiveAgr, isAdjectiveMod, isInfAgr, isNounMod, isVerbAgr, isVerbMod,
+    isAdjectiveAgr, isAdjectiveMod, isInfAgr,
+    isNounMod, isVerbAgr, isVerbMod,
     isWHWord
 } from "../syntax/syntax-methods"
 import { Adverb } from "../syntax/parts-of-speech/adverb"
@@ -298,9 +299,16 @@ export class ClauseBuilder {
 
     public receiveSubject(subject: Noun): void {
         if (this.subject) {
-            throw Error("clause already has subject")
+            throw Error("clause already has subject.")
         }
         this.subject = subject
+    }
+
+    public receiveObject(object: Noun): void {
+        if (!this.subject) {
+            throw Error("Tried to add object to clause without subject.")
+        }
+        this.nounStack.push(object)
     }
 
     public verbInProgress(): boolean {

@@ -115,126 +115,120 @@ export const posDictionary: PosDictionary = {
     XX: "Unknown",
 }
 
-export const conjunctions: string[] =
-    [
-        "that",
-        "if",
-        "whether",
-        "and",
-        "or",
-        "while",
-        "because"
-    ]
+export const conjunctions = [
+    "that",
+    "if",
+    "whether",
+    "and",
+    "or",
+    "while",
+    "because"
+]
 
-export const ecmVerbs: string[] =
-    [
-        "see",
-        "saw",
-        "hear",
-        "smell",
-        "sense",
-        "taste",
-        "watch",
-        "observe",
-        "feel",
-        "felt",
-        "notice",
-        "believe",
-        "predict",
-        "suppose",
-        "imagine",
-        "deem",
-        "find",
-        "found",
-        "estimate",
-    ]
+export const ecmVerbs = [
+    "see",
+    "saw",
+    "hear",
+    "smell",
+    "sense",
+    "taste",
+    "watch",
+    "observe",
+    "feel",
+    "felt",
+    "notice",
+    "believe",
+    "predict",
+    "suppose",
+    "imagine",
+    "deem",
+    "find",
+    "found",
+    "estimate",
+]
 
-export const objectControlVerbs: string[] =
-    [
-        "ask",
-        "tell",
-        "told",
-        "teach",
-        "taught",
-        "signal",
-        "persuade",
-        "remind",
-        "warn",
-        "invite",
-        "convince",
-        "motivate",
-        "beg",
-        "motion",
-        "encourage",
-        "pay",
-        "paid",
-        "challenge"
-    ]
+export const objectControlVerbs = [
+    "ask",
+    "tell",
+    "told",
+    "teach",
+    "taught",
+    "signal",
+    "persuade",
+    "remind",
+    "warn",
+    "invite",
+    "convince",
+    "motivate",
+    "beg",
+    "motion",
+    "encourage",
+    "pay",
+    "paid",
+    "challenge"
+]
 
-export const raisingVerbs: string[] =
-    [
-        "want",
-        "need",
-        "expect",
-        "know",
-        "knew",
-        "consider",
-        "think",
-        "thought",
-        "presume",
-        "judge",
-        "report"
-    ]
+export const raisingVerbs = [
+    "want",
+    "need",
+    "expect",
+    "know",
+    "knew",
+    "consider",
+    "think",
+    "thought",
+    "presume",
+    "judge",
+    "report"
+]
 
-export const impersonalVerbs: string[] =
-    [
-        "happen",
-        "seem",
-        "appear",
-        "turn out",
-        "transpire",
-        "emerge",
-        "follow",
-        "occur",
-        "mean",
-        "result"
-    ]
+export const impersonalVerbs = [
+    "happen",
+    "seem",
+    "appear",
+    "turn out",
+    "transpire",
+    "emerge",
+    "follow",
+    "occur",
+    "mean",
+    "result"
+]
 
-export const ditransitiveList: string[] =
-    [
-        "allow",
-        "ask",
-        "bake",
-        "bet",
-        "borrow",
-        "bring",
-        "buy",
-        "call",
-        "conceive",
-        "consider",
-        "cost",
-        "deem",
-        "deny",
-        "feed",
-        "find",
-        "forbid",
-        "get",
-        "give",
-        "grant",
-        "hand",
-        "loan",
-        "mail",
-        "make",
-        "name",
-        "owe",
-        "pass",
-        "promise",
-        "refuse",
-        "render",
-        "sell",
-        "send",
-        "teach",
-        "tell",
-        "wish",
-        "write"
-    ]
+export const ditransitiveList = [
+    "allow",
+    "ask",
+    "bake",
+    "bet",
+    "borrow",
+    "bring",
+    "buy",
+    "call",
+    "conceive",
+    "consider",
+    "cost",
+    "deem",
+    "deny",
+    "feed",
+    "find",
+    "forbid",
+    "get",
+    "give",
+    "grant",
+    "hand",
+    "loan",
+    "mail",
+    "make",
+    "name",
+    "owe",
+    "pass",
+    "promise",
+    "refuse",
+    "render",
+    "sell",
+    "send",
+    "teach",
+    "tell",
+    "wish",
+    "write"
+]

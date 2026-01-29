@@ -42,8 +42,7 @@ const UserInput: React.FC = () => {
                     posList: posNumList
                 }
 
-                const structure: GrammarVisualizer =
-                    new GrammarVisualizer(sentInfo)
+                const structure = new GrammarVisualizer(sentInfo)
 
                 const clauses = structure.getClauses()
                 console.log(clauses)
@@ -72,7 +71,7 @@ const UserInput: React.FC = () => {
                     className='input-container'
                 >
                     <p>
-                        Enter a sentence to be analyzed
+                        Enter a sentence for analysis
                     </p>
                     <form
                         onSubmit={handleSubmit}

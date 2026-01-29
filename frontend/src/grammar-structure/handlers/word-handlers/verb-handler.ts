@@ -2,12 +2,13 @@ import type { WordHandler } from "./word-handler"
 import type { Word } from "../../types/word"
 import { ClauseBuilder } from "../../builders/clause-builder"
 import {
+    isBeVerb,
     isECMPred, isInfAgr, isIngVerb, isObjectControlPred, isRaisingPred,
     isVerb, isWHWord
 }
     from "../../syntax/syntax-methods"
 import { Predicate } from "../../syntax/predicate"
-import type { Noun } from "../../syntax/parts-of-speech/noun"
+import { Noun } from "../../syntax/parts-of-speech/noun"
 import type { Clause } from "../../syntax/parts-of-speech/clause"
 import type { HandlerMethods } from "../../parser"
 import { PartsOfSpeech } from "../../syntax/syntax-constants"
@@ -87,13 +88,21 @@ export class VerbHandler implements WordHandler {
         addClause: (c: Clause) => void
     ): ClauseBuilder {
         // handles nonfinite verbs when verb appears with 'to' or bare
-        // eg: ECM, Control, Raising
+        // eg: ECM, Subject Control, Object Control, Raising
+
         const subClause = new ClauseBuilder()
         const predType = this.getPredType(pred)
-
         const subSubject = this.yieldSubject(predType, cBuilder)
-        subClause.receiveSubject(subSubject)
 
+        if (this.isBeVerb(pred)) {
+            //e.g. This [is] a cake to eat
+            const subject = new Noun("PRO")
+            subClause.receiveSubject(subject)
+            subClause.receiveObject(subSubject)
+        } else {
+            // e.g. I [used] him to win
+            subClause.receiveSubject(subSubject)
+        }
         const mtxClause = cBuilder.build()
         addClause(mtxClause)
 
@@ -106,6 +115,12 @@ export class VerbHandler implements WordHandler {
         if (isObjectControlPred(pred)) return PredType.OCONTROL
         if (isRaisingPred(pred)) return PredType.RAISING
         return PredType.SCONTROL
+    }
+
+    private isBeVerb(predicate: Predicate): boolean {
+        const copula = predicate.getCopula()
+        if (!copula) return false
+        return (isBeVerb(copula.getName()))
     }
 
     private yieldSubject(

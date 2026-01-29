@@ -31,9 +31,7 @@ export abstract class WordBuilder {
         if (!this.modStack.includes(modToRemove)) {
             throw Error("mod to remove not in modStack")
         }
-        this.modStack = this.modStack.filter(
-            mod => mod !== modToRemove
-        )
+        this.modStack = this.modStack.filter(mod => mod !== modToRemove)
     }
 
     public createAndAddAgr(word: Word): void {
@@ -49,9 +47,7 @@ export abstract class WordBuilder {
         if (!this.agrStack.includes(agrToRemove)) {
             throw Error("agr to remove not in agrStack")
         }
-        this.agrStack = this.agrStack.filter(
-            agr => agr !== agrToRemove
-        )
+        this.agrStack = this.agrStack.filter(agr => agr !== agrToRemove)
     }
 
     public getAgrStack(): Agr[] {

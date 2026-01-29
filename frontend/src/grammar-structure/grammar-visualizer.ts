@@ -38,8 +38,7 @@ export class GrammarVisualizer {
 // and then work on 'my house [was] haunted'
 // He was who needed to go
 
-
-// I don't know how to make this better
+// I made it a play to watch
 
 // TODO: conjunctions, ambiguous sentences, visualization
 // I gave the kid cake. (ambiguous)
@@ -47,7 +46,6 @@ export class GrammarVisualizer {
 // I ate the birthday cake (not ambiguous)
 
 // the man that is a soccer player came back --> the soccer player man came back
-// I made the game (be) easier
 
 // need to add for adverbs:
 // The boy that slowly walked went to school quickly
