@@ -341,10 +341,11 @@ export function isVerbMod(word: Word): boolean {
         word.pos === PartsOfSpeech.PERFECTIVE ||
         word.pos === PartsOfSpeech.NEGATION ||
         word.pos === PartsOfSpeech.MD ||
-        word.pos === PartsOfSpeech.CAUSATIVE ||
+        // word.pos === PartsOfSpeech.CAUSATIVE ||
         word.pos === PartsOfSpeech.QTense ||
         word.pos === PartsOfSpeech.PRESENT ||
-        word.pos === PartsOfSpeech.PAST
+        word.pos === PartsOfSpeech.PAST ||
+        word.pos === PartsOfSpeech.IMPERSONAL
     )
 }
 

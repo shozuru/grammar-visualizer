@@ -179,7 +179,6 @@ export class ClauseBuilder {
         // debugger
         // when you deal with tense in general, you can deal with 
         // inf, since you don't deal with tense in the main clause
-
         const predBuilder = this.getOrCreateBuilder(PredicateBuilder)
 
         if (isVerbAgr(predWord)) {

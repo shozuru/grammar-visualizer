@@ -35,10 +35,7 @@ export class GrammarVisualizer {
         return this.clauses
     }
 }
-// and then work on 'my house [was] haunted'
 // He was who needed to go
-
-// I made it a play to watch
 
 // TODO: conjunctions, ambiguous sentences, visualization
 // I gave the kid cake. (ambiguous)

@@ -38,7 +38,8 @@ export class VerbHandler implements WordHandler {
         }
         if (currentPred
             && !(this.checkPredAgrStack(currentPred, PartsOfSpeech.InfAgr))
-            && isVerb(verbalWord)) {
+            && isVerb(verbalWord)
+        ) {
             // I know | he [left]
             // I know | we [leave] 
             currentPred.getAgrStack()
@@ -53,15 +54,13 @@ export class VerbHandler implements WordHandler {
         if (
             isIngVerb(verbalWord)
             && cBuilder.hasPrepWithObject()
-        ) {
-            return this.handleIngSubordinate(verbalWord, cBuilder, ctx, true)
-        }
+        ) return this.handleIngSubordinate(verbalWord, cBuilder, ctx, true)
+
         if (
             isIngVerb(verbalWord)
             && cBuilder.hasUnfinishedPrep()
-        ) {
-            return this.handleIngSubordinate(verbalWord, cBuilder, ctx, false)
-        }
+        ) return this.handleIngSubordinate(verbalWord, cBuilder, ctx, false)
+
         if (currentPred) {
             return this.handleNonfinite(
                 verbalWord, currentPred, cBuilder, ctx.add

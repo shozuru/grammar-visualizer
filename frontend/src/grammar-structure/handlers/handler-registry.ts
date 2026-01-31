@@ -23,48 +23,43 @@ export class HandlerRegistry {
     }
 
     private setUpHandlers(): void {
-        const nounTags: PartsOfSpeech[] =
+        const nounTags =
             [
                 PartsOfSpeech.NN, PartsOfSpeech.NNP, PartsOfSpeech.NNS,
                 PartsOfSpeech.NNPS, PartsOfSpeech.PRP, PartsOfSpeech.FW,
                 PartsOfSpeech.DT, PartsOfSpeech.PASSIVE, PartsOfSpeech.PRPQ,
                 PartsOfSpeech.WHNoun
             ]
-        const verbTags: PartsOfSpeech[] =
+        const verbTags =
             [
                 PartsOfSpeech.VB, PartsOfSpeech.VBD, PartsOfSpeech.VBZ,
                 PartsOfSpeech.VBP, PartsOfSpeech.VBN, PartsOfSpeech.PsvAgr,
                 PartsOfSpeech.InfAgr, PartsOfSpeech.TO, PartsOfSpeech.TENSE,
                 PartsOfSpeech.PERFECTIVE, PartsOfSpeech.NEGATION,
                 PartsOfSpeech.MD, PartsOfSpeech.QTense, PartsOfSpeech.VBG,
-                PartsOfSpeech.PRESENT, PartsOfSpeech.PAST
+                PartsOfSpeech.PRESENT, PartsOfSpeech.PAST,
+                PartsOfSpeech.IMPERSONAL
             ]
-        const adverbTags: PartsOfSpeech[] =
+        const adverbTags =
             [
                 PartsOfSpeech.RB, PartsOfSpeech.RBR, PartsOfSpeech.RBS,
                 PartsOfSpeech.WHAdverb
             ]
-        const adjTags: PartsOfSpeech[] =
+        const adjTags =
             [
                 PartsOfSpeech.JJ, PartsOfSpeech.JJR, PartsOfSpeech.JJS,
                 PartsOfSpeech.AdvAgr, PartsOfSpeech.SUPERLATIVE,
                 PartsOfSpeech.COMPARATIVE, PartsOfSpeech.AdjectivalNoun
             ]
-        const prepTags: PartsOfSpeech[] =
-            [
-                PartsOfSpeech.IN
-            ]
-        const relTags: PartsOfSpeech[] =
+        const prepTags = [PartsOfSpeech.IN]
+        const relTags =
             [
                 PartsOfSpeech.WDT,
                 PartsOfSpeech.WR,
                 PartsOfSpeech.WP,
                 PartsOfSpeech.WPQ
             ]
-        const conjTags: PartsOfSpeech[] =
-            [
-                PartsOfSpeech.CONJUNCTION
-            ]
+        const conjTags = [PartsOfSpeech.CONJUNCTION]
 
         for (const tag of nounTags) {
             this.register(tag, new NounHandler())
