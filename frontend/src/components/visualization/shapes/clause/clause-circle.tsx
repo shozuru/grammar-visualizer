@@ -1,20 +1,22 @@
-import { Noun }
-    from '../../../../grammar-structure/syntax/parts-of-speech/noun'
-import type { Phrase }
-    from '../../../../grammar-structure/syntax/parts-of-speech/phrase'
+import { Noun } from
+    '../../../../grammar-structure/syntax/parts-of-speech/noun'
+import type { Phrase } from
+    '../../../../grammar-structure/syntax/parts-of-speech/phrase'
 import './clause-circle.css'
 import NounCirle from '../noun/noun-circle'
 import VerbCircle from '../verb/verb-circle'
-import { Adverb }
-    from '../../../../grammar-structure/syntax/parts-of-speech/adverb'
+import { Adverb } from
+    '../../../../grammar-structure/syntax/parts-of-speech/adverb'
 import AdverbCircle from '../adverb/adverb-circle'
-import { Preposition }
-    from '../../../../grammar-structure/syntax/parts-of-speech/preposition'
-import PrepositionCircle
-    from '../preposition-phrase/preposition/preposition-circle'
+import { Preposition } from
+    '../../../../grammar-structure/syntax/parts-of-speech/preposition'
+import PrepositionCircle from
+    '../preposition-phrase/preposition/preposition-circle'
 import PrepositionPhrase from '../preposition-phrase/preposition-phrase'
 import RelativePhrase from '../relative/relative-phrase'
 import { Coupling } from '../utils/coupling'
+import type { Predicate } from '../../../../grammar-structure/syntax/predicate'
+import { isNonFiniteAgr } from '../../../../grammar-structure/syntax/syntax-methods'
 
 enum PartOfSpeech {
     NOUN,
@@ -24,7 +26,7 @@ enum PartOfSpeech {
 }
 
 type ClauseProps = {
-    verb: Phrase
+    predicate: Predicate
     nounList: Noun[]
     adverbList: Adverb[]
     prepList: Preposition[]
@@ -36,7 +38,12 @@ type CoupledElement = {
 }
 
 const ClauseCircle: React.FC<ClauseProps> =
-    ({ verb, nounList, adverbList, prepList }) => {
+    ({ predicate, nounList, adverbList, prepList }) => {
+
+        const predPhrase = predicate.getSemanticContent()
+        if (!predPhrase) {
+            throw Error("Clause does not have a predicate")
+        }
 
         const relativizerList: Noun[] = []
         for (const noun of nounList) {
@@ -49,6 +56,11 @@ const ClauseCircle: React.FC<ClauseProps> =
         for (const prep of prepList) {
             if (!prep.hasObject()) continue
             prepsWithObjects.push(prep)
+        }
+
+        function isTensed(): boolean {
+            const agrStack = predicate.getAgrStack()
+            return agrStack.some((agr) => isNonFiniteAgr(agr))
         }
 
         function distributeAngles(
@@ -114,7 +126,7 @@ const ClauseCircle: React.FC<ClauseProps> =
                     className="clause-circle"
                 >
                     <VerbCircle
-                        predicate={verb}
+                        predicate={predPhrase}
                     />
 
                     {inPhase.map((item, i) => {
@@ -176,7 +188,6 @@ const ClauseCircle: React.FC<ClauseProps> =
                     })}
                 </div >
 
-
                 {prepsWithObjects.length > 0 &&
                     prepList.map((prep, i) =>
                         <PrepositionPhrase
@@ -186,13 +197,16 @@ const ClauseCircle: React.FC<ClauseProps> =
                     )
                 }
 
-                {relativizerList.length > 0 &&
+                {/* Show if it is not already being shown elsewhere in another 
+                clause, such as if both clauses have it as the subject */}
+                {isTensed() && relativizerList.length > 0 &&
                     relativizerList.map((noun, i) =>
                         <RelativePhrase
                             noun={noun}
                             index={i}
                         />
-                    )}
+                    )
+                }
             </>
         )
     }

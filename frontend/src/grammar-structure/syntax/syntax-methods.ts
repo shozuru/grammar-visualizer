@@ -12,6 +12,7 @@ import type { WordBuilder } from "../builders/word-builder"
 import type { PredicateBuilder } from "../builders/predicate-builder"
 import { Preposition } from "./parts-of-speech/preposition"
 import type { ClauseBuilder } from "../builders/clause-builder"
+import type { Agr } from "./agr"
 
 
 export function getLexicalizedMod(adjWord: Word): Mod | undefined {
@@ -199,6 +200,10 @@ export function isMakeWithEllipsedVP(cBuilder: ClauseBuilder): boolean {
         cBuilder.hasObject()
         && isCausativeString(verbName)
     )
+}
+
+export function isNonFiniteAgr(agr: Agr): boolean {
+    return agr.getPos() === PartsOfSpeech.InfAgr
 }
 
 export function isNominal(word: Word): boolean {
