@@ -45,9 +45,7 @@ export class Parser {
             const handler = this.registry.getHandler(word)
             const newCB = handler.handle(word, this.currentBuilder, ctx)
 
-            if (newCB) {
-                this.currentBuilder = newCB
-            }
+            if (newCB) this.currentBuilder = newCB
         }
         return this.wrapLooseEnds()
     }

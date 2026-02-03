@@ -11,11 +11,6 @@ export class AdverbBuilder extends WordBuilder {
         this.adverb = undefined
     }
 
-    public createAndSetAdverb(adverbWord: Word): void {
-        const adverb = new Adverb(adverbWord.name)
-        this.adverb = adverb
-    }
-
     public build(): Adverb {
         if (!this.adverb) {
             throw Error("Tried to build adverb phrase without head")
@@ -30,6 +25,11 @@ export class AdverbBuilder extends WordBuilder {
             this.adverb.addAdjunct(adjunct)
         }
         return this.adverb
+    }
+
+    public createAndSetAdverb(adverbWord: Word): void {
+        const adverb = new Adverb(adverbWord.name)
+        this.adverb = adverb
     }
 
     public addAdjunct(adverb: Adverb): void {

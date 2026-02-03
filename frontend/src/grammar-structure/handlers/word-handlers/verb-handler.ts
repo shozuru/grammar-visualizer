@@ -28,14 +28,16 @@ export class VerbHandler implements WordHandler {
         ctx: HandlerMethods
     ): ClauseBuilder | void {
         // debugger
-        const unfinishedClause: ClauseBuilder | undefined = ctx.peak()
+        // const unfinishedClause: ClauseBuilder | undefined = ctx.peak()
         const currentPred: Predicate | undefined = cBuilder.getPredicate()
-        // the person that knew me is here
-        if (unfinishedClause && currentPred) {
-            // the boy went to the school that is blue
-            this.shipRelClause(cBuilder, ctx)
-            return this.returnToMatrix(verbalWord, ctx)
-        }
+        // the person that knew me [is] here
+        // if (unfinishedClause && currentPred) {
+        //     // the boy went to the school that [is] blue
+        //     // the above sentence doesn't actually go through here
+        //     // "He is who needed to [go]" does go through here
+        //     this.shipRelClause(cBuilder, ctx)
+        //     return this.returnToMatrix(verbalWord, ctx)
+        // }
         if (currentPred
             && !(this.checkPredAgrStack(currentPred, PartsOfSpeech.InfAgr))
             && isVerb(verbalWord)
@@ -51,13 +53,11 @@ export class VerbHandler implements WordHandler {
             subCBuilder.buildPredicate(verbalWord)
             return subCBuilder
         }
-        if (
-            isIngVerb(verbalWord)
+        if (isIngVerb(verbalWord)
             && cBuilder.hasPrepWithObject()
         ) return this.handleIngSubordinate(verbalWord, cBuilder, ctx, true)
 
-        if (
-            isIngVerb(verbalWord)
+        if (isIngVerb(verbalWord)
             && cBuilder.hasUnfinishedPrep()
         ) return this.handleIngSubordinate(verbalWord, cBuilder, ctx, false)
 
@@ -132,16 +132,16 @@ export class VerbHandler implements WordHandler {
         return cBuilder.yieldSControlNoun()
     }
 
-    private shipRelClause(cBuilder: ClauseBuilder, ctx: HandlerMethods): void {
-        const rClause = cBuilder.build()
-        ctx.add(rClause)
-    }
+    // private shipRelClause(cBuilder: ClauseBuilder, ctx: HandlerMethods): void {
+    //     const rClause = cBuilder.build()
+    //     ctx.add(rClause)
+    // }
 
-    private returnToMatrix(vWord: Word, ctx: HandlerMethods): ClauseBuilder {
-        const matrix = ctx.pop()
-        matrix.buildPredicate(vWord)
-        return matrix
-    }
+    // private returnToMatrix(vWord: Word, ctx: HandlerMethods): ClauseBuilder {
+    //     const matrix = ctx.pop()
+    //     matrix.buildPredicate(vWord)
+    //     return matrix
+    // }
 
     private isNonfiniteRelConj(
         verbalWord: Word,
