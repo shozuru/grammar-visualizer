@@ -35,9 +35,7 @@ export class GrammarVisualizer {
         return this.clauses
     }
 }
-// He was who needed to go
-
-// TODO: conjunctions, ambiguous sentences, visualization
+// TODO: ambiguous sentences
 // I gave the kid cake. (ambiguous)
 // I gave the dog food (technically ambiguous)
 // I ate the birthday cake (not ambiguous)
@@ -53,6 +51,7 @@ export class GrammarVisualizer {
 
 // I knew (that) she quickly left
 // I told him (that) she quickly left
+
 // solution: we add the nouns as if they are part of the previous clause, but
 // if we get to a new verb that doesn't have any nouns, we move the last noun
 // of the previous clause to the new clause, and build the previous clause
